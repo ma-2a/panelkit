@@ -18,7 +18,7 @@ const stubEl = () => new Proxy(
   { get: (t, p) => (p in t ? t[p] : () => stubEl()), set: (t, p, v) => { t[p] = v; return true } }
 );
 global.document = {
-  querySelector: () => stubEl(), querySelectorAll: () => [], getElementById: () => null,
+  querySelector: () => stubEl(), querySelectorAll: () => [], getElementById: () => null, addEventListener() {},
   createElement: () => stubEl(), documentElement: stubEl()
 };
 global.window = { addEventListener() {} };
@@ -28,7 +28,10 @@ global.navigator = { clipboard: { writeText: async () => {} } };
 const ctx = {};
 new Function("with(this){" + src +
   "; this.__x = {TYPES,PRESETS,SCHEMAS,DEVICES,blockDefaults,buildYaml,checks,deps,yq,navTarget,tapFor,cardCfg,hacsOf," +
-  "removeBlock,undoRemove,addBlock,paintCell,deviceSize,setState:s=>state=s,getState:()=>state}}").call(ctx);
+  "removeBlock,undoRemove,addBlock,paintCell,deviceSize,newProject,switchView,addView,deleteView,moveView,duplicateView," +
+  "buildAllViews,effectiveRoutes,applyNavbarEverywhere,hexOr,load,TABSET," +
+  "setState:s=>{ if(!project||!project.views.includes(s)) project=newProject([s]); state=s; }," +
+  "setProject:p=>{ project=p; state=p.views[p.active]; }, getProject:()=>project, getState:()=>state}}").call(ctx);
 const A = ctx.__x;
 const run = (s, fn) => { A.setState(s); return fn(); };
 const parse = out => yaml.load(out);
@@ -59,13 +62,16 @@ for (const [name, preset] of Object.entries(A.PRESETS)) {
   check(`preset ${name}: view name set`, /^[a-z0-9_]+$/.test(s.name));
 }
 
+const tabProject = () => A.newProject(A.TABSET.map(k => A.PRESETS[k]()));
 for (const name of ["home", "camera", "music", "lights", "calendar"]) {
-  const s = A.PRESETS[name]();
-  const doc = parse(run(s, A.buildYaml));
+  const p = tabProject(); p.active = A.TABSET.indexOf(name); A.setProject(p);
+  const doc = parse(A.buildYaml());
+  check(`tab ${name}: no warnings in tab set`, A.checks().length === 0, A.checks().join(" / "));
   const nav = doc.custom_fields.navbar.card;
   check(`tab ${name}: navbar on the right`, nav.desktop.position === "right");
   check(`tab ${name}: five routes`, nav.routes.length === 5);
   check(`tab ${name}: own route exists`, nav.routes.some(r => r.url === `/view-assist/${name}`));
+  check(`tab ${name}: active icon derived`, nav.routes.find(r => r.url === "/view-assist/home").icon_selected === "mdi:home");
   check(`tab ${name}: glass and accent`, /backdrop-filter/.test(nav.styles) && /#ff7a3d/.test(nav.styles));
   const g = gridOf(doc);
   check(`tab ${name}: navbar column empty`, g.rows.every(r => r[r.length - 1] === "."));
@@ -121,10 +127,11 @@ check("target: script", A.navTarget("script.good_night").kind === "action");
 check("target: scene", JSON.stringify(A.tapFor("scene.movie")) === JSON.stringify({ action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: "scene.movie" } }));
 check("target: automation triggers", A.tapFor("automation.x").perform_action === "automation.trigger");
 check("target: empty", A.navTarget("") === null);
-s0.vaBase = "/panel";
+A.getProject().vaBase = "/panel";
 check("target: custom dashboard path", A.navTarget("clock").v === "/panel/clock");
 
 const navAct = A.PRESETS.infonav();
+navAct.blocks.navbar.sync = false;
 navAct.blocks.navbar.routes.push({ icon: "mdi:weather-night", label: "Night", target: "script.good_night" });
 const navDoc = parse(run(navAct, A.buildYaml)).custom_fields.navbar.card;
 const night = navDoc.routes.find(r => r.label === "Night");
@@ -175,9 +182,52 @@ check("checks: two navbars", run(two, A.checks).some(m => m.includes("more than 
 check("devices: Echo Show 5 is 960x480", (() => { const d = A.DEVICES.find(x => x.id === "echo5"); return d && d.w === 960 && d.h === 480; })());
 check("devices: Echo Show 8 present", A.DEVICES.some(x => x.label === "Echo Show 8"));
 check("devices: custom size option", A.DEVICES.some(x => x.id === "custom"));
-const cs = A.PRESETS.blank(); cs.device = "custom"; cs.customW = 1024; cs.customH = 768;
-check("devices: custom size used", JSON.stringify(run(cs, A.deviceSize)) === "[1024,768]");
-check("devices: default is Echo Show 5", A.PRESETS.home().device === "echo5");
+const cs = A.PRESETS.blank(); A.setState(cs); Object.assign(A.getProject(), { device: "custom", customW: 1024, customH: 768 });
+check("devices: custom size used", JSON.stringify(A.deviceSize()) === "[1024,768]");
+check("devices: default is Echo Show 5", A.newProject([]).device === "echo5");
+
+const def = A.load();
+check("project: default is the tab set", def.views.map(v => v.name).join() === "home,camera,music,lights,calendar");
+
+let P = tabProject(); A.setProject(P);
+A.addView("tabset");
+check("project: tab set not duplicated", A.getProject().views.length === 5);
+A.addView("home");
+check("project: added view gets unique name", A.getProject().views[5].name === "home2" && A.getProject().active === 5);
+A.addView("blank");
+check("project: blank view named view", A.getProject().views[6].name === "view");
+A.deleteView(5);
+check("project: view deleted", A.getProject().views.length === 6 && !A.getProject().views.some(v => v.name === "home2"));
+A.undoRemove();
+check("project: delete undone in place", A.getProject().views[5].name === "home2");
+A.switchView(1); A.moveView(1);
+check("project: move reorders", A.getProject().views[2].name === "camera" && A.getProject().active === 2);
+const navNow = A.cardCfg(A.getState().blocks.navbar);
+check("project: synced routes follow order", navNow.routes[1].url === "/view-assist/music" && navNow.routes[2].url === "/view-assist/camera");
+A.duplicateView();
+check("project: duplicate gets unique name", A.getProject().views[3].name === "camera_copy");
+const allYaml = A.buildAllViews();
+let allDoc; try { allDoc = parse(allYaml); } catch (e) { allDoc = null; }
+check("export: all views parse", Array.isArray(allDoc), allYaml.slice(0, 120));
+if (allDoc) {
+  check("export: one entry per view", allDoc.length === A.getProject().views.length);
+  check("export: panel views with paths", allDoc.every(v => v.type === "panel" && /^[a-z0-9_]+$/.test(v.path)));
+  check("export: each holds the button-card", allDoc.every(v => v.cards.length === 1 && v.cards[0].type === "custom:button-card"));
+  check("export: titles from labels", allDoc[0].title === "Home");
+}
+const dupName = A.newProject([A.PRESETS.info(), A.PRESETS.info()]); A.setProject(dupName);
+check("checks: duplicate view names", A.checks().some(m => m.includes("also called")));
+
+const mix = A.newProject([A.PRESETS.home(), A.PRESETS.info(), A.PRESETS.timers()]); A.setProject(mix);
+A.getState().blocks.navbar.look = "pill";
+A.applyNavbarEverywhere("navbar");
+check("navbar: copied to views without one", mix.views.every(v => Object.values(v.blocks).some(b => b.type === "navbar" && b.look === "pill")));
+check("navbar: copies leave a free edge", mix.views.every(v => { A.setProject(Object.assign(mix, { active: mix.views.indexOf(v) })); return !A.checks().some(m => m.includes("covers")); }));
+check("navbar: copies produce valid yaml", mix.views.every(v => { mix.active = mix.views.indexOf(v); A.setProject(mix); try { parse(A.buildYaml()); return true } catch (e) { return false } }));
+
+check("color: hex kept", A.hexOr("#FF7A3D", "#000000") === "#ff7a3d");
+check("color: short hex expanded", A.hexOr("#abc", "#000000") === "#aabbcc");
+check("color: rgba falls back", A.hexOr("rgba(0,0,0,.4)", "#123456") === "#123456");
 
 const d1 = A.PRESETS.home();
 check("determinism", run(d1, A.buildYaml) === run(d1, A.buildYaml));
@@ -186,7 +236,14 @@ for (const [label, text] of [["builder", html], ["landing", landing], ["readme",
   check(`${label}: no middle dots`, !/\u00b7/.test(text));
   check(`${label}: no german`, !/[äöüßÄÖÜ]/.test(text));
 }
-check("html: every localStorage call guarded", html.split("localStorage").slice(0, -1).every(p => /try\s*\{[^{}]*$/.test(p.slice(-80))));
+check("html: every localStorage call guarded", (() => {
+  const re = /localStorage\./g; let m;
+  while ((m = re.exec(html))) {
+    const t = html.lastIndexOf("try{", m.index), c = html.indexOf("catch", t);
+    if (t < 0 || c < m.index) return false;
+  }
+  return true;
+})());
 check("html: lang en", /<html lang="en"/.test(html) && /<html lang="en"/.test(landing));
 check("html: viewport-fit", /viewport-fit=cover/.test(html) && /viewport-fit=cover/.test(landing));
 check("html: dark theme", /prefers-color-scheme: dark/.test(html));

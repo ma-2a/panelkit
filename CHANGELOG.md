@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 — 2026-10-01
+
+- Several views in one project: a view bar to switch, add, delete (with undo), reorder, duplicate and rename
+- Add a single view from a template or the whole tab set at once
+- The navbar can follow your views: one route per view, label and icon from each view's settings, in view bar order
+- “Use this navbar in every view” copies the navbar and makes room for it where needed
+- “Copy all views” exports every view as dashboard entries for the raw configuration editor
+- Color pickers for the base color, the navbar background and area backgrounds
+- Warning when two views share a name
+- Work from 0.2 is moved into the new project format automatically
+
 ## 0.2.0 — 2026-10-01
 
 - New layout: blocks on the left, preview and grid on the right, YAML below

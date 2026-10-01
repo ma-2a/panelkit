@@ -209,6 +209,29 @@ ol.steps li{margin-bottom:6px}
 footer{max-width:1500px;margin:0 auto;padding:4px 16px 28px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3)}
 footer a{color:var(--ink-2)}
 footer .ver{font-family:var(--mono);font-size:11.5px}
+.viewbar{background:var(--panel);border-bottom:1px solid var(--line)}
+.viewbar .in{max-width:1500px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.viewbar .lbl{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;flex:none}
+.vtabs{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding:2px;scrollbar-width:thin}
+.vtab{display:flex;align-items:center;flex:none;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);overflow:hidden}
+.vtab button{background:none;border:none;cursor:pointer;color:var(--ink-2);font-size:13.5px}
+.vtab .go{display:flex;align-items:center;gap:6px;padding:7px 11px}
+.vtab .x{padding:7px 9px 7px 2px;color:var(--ink-3);font-size:12px}
+.vtab .x:hover{color:var(--warn)}
+.vtab.on{border-color:var(--accent);background:var(--panel);box-shadow:inset 0 -2px 0 var(--accent)}
+.vtab.on .go{color:var(--ink);font-weight:600}
+.addview{position:relative;flex:none}
+.addmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(320px,86vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.35);padding:8px;max-height:70vh;overflow:auto}
+.addmenu[hidden]{display:none}
+.addmenu h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:6px 6px 4px;font-weight:600}
+.addmenu button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;background:none;border:none;border-radius:8px;padding:7px 8px;cursor:pointer}
+.addmenu button:hover{background:var(--panel-2)}
+.addmenu small{display:block;color:var(--ink-3);font-size:12px}
+.addmenu .e{width:22px;text-align:center;flex:none}
+.vs h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;margin:4px 0 0}
+.vactions{display:flex;flex-wrap:wrap;gap:6px}
+.syncnote{font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.syncnote span.r{font-family:var(--mono);font-size:12px;color:var(--ink)}
 @media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
@@ -220,10 +243,6 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
     <span>View Assist dashboard builder</span>
   </div>
   <div class="field">
-    <label for="viewname">View</label>
-    <input type="text" id="viewname" class="mono" size="11" value="home">
-  </div>
-  <div class="field">
     <label for="device">Device</label>
     <select id="device"></select>
     <span class="custom-size" id="customsize" hidden>
@@ -232,29 +251,19 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
       <input type="number" id="ch" min="200" max="4000" aria-label="Height in pixels">
     </span>
   </div>
-  <div class="field">
-    <label for="preset">Template</label>
-    <select id="preset">
-      <option value="">choose…</option>
-      <optgroup label="Tab set with navbar">
-        <option value="home">Home (clock, weather, chips)</option>
-        <option value="camera">Camera (live feed, floodlight)</option>
-        <option value="music">Music (player, favorites)</option>
-        <option value="lights">Lights (room tiles, all off)</option>
-        <option value="calendar">Calendar (agenda)</option>
-      </optgroup>
-      <optgroup label="Single views">
-        <option value="info">Info (title and text)</option>
-        <option value="infonav">Info with navbar</option>
-        <option value="infopic">Info with image</option>
-        <option value="timers">Timers and alarms</option>
-        <option value="split">Two columns</option>
-        <option value="blank">Blank</option>
-      </optgroup>
-    </select>
-  </div>
   <button class="ghost" id="themebtn" title="Light or dark" aria-label="Toggle light or dark theme">◐</button>
 </header>
+
+<div class="viewbar">
+  <div class="in">
+    <span class="lbl">Views</span>
+    <div class="vtabs" id="vtabs" role="tablist" aria-label="Views"></div>
+    <div class="addview">
+      <button class="act" id="addview" aria-expanded="false" aria-controls="addmenu">+ Add view</button>
+      <div class="addmenu" id="addmenu" hidden></div>
+    </div>
+  </div>
+</div>
 
 <nav class="tabs" role="tablist">
   <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
@@ -270,19 +279,23 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
 
 <div class="layout">
   <aside class="pane active" id="pane-build">
-    <section class="card">
-      <div class="cardhead">
-        <h2>Blocks<span class="count" id="blockcount">0</span></h2>
-        <button class="act" id="addtoggle" aria-expanded="false" aria-controls="picker">+ Add block</button>
-      </div>
-      <div class="picker" id="picker" hidden></div>
-      <ol class="blist" id="blocklist"></ol>
-      <p class="hint">Open a block to edit it. The selected block is what you place when tapping grid cells.</p>
-    </section>
-
     <details class="card vs" id="viewsettings">
-      <summary>View settings</summary>
+      <summary>View settings <span class="count mono" id="vsname"></span></summary>
       <div class="stack">
+        <div class="rowgrid">
+          <div>
+            <label for="viewname">Name in the URL</label>
+            <input type="text" id="viewname" class="mono">
+          </div>
+          <div>
+            <label for="viewlabel">Navbar label</label>
+            <input type="text" id="viewlabel">
+          </div>
+        </div>
+        <div>
+          <label for="viewicon">Navbar icon</label>
+          <input type="text" id="viewicon" class="mono" placeholder="mdi:home-outline">
+        </div>
         <div>
           <label for="bgmode">Background</label>
           <select id="bgmode">
@@ -297,8 +310,15 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
         </div>
         <div>
           <label for="bgcolor">Base color</label>
-          <input type="text" id="bgcolor" class="mono">
+          <div class="colorrow"><input type="color" id="bgcolorc" aria-label="Pick base color"><input type="text" id="bgcolor" class="mono"></div>
         </div>
+        <div class="vactions">
+          <button class="ghost" id="vleft" aria-label="Move view left">← Move</button>
+          <button class="ghost" id="vright" aria-label="Move view right">Move →</button>
+          <button class="ghost" id="vdup">Duplicate</button>
+          <button class="ghost danger" id="vdel">Delete view</button>
+        </div>
+        <h3>All views</h3>
         <div>
           <label for="vabase">View Assist dashboard path</label>
           <input type="text" id="vabase" class="mono">
@@ -306,6 +326,16 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
         <p class="hint" style="margin:0">Link targets work the same everywhere. A plain name like <code class="inl">music</code> opens that view on this dashboard. A path like <code class="inl">/lovelace/0</code> opens any dashboard. <code class="inl">script.x</code> or <code class="inl">scene.x</code> runs it. <code class="inl">https://</code> opens a website.</p>
       </div>
     </details>
+    <section class="card">
+      <div class="cardhead">
+        <h2>Blocks<span class="count" id="blockcount">0</span></h2>
+        <button class="act" id="addtoggle" aria-expanded="false" aria-controls="picker">+ Add block</button>
+      </div>
+      <div class="picker" id="picker" hidden></div>
+      <ol class="blist" id="blocklist"></ol>
+      <p class="hint">Open a block to edit it. The selected block is what you place when tapping grid cells.</p>
+    </section>
+
   </aside>
 
   <section class="pane" id="pane-layout">
@@ -345,7 +375,9 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
       <div class="outbar">
         <button class="act" id="copy">Copy</button>
         <button class="ghost" id="download">Download .yaml</button>
+        <button class="ghost" id="copyall">Copy all views</button>
       </div>
+      <p class="hint" id="copyallhint" style="margin:0 0 10px">The YAML below is the view <strong class="mono" id="yamlname"></strong>. “Copy all views” gives you every view as dashboard entries for the raw configuration editor, to paste under <code class="inl">views:</code>.</p>
       <pre class="out" id="yaml"></pre>
     </div>
     <div class="card">
@@ -366,7 +398,7 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
   <a href="https://github.com/ma-2a/panelkit">GitHub</a>
   <a href="https://ko-fi.com/ma2a">Support on Ko-fi</a>
   <a href="https://github.com/ma-2a/panelkit/issues">Report an issue</a>
-  <span class="ver">v0.2.0</span>
+  <span class="ver">v0.3.0</span>
   <span>Not affiliated with the View Assist project or Home Assistant.</span>
 </footer>
 
@@ -426,7 +458,7 @@ function blockDefaults(type){
     case "custom":  b.yaml = "type: markdown\ncontent: Hello from View Assist"; break;
     case "shader":  b.shade = "0.15"; break;
     case "navbar":
-      Object.assign(b,{look:"glass", position:"right", showLabels:false, primary:ACCENT, bg:"", radius:"", autoPadding:false,
+      Object.assign(b,{look:"glass", position:"right", showLabels:false, primary:ACCENT, bg:"", radius:"", autoPadding:false, sync:true,
         routes:[
           {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"home"},
           {icon:"mdi:music", iconSel:"", label:"Music", target:"music"},
@@ -538,13 +570,20 @@ const NAV_LOOKS = {
 const CHIP_KINDS = {weather:"Weather", entity:"Entity", template:"Text and icon", action:"Icon only", back:"Back"};
 
 let state;
+let project;
 function base(){
-  return {name:"home", cols:2, colSizes:["1fr","1fr"], rows:[], blocks:{},
+  return {name:"view", label:"", icon:"", cols:2, colSizes:["1fr","1fr"], rows:[], blocks:{},
     bgmode:"color", bgpath:"/local/viewassist/backgrounds/default.png", bgcolor:"#1b1f24",
-    vaBase:"/view-assist/", device:"echo5", customW:1280, customH:800, selected:null, expanded:true};
+    selected:null, expanded:true};
 }
+function newProject(views){
+  return {views, active:0, device:"echo5", customW:1280, customH:800, vaBase:"/view-assist/"};
+}
+function cap(n){ return String(n||"").replace(/_/g," ").replace(/^./,c=>c.toUpperCase()); }
+function viewLabel(v){ return v.label || cap(v.name); }
 function tabNavbar(){
   const b = blockDefaults("navbar");
+  b.sync = true;
   b.routes = [
     {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"home"},
     {icon:"mdi:cctv", iconSel:"", label:"Camera", target:"camera"},
@@ -564,7 +603,7 @@ function titled(text){ const t=blockDefaults("title"); t.text=text; return t; }
 function provided(){ return {status:blockDefaults("status"), assist:blockDefaults("assist")}; }
 
 function presetHome(){
-  const s=base(); s.name="home";
+  const s=base(); s.name="home"; s.label="Home"; s.icon="mdi:home-outline";
   s.rows=[
     {size:"min-content",cells:["title","status"]},
     {size:"1fr",cells:["clockweather","clockweather"]},
@@ -581,7 +620,7 @@ function presetHome(){
   s.selected="clockweather"; return withNav(s);
 }
 function presetCamera(){
-  const s=base(); s.name="camera"; s.colSizes=["3fr","1fr"];
+  const s=base(); s.name="camera"; s.label="Camera"; s.icon="mdi:cctv"; s.colSizes=["3fr","1fr"];
   s.rows=[
     {size:"min-content",cells:["title","status"]},
     {size:"1fr",cells:["camera","floodlight"]},
@@ -592,7 +631,7 @@ function presetCamera(){
   s.selected="camera"; return withNav(s);
 }
 function presetMusic(){
-  const s=base(); s.name="music";
+  const s=base(); s.name="music"; s.label="Music"; s.icon="mdi:music";
   s.rows=[
     {size:"min-content",cells:["title","status"]},
     {size:"1fr",cells:["player","player"]},
@@ -606,7 +645,7 @@ function presetMusic(){
   s.selected="player"; return withNav(s);
 }
 function presetLights(){
-  const s=base(); s.name="lights"; s.cols=3; s.colSizes=["1fr","1fr","1fr"];
+  const s=base(); s.name="lights"; s.label="Lights"; s.icon="mdi:lightbulb-group-outline"; s.cols=3; s.colSizes=["1fr","1fr","1fr"];
   s.rows=[
     {size:"min-content",cells:["title","title","status"]},
     {size:"1fr",cells:["living","floorlamp","office"]},
@@ -625,7 +664,7 @@ function presetLights(){
   s.selected="living"; return withNav(s);
 }
 function presetCalendar(){
-  const s=base(); s.name="calendar";
+  const s=base(); s.name="calendar"; s.label="Calendar"; s.icon="mdi:calendar-month-outline";
   s.rows=[
     {size:"min-content",cells:["title","status"]},
     {size:"1fr",cells:["agenda","agenda"]},
@@ -636,28 +675,28 @@ function presetCalendar(){
   s.selected="agenda"; return withNav(s);
 }
 function presetInfo(){
-  const s=base(); s.name="info"; s.bgmode="fixed";
+  const s=base(); s.name="info"; s.label="Info"; s.icon="mdi:information-outline"; s.bgmode="fixed";
   s.rows=[{size:"min-content",cells:["title","status"]},{size:"4fr",cells:["message","message"]},{size:"min-content",cells:["assist","assist"]}];
   s.blocks={title:titled("Info"), ...provided(), message:blockDefaults("message")};
   s.selected="message"; return s;
 }
 function presetInfonav(){ const s=withNav(presetInfo()); s.selected="navbar"; return s; }
 function presetInfopic(){
-  const s=presetInfo(); s.name="infopic"; s.colSizes=["1fr","2fr"]; s.rows[1].cells=["image","message"];
+  const s=presetInfo(); s.name="infopic"; s.label="Picture"; s.icon="mdi:image-outline"; s.colSizes=["1fr","2fr"]; s.rows[1].cells=["image","message"];
   s.blocks.image=blockDefaults("image"); s.selected="image"; return s;
 }
 function presetTimers(){
-  const s=presetInfo(); s.name="timers";
+  const s=presetInfo(); s.name="timers"; s.label="Timers"; s.icon="mdi:timer-outline";
   s.rows=[{size:"15vh",cells:["title","status"]},{size:"max-content",cells:["timers","timers"]},{size:"10vh",cells:["assist","assist"]}];
   delete s.blocks.message; s.blocks.timers=blockDefaults("timers"); s.blocks.title.text="Timers and alarms";
   s.selected="timers"; return s;
 }
 function presetSplit(){
-  const s=presetInfo(); s.name="split"; s.rows[1]={size:"1fr",cells:["message","card"]};
+  const s=presetInfo(); s.name="split"; s.label="Split"; s.icon="mdi:view-split-vertical"; s.rows[1]={size:"1fr",cells:["message","card"]};
   s.blocks.card=blockDefaults("custom"); s.selected="card"; return s;
 }
 function presetBlank(){
-  const s=base(); s.name="myview";
+  const s=base(); s.name="view"; s.label=""; s.icon="mdi:card-outline";
   s.rows=[{size:"min-content",cells:["title","status"]},{size:"1fr",cells:[".","."]},{size:"min-content",cells:["assist","assist"]}];
   s.blocks={title:blockDefaults("title"), ...provided()};
   s.selected="title"; return s;
@@ -665,25 +704,56 @@ function presetBlank(){
 const PRESETS = {home:presetHome, camera:presetCamera, music:presetMusic, lights:presetLights, calendar:presetCalendar,
   info:presetInfo, infonav:presetInfonav, infopic:presetInfopic, timers:presetTimers, split:presetSplit, blank:presetBlank};
 
-const KEY = "panelkit.view";
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+const VIEW_MENU = [
+  {group:"Start fresh", items:[
+    {id:"tabset", label:"Full tab set", desc:"Home, camera, music, lights and calendar", e:"🗂️"},
+    {id:"blank", label:"Blank view", desc:"Title, status and assist bar", e:"⬜"}]},
+  {group:"Tab set views", items:[
+    {id:"home", label:"Home", desc:"Clock, weather, chips", e:"🏠"},
+    {id:"camera", label:"Camera", desc:"Live feed and floodlight", e:"📹"},
+    {id:"music", label:"Music", desc:"Player and favorites", e:"🎵"},
+    {id:"lights", label:"Lights", desc:"Room tiles and all off", e:"💡"},
+    {id:"calendar", label:"Calendar", desc:"Agenda", e:"📅"}]},
+  {group:"Single views", items:[
+    {id:"info", label:"Info", desc:"Title and message", e:"ℹ️"},
+    {id:"infonav", label:"Info with navbar", desc:"Message plus tabs", e:"ℹ️"},
+    {id:"infopic", label:"Info with image", desc:"Image next to the message", e:"🖼️"},
+    {id:"timers", label:"Timers and alarms", desc:"Running timers", e:"⏲️"},
+    {id:"split", label:"Two columns", desc:"Message and a custom card", e:"◫"}]}
+];
+const TABSET = ["home","camera","music","lights","calendar"];
+
+const KEY = "panelkit.project";
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(project)); }catch(e){} }
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
     if(raw){
       const p = JSON.parse(raw);
-      if(p && p.rows && p.blocks){
-        const s = Object.assign(base(), p);
-        if(!DEVICES.some(d=>d.id===s.device)){
-          const m = /^(\d+)x(\d+)$/.exec(String(s.device||""));
-          const hit = m && DEVICES.find(d=>d.w==+m[1] && d.h==+m[2]);
-          s.device = hit ? hit.id : "echo5";
-        }
-        return s;
+      if(p && Array.isArray(p.views) && p.views.length){
+        const pr = Object.assign(newProject([]), p);
+        pr.views = p.views.map(v=>Object.assign(base(), v));
+        if(!DEVICES.some(d=>d.id===pr.device)) pr.device="echo5";
+        pr.active = Math.min(Math.max(0, +pr.active||0), pr.views.length-1);
+        return pr;
+      }
+    }
+    const old = localStorage.getItem("panelkit.view");
+    if(old){
+      const v = JSON.parse(old);
+      if(v && v.rows && v.blocks){
+        const pr = newProject([Object.assign(base(), v)]);
+        const m = /^(\d+)x(\d+)$/.exec(String(v.device||""));
+        const hit = m ? DEVICES.find(d=>d.w==+m[1] && d.h==+m[2]) : DEVICES.find(d=>d.id===v.device);
+        pr.device = hit ? hit.id : "echo5";
+        if(v.vaBase) pr.vaBase = v.vaBase;
+        if(v.customW) pr.customW = v.customW;
+        if(v.customH) pr.customH = v.customH;
+        return pr;
       }
     }
   }catch(e){}
-  return presetHome();
+  return newProject(TABSET.map(k=>PRESETS[k]()));
 }
 
 const $ = s => document.querySelector(s);
@@ -693,8 +763,8 @@ function tint(hex,a){ const n=parseInt(String(hex).slice(1),16); return `rgba(${
 function uniqueName(b){ let n=b,i=2; while(state.blocks[n]) n=b+i++; return n; }
 function safeIdent(s){ return (s||"").toLowerCase().replace(/[^a-z0-9_]/g,"_").replace(/^([0-9])/,"a$1") || "block"; }
 function deviceSize(){
-  const d = DEVICES.find(x=>x.id===state.device);
-  if(!d || d.id==="custom") return [Math.max(200,+state.customW||1280), Math.max(200,+state.customH||800)];
+  const d = DEVICES.find(x=>x.id===project.device);
+  if(!d || d.id==="custom") return [Math.max(200,+project.customW||1280), Math.max(200,+project.customH||800)];
   return [d.w, d.h];
 }
 
@@ -703,7 +773,7 @@ function navTarget(t){
   if(/^https?:\/\//i.test(t)) return {kind:"url", v:t};
   if(/^(script|scene|automation)\.[a-z0-9_]+$/i.test(t)) return {kind:"action", v:t};
   if(t.startsWith("/")) return {kind:"path", v:t};
-  const b = (state.vaBase||"/view-assist/").replace(/\/?$/,"/");
+  const b = (project.vaBase||"/view-assist/").replace(/\/?$/,"/");
   return {kind:"path", v:b+t};
 }
 function actionFor(n){
@@ -771,11 +841,18 @@ function navbarCss(b){
   if(b.bg && b.look!=="transparent") L.push(`background: ${b.bg};`);
   return L.length ? ".navbar {\n" + L.map(l=>"  "+l).join("\n") + "\n}" : "";
 }
+function effectiveRoutes(b){
+  if(!b.sync) return b.routes||[];
+  return project.views.map(v=>{
+    const icon = v.icon || "mdi:circle-outline";
+    return {icon, iconSel: /-outline$/.test(icon) ? icon.replace(/-outline$/,"") : "", label: viewLabel(v), target: v.name};
+  });
+}
 function calEntities(b){ return String(b.entities||"").split(/[,\s]+/).map(x=>x.trim()).filter(Boolean); }
 function cardCfg(b){
   switch(b.type){
     case "navbar": {
-      const routes = (b.routes||[]).map(r=>{
+      const routes = effectiveRoutes(b).map(r=>{
         const o={}; const n=navTarget(r.target);
         if(n && n.kind==="path") o.url=n.v;
         o.icon = r.icon || "mdi:circle-outline";
@@ -841,9 +918,9 @@ function renderDevices(){
       sel.appendChild(o);
     });
   }
-  sel.value=state.device;
-  $("#customsize").hidden = state.device!=="custom";
-  $("#cw").value=state.customW; $("#ch").value=state.customH;
+  sel.value=project.device;
+  $("#customsize").hidden = project.device!=="custom";
+  $("#cw").value=project.customW; $("#ch").value=project.customH;
 }
 
 function renderPicker(){
@@ -869,31 +946,103 @@ function addBlock(t){
   const el=document.querySelector(`[data-block="${a}"]`); if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
 }
 
-let undoState=null, snackTimer=null;
+let undoFn=null, snackTimer=null;
 function removeBlock(a){
   const cells=[];
   state.rows.forEach((r,ri)=>r.cells.forEach((c,ci)=>{ if(c===a){ cells.push([ri,ci]); r.cells[ci]="."; } }));
-  undoState={a, block:state.blocks[a], cells, order:Object.keys(state.blocks)};
+  const block=state.blocks[a], order=Object.keys(state.blocks), view=state;
   delete state.blocks[a];
   if(state.selected===a) state.selected=null;
   renderAll();
-  showSnack(`Removed “${a}”`);
+  showSnack(`Removed “${a}”`, ()=>{
+    const nb={}; order.forEach(k=>{ if(k===a) nb[a]=block; else if(view.blocks[k]) nb[k]=view.blocks[k]; });
+    Object.keys(view.blocks).forEach(k=>{ if(!(k in nb)) nb[k]=view.blocks[k]; });
+    view.blocks=nb;
+    cells.forEach(([ri,ci])=>{ if(view.rows[ri] && ci<view.rows[ri].cells.length && view.rows[ri].cells[ci]===".") view.rows[ri].cells[ci]=a; });
+    view.selected=a; view.expanded=true;
+  });
 }
 function undoRemove(){
-  if(!undoState) return;
-  const {a, block, cells, order} = undoState;
-  const nb={}; order.forEach(k=>{ if(k===a) nb[a]=block; else if(state.blocks[k]) nb[k]=state.blocks[k]; });
-  Object.keys(state.blocks).forEach(k=>{ if(!(k in nb)) nb[k]=state.blocks[k]; });
-  state.blocks=nb;
-  cells.forEach(([ri,ci])=>{ if(state.rows[ri] && ci<state.rows[ri].cells.length && state.rows[ri].cells[ci]===".") state.rows[ri].cells[ci]=a; });
-  state.selected=a; state.expanded=true; undoState=null;
-  hideSnack(); renderAll();
+  if(!undoFn) return;
+  const f=undoFn; undoFn=null; f(); hideSnack(); renderAll();
 }
-function showSnack(text){
-  $("#snacktext").textContent=text; $("#snack").hidden=false;
+function showSnack(text, undo){
+  undoFn = undo || null;
+  $("#snacktext").textContent=text; $("#snackundo").hidden=!undo; $("#snack").hidden=false;
   clearTimeout(snackTimer); snackTimer=setTimeout(hideSnack,6000);
 }
 function hideSnack(){ $("#snack").hidden=true; }
+
+function uniqueView(n){
+  n = safeIdent(n); let out=n, i=2;
+  while(project.views.some(v=>v.name===out)) out=n+i++;
+  return out;
+}
+function switchView(i){
+  project.active = Math.min(Math.max(0,i), project.views.length-1);
+  state = project.views[project.active];
+  state.paintEmpty=false; $("#painthint").textContent="";
+  syncInputs(); renderAll();
+}
+function addView(id){
+  toggleAddMenu(false);
+  const ids = id==="tabset" ? TABSET : [id];
+  let first=-1;
+  ids.forEach(k=>{
+    if(id==="tabset" && project.views.some(v=>v.name===k)) return;
+    const v = PRESETS[k]();
+    v.name = uniqueView(k==="blank" ? "view" : v.name);
+    project.views.push(v);
+    if(first<0) first=project.views.length-1;
+  });
+  if(first<0){ showSnack("All tab set views are already there"); return; }
+  switchView(first);
+}
+function deleteView(i){
+  if(project.views.length<2){ showSnack("A project needs at least one view"); return; }
+  const [v] = project.views.splice(i,1);
+  const was = project.active;
+  switchView(Math.min(i, project.views.length-1));
+  showSnack(`Deleted view “${v.name}”`, ()=>{ project.views.splice(i,0,v); project.active=i; state=v; syncInputs(); });
+  void was;
+}
+function moveView(d){
+  const i=project.active, j=i+d;
+  if(j<0 || j>=project.views.length) return;
+  [project.views[i],project.views[j]]=[project.views[j],project.views[i]];
+  switchView(j);
+}
+function duplicateView(){
+  const v = JSON.parse(JSON.stringify(state));
+  v.name = uniqueView(state.name+"_copy"); v.label = state.label ? state.label+" copy" : "";
+  project.views.splice(project.active+1,0,v);
+  switchView(project.active+1);
+}
+function toggleAddMenu(open){
+  const m=$("#addmenu"), b=$("#addview");
+  const show = open ?? m.hidden;
+  m.hidden=!show; b.setAttribute("aria-expanded", String(show));
+}
+function renderAddMenu(){
+  const m=$("#addmenu");
+  m.innerHTML = VIEW_MENU.map(g=>`<h3>${esc(g.group)}</h3>`+g.items.map(it=>
+    `<button data-view="${it.id}"><span class="e">${it.e}</span><span><strong>${esc(it.label)}</strong><small>${esc(it.desc)}</small></span></button>`).join("")).join("");
+  m.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>addView(b.dataset.view));
+}
+function renderViews(){
+  const el=$("#vtabs");
+  el.innerHTML = project.views.map((v,i)=>`<div class="vtab${i===project.active?" on":""}">
+    <button class="go" role="tab" aria-selected="${i===project.active}" data-vi="${i}"><span aria-hidden="true">${emo(v.icon||v.name)}</span>${esc(viewLabel(v))}</button>
+    ${project.views.length>1?`<button class="x" data-vx="${i}" aria-label="Delete view ${esc(v.name)}" title="Delete view">✕</button>`:""}
+  </div>`).join("");
+  el.querySelectorAll("[data-vi]").forEach(b=>b.onclick=()=>switchView(+b.dataset.vi));
+  el.querySelectorAll("[data-vx]").forEach(b=>b.onclick=()=>deleteView(+b.dataset.vx));
+  $("#vsname").textContent = state.name;
+  $("#yamlname").textContent = state.name;
+  $("#vleft").disabled = project.active===0;
+  $("#vright").disabled = project.active===project.views.length-1;
+  $("#vdel").disabled = project.views.length<2;
+}
 
 function renderBlocks(){
   const list=$("#blocklist"); list.innerHTML="";
@@ -948,7 +1097,7 @@ function styleHTML(b){
     <div><label for="s-just">justify-self</label>${sel("s-just",["","start","center","end","stretch"],b.style.justifySelf)}</div>
     <div><label for="s-text">text-align</label>${sel("s-text",["","start","center","end"],b.style.textAlign)}</div>
     <div><label for="s-ovf">overflow</label>${sel("s-ovf",["","auto","scroll","hidden"],b.style.overflow)}</div>
-    <div><label for="s-bg">background</label><input type="text" id="s-bg" class="mono" value="${esc(b.style.background)}" placeholder="rgba(0,0,0,.4)"></div>
+    <div><label for="s-bg">background</label><div class="colorrow"><input type="color" id="s-bgc" value="${hexOr(b.style.background,"#000000")}" aria-label="Pick area background"><input type="text" id="s-bg" class="mono" value="${esc(b.style.background)}" placeholder="rgba(0,0,0,.4)"></div></div>
     <div><label for="s-rad">border-radius</label><input type="text" id="s-rad" class="mono" value="${esc(b.style.radius)}" placeholder="12px"></div>
   </div></details>`;
 }
@@ -973,12 +1122,16 @@ function navbarHTML(b){
       <div><label for="n-pos">Position</label>${sel("n-pos",["right","left","bottom","top"],b.position)}</div>
       <div><label for="n-rad">Corner radius</label><input type="text" id="n-rad" class="mono" value="${esc(b.radius)}" placeholder="${b.look==="pill"?"999px (pill)":"16px"}" ${b.look==="pill"?"disabled":""}></div>
       <div><label for="n-prim">Accent color</label><div class="colorrow"><input type="color" id="n-primc" value="${/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:ACCENT}" aria-label="Pick accent color"><input type="text" id="n-prim" class="mono" value="${esc(b.primary)}"></div></div>
-      <div><label for="n-bg">Background</label><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div>
+      <div><label for="n-bg">Background</label><div class="colorrow"><input type="color" id="n-bgc" value="${hexOr(b.bg,"#262b33")}" aria-label="Pick background color" ${b.look==="transparent"?"disabled":""}><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div></div>
     </div>
     <label class="checkrow"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
     <label class="checkrow"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding</label>
-    <div><label>Routes</label><div class="list">${routes}</div></div>
-    <div><button class="ghost" id="n-add">+ Route</button></div>`;
+    <label class="checkrow"><input type="checkbox" id="n-sync" ${b.sync?"checked":""}> Routes follow the views</label>
+    ${b.sync ? `<div class="syncnote">One route per view, in the order of the view bar. Label and icon come from each view's settings.
+        <span class="r">${effectiveRoutes(b).map(r=>`${emo(r.icon)} ${esc(r.label)}`).join("&nbsp;&nbsp;&nbsp;")}</span></div>`
+      : `<div><label>Routes</label><div class="list">${routes}</div></div>
+    <div><button class="ghost" id="n-add">+ Route</button></div>`}
+    <div><button class="ghost" id="n-all">Use this navbar in every view</button></div>`;
 }
 function chipsHTML(b){
   const items=(b.chips||[]).map((c,i)=>{
@@ -1023,6 +1176,36 @@ function inspectorHTML(a,b,isPlaced){
   P.push(`<div><button class="ghost danger" id="i-del">Remove block</button></div>`);
   return P.join("");
 }
+function applyNavbarEverywhere(a){
+  const src = JSON.parse(JSON.stringify(state.blocks[a]));
+  let added=0, updated=0;
+  project.views.forEach(v=>{
+    if(v===state) return;
+    const key = Object.keys(v.blocks).find(k=>v.blocks[k].type==="navbar");
+    if(key){ v.blocks[key] = JSON.parse(JSON.stringify(src)); updated++; }
+    else {
+      const edge = src.position||"right";
+      if(edge==="right"||edge==="left"){
+        v.cols+=1;
+        if(edge==="right"){ v.colSizes.push("90px"); v.rows.forEach(r=>r.cells.push(".")); }
+        else { v.colSizes.unshift("90px"); v.rows.forEach(r=>r.cells.unshift(".")); }
+      } else {
+        const row={size:"70px", cells:Array(v.cols).fill(".")};
+        if(edge==="bottom") v.rows.push(row); else v.rows.unshift(row);
+      }
+      v.blocks[uniqueIn(v,"navbar")] = JSON.parse(JSON.stringify(src)); added++;
+    }
+  });
+  renderAll();
+  showSnack(`Navbar copied: ${updated} updated, ${added} added with a free ${src.position||"right"} edge`);
+}
+function uniqueIn(v,b){ let n=b,i=2; while(v.blocks[n]) n=b+i++; return n; }
+function hexOr(v, fb){
+  v=String(v||"").trim();
+  if(/^#[0-9a-f]{6}$/i.test(v)) return v.toLowerCase();
+  if(/^#[0-9a-f]{3}$/i.test(v)) return "#"+v.slice(1).split("").map(c=>c+c).join("").toLowerCase();
+  return fb;
+}
 function moveItem(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; [arr[i],arr[j]]=[arr[j],arr[i]]; }
 function bindInspector(a,b){
   const on=(id,fn,ev="onchange")=>{ const e=document.getElementById(id); if(e) e[ev]=()=>{ fn(e); renderAll(); }; };
@@ -1036,12 +1219,15 @@ function bindInspector(a,b){
   on("i-shade",e=>b.shade=e.value); on("i-yaml",e=>b.yaml=e.value); on("i-fontvar",e=>b.fontVar=e.checked);
   const m={"s-font":"fontSize","s-pad":"padding","s-align":"alignSelf","s-just":"justifySelf","s-text":"textAlign","s-ovf":"overflow","s-bg":"background","s-rad":"radius"};
   Object.entries(m).forEach(([id,k])=>on(id,e=>b.style[k]=e.value));
+  on("s-bgc",e=>b.style.background=e.value);
   if(SCHEMAS[b.type]) SCHEMAS[b.type].forEach(f=>on("f-"+f.k, e=>{ b[f.k] = f.kind==="check" ? e.checked : e.value; }));
   if(b.type==="navbar"){
     document.querySelectorAll("[data-look]").forEach(x=>x.onclick=()=>{ b.look=x.dataset.look; renderAll(); });
     on("n-pos",e=>b.position=e.value); on("n-rad",e=>b.radius=e.value); on("n-bg",e=>b.bg=e.value);
     on("n-prim",e=>b.primary=e.value); on("n-primc",e=>b.primary=e.value);
-    on("n-lab",e=>b.showLabels=e.checked); on("n-pad",e=>b.autoPadding=e.checked);
+    on("n-lab",e=>b.showLabels=e.checked); on("n-pad",e=>b.autoPadding=e.checked); on("n-bgc",e=>b.bg=e.value);
+    on("n-sync",e=>{ if(!e.checked) b.routes = effectiveRoutes({...b, sync:true}).map(r=>({...r})); b.sync=e.checked; });
+    const all=$("#n-all"); if(all) all.onclick=()=>applyNavbarEverywhere(a);
     document.querySelectorAll("[data-r]").forEach(e=>e.onchange=()=>{ b.routes[+e.dataset.r][e.dataset.k]=e.value; renderAll(); });
     document.querySelectorAll("[data-rmv]").forEach(e=>e.onclick=()=>{ moveItem(b.routes,+e.dataset.rmv,+e.dataset.d); renderAll(); });
     document.querySelectorAll("[data-rdel]").forEach(e=>e.onclick=()=>{ b.routes.splice(+e.dataset.rdel,1); renderAll(); });
@@ -1157,7 +1343,7 @@ function renderNavPreview(s, b){
   if(b.position==="left"){ nav.style.left="1.2%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
   if(b.position==="right"){ nav.style.right="1.2%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
   const prim=/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:ACCENT;
-  (b.routes||[]).forEach(r=>{
+  effectiveRoutes(b).forEach(r=>{
     const cur=isCurrent(r.target);
     const d=document.createElement("div"); d.className="r";
     if(cur){ d.style.color=prim; d.style.background=tint(prim,.2); }
@@ -1169,7 +1355,7 @@ function renderNavPreview(s, b){
 function renderPreview(){
   const s=$("#screen");
   const [w,h]=deviceSize();
-  const d=DEVICES.find(x=>x.id===state.device);
+  const d=DEVICES.find(x=>x.id===project.device);
   $("#devlabel").textContent = `${d&&d.id!=="custom"?d.label+", ":""}${w} × ${h}`;
   s.style.aspectRatio=`${w} / ${h}`;
   s.style.gridTemplateAreas=areasString();
@@ -1274,6 +1460,17 @@ function buildYaml(){
   return L.join("\n")+"\n";
 }
 
+function buildAllViews(){
+  const keep=state, out=[];
+  project.views.forEach(v=>{
+    state=v;
+    const lines=buildYaml().trimEnd().split("\n");
+    out.push(`- title: ${yq(viewLabel(v))}`, `  path: ${v.name}`, "  type: panel", "  cards:");
+    out.push("    - "+lines[0], ...lines.slice(1).map(l=>l.length?"      "+l:l));
+  });
+  state=keep;
+  return out.join("\n")+"\n";
+}
 function checks(){
   const m=[]; const areas=usedAreas();
   areas.forEach(a=>{
@@ -1289,6 +1486,7 @@ function checks(){
     else if(TYPES[state.blocks[a].type].floating) m.push(`“${a}” floats and should not be on the grid.`);
   });
   if(!areas.includes("assist")) m.push("Without an “assist” area the view shows no voice feedback.");
+  if(project && project.views.filter(v=>v.name===state.name).length>1) m.push(`Another view is also called “${state.name}”. View names must be unique.`);
   const nb=Object.values(state.blocks).filter(b=>b.type==="navbar");
   if(nb.length>1) m.push("There is more than one navbar. navbar-card would draw on top of itself.");
   nb.forEach(b=>{
@@ -1300,7 +1498,7 @@ function checks(){
     if(pos==="top") edge=(state.rows[0]||{cells:[]}).cells.slice(0,state.cols);
     const hit=[...new Set(edge.filter(c=>c&&c!=="."))];
     if(hit.length) m.push(`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}. Leave that edge of the grid empty.`);
-    (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (${r.label||"no label"}) has no target.`); });
+    if(!b.sync) (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (${r.label||"no label"}) has no target.`); });
   });
   return m;
 }
@@ -1318,7 +1516,7 @@ function renderYaml(){
   $("#yaml").textContent=buildYaml();
   $("#deps").innerHTML='Needs from HACS:'+deps().map(x=>`<span>${esc(x)}</span>`).join("");
 }
-function renderAll(){ renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderYaml(); save(); }
+function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderYaml(); save(); }
 
 function switchTab(name){
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
@@ -1340,19 +1538,36 @@ document.querySelectorAll("[data-g]").forEach(btn=>{
     renderAll();
   };
 });
-$("#viewname").onchange=e=>{ state.name=safeIdent(e.target.value); e.target.value=state.name; renderAll(); };
-$("#device").onchange=e=>{ state.device=e.target.value; renderAll(); };
-$("#cw").onchange=e=>{ state.customW=+e.target.value||1280; renderAll(); };
-$("#ch").onchange=e=>{ state.customH=+e.target.value||800; renderAll(); };
+$("#viewname").onchange=e=>{
+  const old=state.name, nn=safeIdent(e.target.value);
+  state.name = project.views.some(v=>v!==state && v.name===nn) ? uniqueView(nn) : nn;
+  e.target.value=state.name;
+  project.views.forEach(v=>Object.values(v.blocks).forEach(b=>{ if(b.type==="navbar" && !b.sync) (b.routes||[]).forEach(r=>{ if(r.target===old) r.target=state.name; }); }));
+  renderAll();
+};
+$("#viewlabel").onchange=e=>{ state.label=e.target.value.trim(); renderAll(); };
+$("#viewicon").onchange=e=>{ state.icon=e.target.value.trim(); renderAll(); };
+$("#bgcolorc").oninput=e=>{ state.bgcolor=e.target.value; $("#bgcolor").value=e.target.value; renderPreview(); };
+$("#bgcolorc").onchange=e=>{ state.bgcolor=e.target.value; renderAll(); };
+$("#addview").onclick=()=>toggleAddMenu();
+document.addEventListener("click",e=>{ if(!e.target.closest || !e.target.closest(".addview")) toggleAddMenu(false); });
+$("#vleft").onclick=()=>moveView(-1);
+$("#vright").onclick=()=>moveView(1);
+$("#vdup").onclick=duplicateView;
+$("#vdel").onclick=()=>deleteView(project.active);
+$("#copyall").onclick=async()=>{
+  const btn=$("#copyall");
+  try{ await navigator.clipboard.writeText(buildAllViews()); btn.textContent="Copied all"; }
+  catch(e){ btn.textContent="Copy failed"; }
+  setTimeout(()=>btn.textContent="Copy all views",1600);
+};
+$("#device").onchange=e=>{ project.device=e.target.value; renderAll(); };
+$("#cw").onchange=e=>{ project.customW=+e.target.value||1280; renderAll(); };
+$("#ch").onchange=e=>{ project.customH=+e.target.value||800; renderAll(); };
 $("#bgmode").onchange=e=>{ state.bgmode=e.target.value; syncInputs(); renderAll(); };
 $("#bgpath").onchange=e=>{ state.bgpath=e.target.value; renderAll(); };
-$("#bgcolor").onchange=e=>{ state.bgcolor=e.target.value; renderAll(); };
-$("#vabase").onchange=e=>{ state.vaBase=e.target.value||"/view-assist/"; renderAll(); };
-$("#preset").onchange=e=>{
-  const f=PRESETS[e.target.value];
-  if(f){ const keep={vaBase:state.vaBase, device:state.device, customW:state.customW, customH:state.customH}; state=Object.assign(f(), keep); syncInputs(); renderAll(); }
-  e.target.value="";
-};
+$("#bgcolor").onchange=e=>{ state.bgcolor=e.target.value; syncInputs(); renderAll(); };
+$("#vabase").onchange=e=>{ project.vaBase=e.target.value||"/view-assist/"; renderAll(); };
 $("#copy").onclick=async()=>{
   const btn=$("#copy");
   try{ await navigator.clipboard.writeText(buildYaml()); btn.textContent="Copied"; }
@@ -1373,14 +1588,15 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>switchTab(b.d
 window.addEventListener("resize",()=>renderPreview());
 
 function syncInputs(){
-  $("#viewname").value=state.name;
+  $("#viewname").value=state.name; $("#viewlabel").value=state.label||""; $("#viewlabel").placeholder=cap(state.name);
+  $("#viewicon").value=state.icon||""; $("#bgcolorc").value=hexOr(state.bgcolor,"#1b1f24");
   $("#bgmode").value=state.bgmode; $("#bgpath").value=state.bgpath; $("#bgcolor").value=state.bgcolor;
-  $("#vabase").value=state.vaBase; $("#bgpathwrap").hidden=state.bgmode!=="fixed";
+  $("#vabase").value=project.vaBase; $("#bgpathwrap").hidden=state.bgmode!=="fixed";
 }
 
 try{ const t=localStorage.getItem("panelkit.theme"); if(t) document.documentElement.setAttribute("data-theme",t); }catch(e){}
-state=load(); state.paintEmpty=false;
-renderPicker(); syncInputs(); renderAll();
+project=load(); state=project.views[project.active]; state.paintEmpty=false;
+renderPicker(); renderAddMenu(); syncInputs(); renderAll();
 </script>
 </body>
 </html>

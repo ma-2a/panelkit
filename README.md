@@ -11,7 +11,10 @@ grid, fills in the fields and hands back YAML you paste into a manual card.
 ## What it does
 
 - Device presets: Echo Show 5, 8 and 10, Lenovo ThinkSmart View, Fire HD 8 and 10, 7 inch tablets, Raspberry Pi display, or any custom size
+- Several views in one project, with a view bar to switch, add, delete, reorder and duplicate
 - Templates, including a tab set (home, camera, music, lights, calendar) that shares one navbar
+- A navbar that follows your views, and one click to put it on every view
+- Export one view, or all of them at once for the raw configuration editor
 - Grid editor with per-row and per-column sizing in any CSS grid unit
 - Live preview at the aspect ratio of your display
 - View Assist blocks: title, status icons, assist bar, message, timers, satellite image, web page, intent cards
