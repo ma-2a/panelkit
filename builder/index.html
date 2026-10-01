@@ -219,6 +219,49 @@ details.sty[open] summary{margin-bottom:10px}
 
 .canvas-head{display:flex;align-items:center;gap:10px}
 .devlabel{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.canvas-tools{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.canvas-tools .help{margin-left:auto;text-align:right;max-width:560px}
+.show-touch{display:none}
+@media (hover:none){.show-touch{display:inline}.hide-touch{display:none}}
+.editor{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:6px;row-gap:4px;width:100%;max-width:1100px}
+.colbar{grid-column:2;grid-row:1;display:grid;padding:0 10px;min-height:28px;align-items:end}
+.rowbar{grid-column:1;grid-row:2;display:grid;padding:10px 0;width:88px}
+.editor .bezel{grid-column:2;grid-row:2;max-width:none}
+.editor.nobars{grid-template-columns:minmax(0,1fr)}
+.editor.nobars .colbar,.editor.nobars .rowbar{display:none}
+.editor.nobars .bezel{grid-column:1}
+#sizesbtn[aria-pressed=true]{background:var(--surface-3);color:var(--ink)}
+.tk{display:flex;align-items:center;gap:2px;min-width:0;min-height:0;padding:1px 2px;overflow:hidden}
+.tksel{height:24px;min-height:24px !important;padding:0 4px !important;font-size:11px !important;width:100%;min-width:0;border-radius:6px;background:var(--surface) !important}
+.tkdel{border:none;background:none;color:var(--ink-3);width:20px;height:20px;display:grid;place-items:center;border-radius:5px;opacity:0;flex:none;padding:0}
+.tk:hover .tkdel,.tkdel:focus-visible{opacity:1}
+.tkdel:hover{color:var(--warn);background:var(--surface-3)}
+@media (hover:none){.tkdel{opacity:1}}
+@media (max-width:640px){.rowbar{width:64px}.stage{padding:14px 6px}.canvas-head .devlabel{display:none}}
+.screen > .gcell{border:1px dashed rgba(255,255,255,.08);padding:0;margin:0;pointer-events:none;border-radius:0;z-index:0}
+.screen > .blk{position:relative;z-index:1;cursor:grab;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.screen > .blk:hover{outline:1px dashed rgba(74,163,255,.6);outline-offset:-1px}
+.screen > .blk:focus-visible{outline:2px solid #4aa3ff;outline-offset:-2px;box-shadow:none}
+.screen > .blk.is-sel{outline:2px solid #4aa3ff;outline-offset:-2px;touch-action:none;z-index:2}
+.screen > .blk.dragging{opacity:.35}
+.screen > .blk.flash{animation:flashb 1.6s ease-out 1}
+.screen > .blk [contenteditable]{outline:none;cursor:text}
+@keyframes flashb{0%,40%{box-shadow:inset 0 0 0 3px #f0b44c}100%{box-shadow:inset 0 0 0 0 transparent}}
+.screen > .sel-frame{z-index:3;pointer-events:none;position:relative;padding:0;overflow:visible}
+.sel-frame .hd{position:absolute;pointer-events:auto;background:#4aa3ff;border:2px solid #0d1117;border-radius:5px;touch-action:none}
+.sel-frame .hd.e,.sel-frame .hd.w{top:50%;width:11px;height:30px;margin-top:-15px;cursor:ew-resize}
+.sel-frame .hd.e{right:2px}.sel-frame .hd.w{left:2px}
+.sel-frame .hd.n,.sel-frame .hd.s{left:50%;height:11px;width:30px;margin-left:-15px;cursor:ns-resize}
+.sel-frame .hd.n{top:2px}.sel-frame .hd.s{bottom:2px}
+.sel-bar{position:absolute;top:6px;left:6px;pointer-events:auto;display:flex;align-items:center;gap:1px;background:#0d1117;border:1px solid #2b3440;border-radius:7px;padding:2px 2px 2px 8px;font-family:var(--mono);font-size:11px;color:#e6ebf1;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:calc(100% - 12px)}
+.sel-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:4px}
+.sel-bar button{border:none;background:none;color:#a1abb8;width:24px;height:22px;display:grid;place-items:center;border-radius:5px;padding:0;flex:none}
+.sel-bar button:hover{background:#1f2630;color:#fff}
+.sel-bar .i{width:13px;height:13px}
+.screen > .ghost{z-index:4;pointer-events:none;border:2px dashed #4aa3ff;background:rgba(74,163,255,.16);border-radius:8px;padding:0}
+.screen > .ghost.swap{border-color:#ff7a3d;background:rgba(255,122,61,.16)}
+.screen > .pv-nav{cursor:pointer}
+.screen > .pv-nav.is-sel{outline:2px solid #4aa3ff;outline-offset:2px}
 .stage{padding:28px 20px;display:flex;justify-content:center;background:
   radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/16px 16px, var(--surface-2);border-radius:0 0 10px 10px}
 .bezel{background:#06080b;border-radius:16px;padding:10px;width:100%;max-width:1000px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px rgba(0,0,0,.35)}
@@ -274,27 +317,9 @@ details.sty[open] summary{margin-bottom:10px}
 .chk.ok{color:var(--ink-3)}
 .chk.ok .i{color:var(--ok)}
 
-.gridtools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.gridtools .spacer{flex:1}
-.gridtools .btn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
-.painting{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2)}
-.painting .bico{width:22px;height:22px}
-.painter{display:grid;gap:4px;margin-top:12px}
-.colhead,.rowhead,.cells{display:grid;gap:4px}
-.sizein{width:100%;min-height:28px;padding:3px 4px;font-family:var(--mono);font-size:11px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-2)}
-.sizein:hover{border-color:var(--ink-3)}
-.sizein:focus-visible{border-color:var(--accent);color:var(--ink)}
-.cell{border:1px solid var(--line-2);border-radius:6px;min-height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink);background:var(--surface-2);padding:2px;word-break:break-all;text-align:center;transition:border-color .1s}
-.cell:hover{border-color:var(--accent)}
-.cell.bad{border-style:dashed;border-color:var(--warn) !important;box-shadow:inset 0 0 0 1px var(--warn)}
-.cell.flash{animation:flash 1.6s ease-out 1}
-@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--warn)}100%{box-shadow:0 0 0 0 transparent}}
 .issues{font-size:11.5px;font-weight:500;color:var(--warn);background:var(--warn-soft);border-radius:5px;padding:1px 7px}
 .issues.ok{color:var(--ok);background:transparent;padding:0}
 .pbadge{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:9px;background:var(--warn);color:var(--surface);font-size:10.5px;font-weight:600;margin-left:6px;padding:0 4px}
-.cell.empty{background:repeating-linear-gradient(-45deg,transparent 0 6px,var(--surface-3) 6px 7px),var(--surface-2)}
-.painthint{font-size:12.5px;color:var(--warn);min-height:0;margin-top:8px}
-.painthint:empty{display:none}
 
 .guide{max-width:1560px;margin:0 auto;padding:0 16px 24px}
 .guide .panel-head{flex-wrap:wrap}
@@ -341,7 +366,7 @@ footer a:hover{color:var(--ink)}
 footer .grow{flex:1}
 @media (max-width:640px){
   .topbar .in{gap:8px}
-  .devpick label,.topbar .sep,.hide-sm,.logo .ver,#exportbtn span{display:none}
+  .devpick label,.topbar .sep,.hide-sm,.logo .ver,#exportbtn span,#redobtn,#themebtn{display:none}
   .devpick select{min-width:0;max-width:44vw}
   #exportbtn{padding:0;width:32px}
   .deplist li{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n a" "u u";gap:2px 12px}
@@ -381,6 +406,7 @@ footer .grow{flex:1}
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
   <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4"/></symbol>
   <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 10-10M15 4v3M19 8h-3M18.5 4.5l-2 2M13 9l2 2"/></symbol>
 
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/></symbol>
@@ -426,7 +452,7 @@ footer .grow{flex:1}
   <div class="in">
     <a class="logo" href="../" aria-label="PanelKit home">
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#161c24"/><rect x="12" y="13" width="24" height="18" rx="4" fill="#4aa3ff"/><rect x="40" y="13" width="12" height="18" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="12" y="35" width="12" height="16" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="28" y="35" width="24" height="16" rx="4" fill="#ff7a3d"/></svg>
-      PanelKit <span class="ver">0.5</span>
+      PanelKit <span class="ver">0.6</span>
     </a>
     <div class="devpick">
       <label for="device">Device</label>
@@ -457,8 +483,8 @@ footer .grow{flex:1}
 </nav>
 
 <nav class="panes" role="tablist" aria-label="Sections">
-  <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
-  <button role="tab" aria-selected="false" data-pane="layout">Canvas<span class="pbadge" id="panebadge" hidden></span></button>
+  <button role="tab" aria-selected="true" data-pane="layout">Preview<span class="pbadge" id="panebadge" hidden></span></button>
+  <button role="tab" aria-selected="false" data-pane="build">Blocks</button>
   <button role="tab" aria-selected="false" data-pane="yaml">Install</button>
 </nav>
 
@@ -469,7 +495,7 @@ footer .grow{flex:1}
 </datalist>
 
 <div class="workspace">
-  <aside class="pane active side" id="pane-build">
+  <aside class="pane side" id="pane-build">
     <section class="panel">
       <div class="panel-head">
         <h2>Blocks <span class="count" id="blockcount">0</span></h2>
@@ -529,35 +555,27 @@ footer .grow{flex:1}
     </details>
   </aside>
 
-  <section class="pane" id="pane-layout">
+  <section class="pane active" id="pane-layout">
     <div class="panel">
       <div class="panel-head canvas-head">
         <h2>Preview <span class="sub" id="vstitle"></span></h2>
         <span class="issues" id="issuebadge"></span>
         <span class="devlabel" id="devlabel"></span>
       </div>
-      <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
-      <div class="checks" id="warnings"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Layout grid</h2>
-        <span class="painting" id="painting"></span>
+      <div class="canvas-tools">
+        <button class="btn sm" id="addrowbtn"><svg class="i sm"><use href="#i-plus"/></svg>Row</button>
+        <button class="btn sm" id="addcolbtn"><svg class="i sm"><use href="#i-plus"/></svg>Column</button>
+        <button class="btn sm quiet" id="sizesbtn" aria-pressed="true">Sizes</button>
+        <p class="help" id="canvashelp"><span class="hide-touch">Drag a block to move it, drop it on another block to swap them. Drag the blue handles to resize. Double-click a title to edit it.</span><span class="show-touch">Tap a block to select it, then drag it or its blue handles.</span></p>
       </div>
-      <div class="panel-body">
-        <div class="gridtools">
-          <button class="btn sm" data-g="addrow"><svg class="i sm"><use href="#i-plus"/></svg>Row</button>
-          <button class="btn sm" data-g="delrow"><svg class="i sm"><use href="#i-minus"/></svg>Row</button>
-          <button class="btn sm" data-g="addcol"><svg class="i sm"><use href="#i-plus"/></svg>Column</button>
-          <button class="btn sm" data-g="delcol"><svg class="i sm"><use href="#i-minus"/></svg>Column</button>
-          <span class="spacer"></span>
-          <button class="btn sm" data-g="clear" aria-pressed="false"><svg class="i sm"><use href="#i-eraser"/></svg>Eraser</button>
+      <div class="stage">
+        <div class="editor" id="editor">
+          <div class="colbar" id="colbar" aria-label="Column sizes"></div>
+          <div class="rowbar" id="rowbar" aria-label="Row sizes"></div>
+          <div class="bezel"><div class="screen" id="screen"></div></div>
         </div>
-        <div class="painter" id="painter"></div>
-        <p class="painthint" id="painthint"></p>
-        <p class="help" style="margin-top:10px">Select a block on the left, then click cells to give them to it. Click a cell again to free it. Row and column sizes take any CSS grid value, for example <code>1fr</code>, <code>min-content</code> or <code>90px</code>.</p>
       </div>
+      <div class="checks" id="warnings"></div>
     </div>
   </section>
 </div>
@@ -1117,9 +1135,9 @@ function togglePicker(open){
 function addBlock(t){
   const nameMap={custom:"card",mtemplate:"button",mlight:"light",clockweather:"clockweather"};
   const a=uniqueName(nameMap[t]||t);
-  state.blocks[a]=blockDefaults(t); state.selected=a; state.expanded=true; state.paintEmpty=false;
+  state.blocks[a]=blockDefaults(t); state.selected=a; state.expanded=true;
   togglePicker(false);
-  $("#painthint").textContent = TYPES[t].floating ? "" : `Click cells in the layout grid to place “${a}”.`;
+  if(!TYPES[t].floating) autoPlace(a);
   renderAll();
   const el=document.querySelector(`[data-block="${a}"]`); if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
 }
@@ -1160,7 +1178,6 @@ function uniqueView(n){
 function switchView(i){
   project.active = Math.min(Math.max(0,i), project.views.length-1);
   state = project.views[project.active];
-  state.paintEmpty=false; $("#painthint").textContent="";
   syncInputs(); renderAll();
 }
 function addView(id){
@@ -1244,7 +1261,7 @@ function renderBlocks(){
       <button class="bdel" aria-label="Remove ${esc(a)}" title="Remove block">${sym("trash","i sm")}</button></div>`;
     li.querySelector(".bsel").onclick=()=>{
       if(state.selected===a) state.expanded=!state.expanded; else { state.selected=a; state.expanded=true; }
-      state.paintEmpty=false; $("#painthint").textContent=""; renderAll();
+      renderAll();
     };
     li.querySelector(".bdel").onclick=()=>removeBlock(a);
     if(open){
@@ -1268,8 +1285,10 @@ function fieldHTML(f, b){
   const extra = f.kind==="target" ? ` list="targets" placeholder="music, /lovelace/0, script.x"` : (f.ph?` placeholder="${esc(f.ph)}"`:"");
   return `<div><label for="${id}">${esc(f.l)}</label><input type="text" id="${id}" class="mono" value="${esc(v??"")}"${extra}></div>`;
 }
-function styleHTML(b){
-  return `<details class="sty"><summary>${sym("right","i sm")}Area style</summary><div class="row2">
+function styleHTML(b, a, withStyle){
+  const name=`<div style="grid-column:1/-1"><label for="i-name">Name in the YAML</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`;
+  if(!withStyle) return `<details class="sty"><summary>${sym("right","i sm")}Advanced</summary><div class="row2">${name}</div></details>`;
+  return `<details class="sty"><summary>${sym("right","i sm")}Advanced</summary><div class="row2">${name}
     <div><label for="s-font">font-size</label><input type="text" id="s-font" class="mono" value="${esc(b.style.fontSize)}" placeholder="4vh"></div>
     <div><label for="s-pad">padding</label><input type="text" id="s-pad" class="mono" value="${esc(b.style.padding)}" placeholder="2%"></div>
     <div><label for="s-align">align-self</label>${sel("s-align",["","start","center","end","stretch"],b.style.alignSelf)}</div>
@@ -1336,11 +1355,10 @@ function chipsHTML(b){
 function inspectorHTML(a,b,isPlaced){
   const t=TYPES[b.type], P=[];
   if(!t.floating && !isPlaced)
-    P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the grid yet. Click cells in the layout grid to place it, or let PanelKit find a place.<span class="chk-actions"><button class="btn sm" data-autoplace="${esc(a)}">${sym("wand","i sm")}Find a place</button><button class="btn sm mobile-only" data-goto="layout">Open grid</button></span></span></div>`);
-  P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
+    P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the screen yet.<span class="chk-actions"><button class="btn sm" data-autoplace="${esc(a)}">${sym("wand","i sm")}Place it</button></span></span></div>`);
   const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS. The install steps list it for you.</p>`);
-  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the grid edge it sits on empty. The templates reserve a 90px column for it.</p>`);
-  if(t.provided) P.push(`<p class="note">Content and style come from View Assist's <span class="mono">body_template</span>. Only its place in the grid is set here.</p>`);
+  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the edge it sits on free. The templates reserve a narrow column for it.</p>`);
+  if(t.provided) P.push(`<p class="note">View Assist draws this one itself. Move and resize it in the preview.</p>`);
 
   if(b.type==="title")   P.push(`<div><label for="i-text">Text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
   if(b.type==="webpage") P.push(`<div><label for="i-url">Fallback URL</label><input type="text" id="i-url" class="mono" value="${esc(b.url)}"></div>`);
@@ -1351,7 +1369,7 @@ function inspectorHTML(a,b,isPlaced){
   if(b.type==="navbar")  P.push(navbarHTML(b));
   if(b.type==="chips")   P.push(chipsHTML(b));
   if(SCHEMAS[b.type])    P.push(SCHEMAS[b.type].map(f=>fieldHTML(f,b)).join(""));
-  if(!t.provided && !t.floating) P.push(styleHTML(b));
+  P.push(styleHTML(b, a, !t.provided && !t.floating));
   P.push(`<div><button class="btn sm danger" id="i-del">${sym("trash","i sm")}Remove block</button></div>`);
   return P.join("");
 }
@@ -1416,64 +1434,174 @@ function bindInspector(a,b){
   document.querySelectorAll("[data-autoplace]").forEach(x=>x.onclick=()=>{ autoPlace(x.dataset.autoplace); renderAll(); });
 }
 
-function renderPainter(){
-  const p=$("#painter");
-  const corner=document.createElement("div");
-  const colhead=document.createElement("div"); colhead.className="colhead";
-  colhead.style.gridTemplateColumns=`repeat(${state.cols},minmax(0,1fr))`;
-  state.colSizes.forEach((v,i)=>{
-    const inp=document.createElement("input"); inp.className="sizein"; inp.value=v; inp.setAttribute("aria-label",`Width of column ${i+1}`);
-    inp.onchange=e=>{ state.colSizes[i]=e.target.value.trim()||"1fr"; renderAll(); };
-    colhead.appendChild(inp);
-  });
-  const rowhead=document.createElement("div"); rowhead.className="rowhead";
-  rowhead.style.gridTemplateRows=`repeat(${state.rows.length},minmax(46px,auto))`;
-  state.rows.forEach((r,i)=>{
-    const w=document.createElement("div"); w.style.display="flex"; w.style.alignItems="center";
-    const inp=document.createElement("input"); inp.className="sizein"; inp.value=r.size; inp.setAttribute("aria-label",`Height of row ${i+1}`);
-    inp.onchange=e=>{ state.rows[i].size=e.target.value.trim()||"1fr"; renderAll(); };
-    w.appendChild(inp); rowhead.appendChild(w);
-  });
-  const cells=document.createElement("div"); cells.className="cells";
-  const bad=new Set(usedAreas().filter(a=>!state.blocks[a] || TYPES[state.blocks[a].type].floating || !areaInfo(state,a).rect));
-  cells.style.gridTemplateColumns=`repeat(${state.cols},minmax(0,1fr))`;
-  state.rows.forEach(r=>{
-    for(let ci=0; ci<state.cols; ci++){
-      const a=r.cells[ci]||".";
-      const c=document.createElement("button");
-      c.className="cell"+(a==="."?" empty":"");
-      c.textContent = a==="." ? "" : a;
-      c.setAttribute("aria-label", a==="." ? "Empty cell" : `Cell of ${a}`);
-      if(a!=="." && bad.has(a)) c.classList.add("bad");
-      if(a!=="." && a===flashArea) c.classList.add("flash");
-      if(a!=="."){ const h=hueOf(a); c.style.background=tint(h,.22); c.style.borderColor=h; }
-      c.onclick=()=>paintCell(r,ci);
-      cells.appendChild(c);
-    }
-  });
-  p.innerHTML=""; p.style.gridTemplateColumns="84px minmax(0,1fr)";
-  p.append(corner, colhead, rowhead, cells);
-
-  const pt=$("#painting"); const s=state.selected && state.blocks[state.selected];
-  if(state.paintEmpty) pt.innerHTML=sym("eraser","i sm")+"Eraser is on";
-  else if(s && !TYPES[s.type].floating) pt.innerHTML=`<span class="bico" style="--hue:${TYPES[s.type].hue}">${sym(TYPE_ICON[s.type],"i sm")}</span><span>Placing <strong class="mono">${esc(state.selected)}</strong></span>`;
-  else pt.textContent="Select a block to place it";
-  document.querySelector('[data-g="clear"]').setAttribute("aria-pressed", String(!!state.paintEmpty));
+const SIZE_OPTS=[["min-content","Auto"],["1fr","Fill"],["2fr","Fill 2x"],["3fr","Fill 3x"],["4fr","Fill 4x"]];
+function sizeSelect(kind,i,val){
+  const known=SIZE_OPTS.some(o=>o[0]===val);
+  return `<select class="tksel" data-${kind}="${i}" aria-label="${kind==="col"?"Column":"Row"} ${i+1} size">`+
+    (known?"":`<option value="${esc(val)}" selected>${esc(val)}</option>`)+
+    SIZE_OPTS.map(([v,l])=>`<option value="${v}"${v===val?" selected":""}>${l}</option>`).join("")+
+    `<option value="__custom">Custom</option></select>`;
 }
-function paintCell(r,ci){
-  const s = state.selected && state.blocks[state.selected];
-  if(state.paintEmpty){ r.cells[ci]="."; renderAll(); return; }
-  if(!s){ $("#painthint").textContent="Select a block on the left first."; return; }
-  if(TYPES[s.type].floating){ $("#painthint").textContent=`“${state.selected}” floats above the view and is not placed in the grid.`; return; }
-  const prev=r.cells[ci];
-  r.cells[ci] = prev===state.selected ? "." : state.selected;
-  if(prev!=="." && prev!==state.selected && state.blocks[prev]){
-    const lost=lostMap(), key=state.rows.indexOf(r)+","+ci;
-    lost[prev]=[...new Set([...(lost[prev]||[]), key])];
+function trackPx(el){
+  const cs=getComputedStyle(el);
+  const parse=t=>{ const p=String(t||"").trim().split(/\s+/); return p.every(x=>/^[\d.]+px$/.test(x)) ? p.map(parseFloat) : null; };
+  return {cols:parse(cs.gridTemplateColumns), rows:parse(cs.gridTemplateRows)};
+}
+function renderBars(){
+  const t=trackPx($("#screen"));
+  const cb=$("#colbar"), rb=$("#rowbar");
+  cb.style.gridTemplateColumns = t.cols && t.cols.length===state.cols ? t.cols.map(x=>x+"px").join(" ") : `repeat(${state.cols},minmax(0,1fr))`;
+  rb.style.gridTemplateRows = t.rows && t.rows.length===state.rows.length ? t.rows.map(x=>x+"px").join(" ") : `repeat(${state.rows.length},minmax(0,1fr))`;
+  cb.innerHTML = state.colSizes.slice(0,state.cols).map((v,i)=>`<div class="tk">${sizeSelect("col",i,v)}${state.cols>1?`<button class="tkdel" data-delcol="${i}" aria-label="Delete column ${i+1}" title="Delete column">${sym("x","i sm")}</button>`:""}</div>`).join("");
+  rb.innerHTML = state.rows.map((r,i)=>`<div class="tk">${sizeSelect("row",i,r.size)}${state.rows.length>1?`<button class="tkdel" data-delrow="${i}" aria-label="Delete row ${i+1}" title="Delete row">${sym("x","i sm")}</button>`:""}</div>`).join("");
+}
+function onBarChange(e){
+  const t=e.target; if(!t.matches(".tksel")) return;
+  let val=t.value;
+  if(val==="__custom"){
+    const cur = t.dataset.col!==undefined ? state.colSizes[+t.dataset.col] : state.rows[+t.dataset.row].size;
+    const v = window.prompt("Size in any CSS grid unit, for example 90px, 20vh or 1.5fr", cur);
+    if(!v || !v.trim()){ renderBars(); return; }
+    val=v.trim();
   }
-  $("#painthint").textContent=""; renderAll();
-  if(prev!=="." && prev!==state.selected && state.blocks[prev] && !usedAreas().includes(prev))
-    showSnack(`“${prev}” was painted over and is no longer on the grid`, ()=>histUndo(true));
+  if(t.dataset.col!==undefined) state.colSizes[+t.dataset.col]=val; else state.rows[+t.dataset.row].size=val;
+  renderAll();
+}
+function onBarClick(e){
+  const dc=e.target.closest("[data-delcol]"), dr=e.target.closest("[data-delrow]");
+  if(!dc && !dr) return;
+  const gone = dc ? delCol(+dc.dataset.delcol) : delRow(+dr.dataset.delrow);
+  renderAll();
+  showSnack(gone.length ? `${dc?"Column":"Row"} deleted. ${gone.map(x=>`“${x}”`).join(", ")} ${gone.length>1?"are":"is"} no longer on the screen` : `${dc?"Column":"Row"} deleted`, ()=>histUndo(true));
+}
+function cellAt(x,y,clamp){
+  const s=$("#screen"), b=s.getBoundingClientRect(), t=trackPx(s);
+  if(!t.cols || !t.rows || t.cols.length!==state.cols || t.rows.length!==state.rows.length) return null;
+  const px=x-b.left, py=y-b.top;
+  if(!clamp && (px<0||py<0||px>b.width||py>b.height)) return null;
+  const idx=(arr,v)=>{ let acc=0; for(let i=0;i<arr.length;i++){ acc+=arr[i]; if(v<acc) return i; } return arr.length-1; };
+  return {r:Math.max(0,idx(t.rows,py)), c:Math.max(0,idx(t.cols,px))};
+}
+let drag=null;
+function ghost(R,kind){
+  const s=$("#screen"); let g=s.querySelector(".ghost");
+  if(!R){ if(g) g.remove(); return; }
+  if(!g){ g=document.createElement("div"); s.appendChild(g); }
+  g.className="ghost"+(kind==="swap"?" swap":"");
+  g.style.gridArea=`${R.r+1} / ${R.c+1} / span ${R.h} / span ${R.w}`;
+}
+function onScreenDown(e){
+  if(e.button!==undefined && e.button!==0) return;
+  if(e.target.isContentEditable || e.target.closest(".sel-bar")) return;
+  const nav=e.target.closest(".pv-nav");
+  if(nav){ const k=findType("navbar"); if(k){ state.selected=k; state.expanded=true; renderAll(); } return; }
+  const hd=e.target.closest("[data-h]");
+  const blk=e.target.closest(".blk");
+  if(hd && state.selected){
+    drag={mode:"resize", a:state.selected, edge:hd.dataset.h, rect:rectOf(state,state.selected), x0:e.clientX, y0:e.clientY, active:false};
+    e.preventDefault();
+  } else if(blk){
+    const a=blk.dataset.block, pc=cellAt(e.clientX,e.clientY,false), rc=rectOf(state,a);
+    drag={mode:"move", a, x0:e.clientX, y0:e.clientY, active:false, grab: pc&&rc ? {dr:pc.r-rc.r, dc:pc.c-rc.c} : {dr:0,dc:0}};
+    if(state.selected===a) e.preventDefault();
+  } else {
+    if(state.selected){ state.selected=null; renderAll(); }
+    return;
+  }
+  window.addEventListener("pointermove", onDragMove);
+  window.addEventListener("pointerup", onDragEnd);
+  window.addEventListener("pointercancel", onDragCancel);
+}
+function stopDrag(){
+  window.removeEventListener("pointermove", onDragMove);
+  window.removeEventListener("pointerup", onDragEnd);
+  window.removeEventListener("pointercancel", onDragCancel);
+}
+function onDragMove(e){
+  if(!drag) return;
+  if(!drag.active){
+    if(Math.hypot(e.clientX-drag.x0, e.clientY-drag.y0) < 5) return;
+    drag.active=true;
+    const el=document.querySelector(`.screen .blk[data-block="${drag.a}"]`); if(el) el.classList.add("dragging");
+  }
+  e.preventDefault();
+  if(drag.mode==="move"){
+    const pc=cellAt(e.clientX,e.clientY,false);
+    drag.plan = pc ? dropPlan(state, drag.a, pc.r, pc.c, drag.grab) : null;
+    ghost(drag.plan && drag.plan.rect, drag.plan && drag.plan.kind);
+  } else if(drag.rect){
+    const pc=cellAt(e.clientX,e.clientY,true); if(!pc) return;
+    const R=resizePlan(state, drag.a, drag.rect, drag.edge, pc.r, pc.c);
+    drag.plan={kind:"resize", rect:R}; ghost(R,"ok");
+  }
+}
+function onDragEnd(){
+  stopDrag();
+  const d=drag; drag=null;
+  if(!d) return;
+  if(!d.active){
+    if(d.mode!=="move") return;
+    const now=Date.now(), dbl = lastTap.a===d.a && now-lastTap.t<450;
+    lastTap={a:d.a, t:now};
+    if(!(state.selected===d.a && state.expanded)){ state.selected=d.a; state.expanded=true; renderAll(); focusBlock(d.a); }
+    if(dbl) editTitleInline(d.a);
+    return;
+  }
+  ghost(null);
+  if(d.plan){
+    const pushed = d.plan.kind==="resize" ? (setRect(state,d.a,d.plan.rect), null) : applyPlan(state,d.a,d.plan);
+    if(pushed) autoPlace(pushed);
+    state.selected=d.a; state.expanded=true;
+    renderAll(); focusBlock(d.a);
+    if(pushed) showSnack(`“${pushed}” moved to a free spot`, ()=>histUndo(true));
+  } else renderAll();
+}
+function onDragCancel(){ stopDrag(); drag=null; ghost(null); renderPreview(); }
+function focusBlock(a){ const el=document.querySelector(`.screen .blk[data-block="${a}"]`); if(el && el.focus) el.focus({preventScroll:true}); }
+function onScreenKey(e){
+  const blk=e.target.closest && e.target.closest(".blk");
+  if(!blk || e.target.isContentEditable) return;
+  const a=blk.dataset.block, rc=rectOf(state,a); if(!rc) return;
+  const d={ArrowLeft:[0,-1],ArrowRight:[0,1],ArrowUp:[-1,0],ArrowDown:[1,0]}[e.key];
+  if(d){
+    e.preventDefault();
+    let R=null;
+    if(e.shiftKey){
+      if(d[1]) R=resizePlan(state,a,rc,"e",0,rc.c+rc.w-1+d[1]);
+      else R=resizePlan(state,a,rc,"s",rc.r+rc.h-1+d[0],0);
+    } else {
+      const T={...rc, r:rc.r+d[0], c:rc.c+d[1]};
+      if(fits(state,T,a)) R=T;
+    }
+    if(R){ setRect(state,a,R); state.selected=a; renderAll(); focusBlock(a); }
+    return;
+  }
+  if(e.key==="Enter"){ e.preventDefault(); state.selected=a; state.expanded=true; renderAll(); focusBlock(a); }
+  if(e.key==="Delete"||e.key==="Backspace"){ e.preventDefault(); removeBlock(a); }
+}
+function onScreenClick(e){
+  const act=e.target.closest("[data-act]"); if(!act) return;
+  const a=state.selected; if(!a) return;
+  if(act.dataset.act==="del") removeBlock(a);
+  if(act.dataset.act==="edit"){
+    state.expanded=true; renderAll();
+    if(window.matchMedia && !window.matchMedia("(min-width:1024px)").matches) switchTab("build");
+    const li=document.querySelector(`.bitem[data-block="${a}"]`); if(li && li.scrollIntoView) li.scrollIntoView({behavior:"smooth", block:"nearest"});
+  }
+}
+let lastTap={a:null,t:0};
+function onScreenDbl(e){
+  const hit=e.target.closest(".blk"); if(hit) editTitleInline(hit.dataset.block);
+}
+function editTitleInline(a){
+  const b=state.blocks[a];
+  if(!b || b.type!=="title") return;
+  const blk=document.querySelector(`.screen .blk[data-block="${a}"]`); if(!blk || blk.isContentEditable) return;
+  blk.contentEditable="true"; blk.focus();
+  const r=document.createRange(); r.selectNodeContents(blk); const sl=window.getSelection(); sl.removeAllRanges(); sl.addRange(r);
+  const done=()=>{ blk.removeEventListener("blur",done); const t=blk.textContent.trim(); if(t) b.text=t; renderAll(); };
+  blk.addEventListener("blur",done);
+  blk.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); blk.blur(); } if(ev.key==="Escape"){ blk.textContent=b.text; blk.blur(); } });
 }
 
 function areasString(){
@@ -1548,38 +1676,55 @@ function renderPreview(){
   const d=DEVICES.find(x=>x.id===project.device);
   $("#devlabel").textContent = `${d&&d.id!=="custom"?d.label+", ":""}${w} × ${h}`;
   s.style.aspectRatio=`${w} / ${h}`;
-  s.style.gridTemplateAreas=areasString();
+  s.style.gridTemplateAreas="none";
   s.style.gridTemplateRows=state.rows.map(r=>r.size).join(" ");
   s.style.gridTemplateColumns=state.colSizes.slice(0,state.cols).map(c=>/px$/.test(c)?`calc(${c} * var(--scale,1))`:c).join(" ");
   const cw=s.clientWidth||640;
   s.style.setProperty("--scale", (cw/w).toFixed(4));
-  s.style.fontSize=Math.max(8, Math.round(cw/ (w/15)))+"px";
+  s.style.fontSize=Math.max(8, Math.round(cw/(w/15)))+"px";
   s.style.backgroundColor=state.bgcolor||"#1b1f24";
   s.style.backgroundImage=(state.bgmode==="fixed"&&state.bgpath)?`url("${state.bgpath}")`:"none";
   s.innerHTML="";
+  for(let r=0;r<state.rows.length;r++) for(let c=0;c<state.cols;c++){
+    const g=document.createElement("div"); g.className="gcell"; g.style.gridArea=`${r+1} / ${c+1} / ${r+2} / ${c+2}`; s.appendChild(g);
+  }
   usedAreas().forEach(a=>{
-    const b=state.blocks[a]; const el=document.createElement("div"); el.style.gridArea=a;
-    if(!b){ el.className="pv-generic"; el.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(el); return; }
+    const b=state.blocks[a], R=rectOf(state,a);
+    const el=document.createElement("div");
+    el.style.gridArea=`${R.r+1} / ${R.c+1} / span ${R.h} / span ${R.w}`;
+    if(!b){ el.className="pv-generic blk"; el.dataset.block=a; el.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(el); return; }
     const st=b.style||{};
-    const [cls,html]=mockHTML(a,b); el.className=cls; el.innerHTML=html;
+    const [cls,html]=mockHTML(a,b); el.className=cls+" blk"; el.innerHTML=html;
+    el.dataset.block=a; el.tabIndex=0; el.setAttribute("role","button");
+    el.setAttribute("aria-label", `${a}, ${TYPES[b.type].label}. Arrow keys move it, Shift with arrow keys resizes it, Enter edits it.`);
     if(st.alignSelf && st.alignSelf!=="stretch") el.style.alignSelf=st.alignSelf;
     if(st.justifySelf && st.justifySelf!=="stretch") el.style.justifySelf=st.justifySelf;
     if(st.textAlign) el.style.textAlign=st.textAlign;
     if(st.padding) el.style.margin=st.padding;
     if(st.background) el.style.background=st.background;
     if(st.radius) el.style.borderRadius=st.radius;
-    if(state.selected===a){ el.style.outline="2px solid "+TYPES[b.type].hue; el.style.outlineOffset="-2px"; }
+    if(state.selected===a) el.classList.add("is-sel");
+    if(flashArea===a) el.classList.add("flash");
     s.appendChild(el);
   });
-  Object.values(state.blocks).forEach(b=>{
-    if(b.type==="shader"){ const el=document.createElement("div"); el.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,${b.shade||.15});pointer-events:none`; s.appendChild(el); }
-  });
-  Object.values(state.blocks).forEach(b=>{ if(b.type==="navbar") renderNavPreview(s,b); });
-  if(usedAreas().some(a=>!areaInfo(state,a).rect)){
-    const w=document.createElement("div"); w.className="pv-invalid";
-    w.innerHTML=`<svg class="pi" aria-hidden="true"><use href="#i-alert"/></svg><span>Layout is broken, so the device would show this jumble. See the issues below.</span>`;
-    s.appendChild(w);
+  const sel=state.selected, sb=sel&&state.blocks[sel], sr=sb&&!TYPES[sb.type].floating&&rectOf(state,sel);
+  if(sr){
+    const f=document.createElement("div"); f.className="sel-frame";
+    f.style.gridArea=`${sr.r+1} / ${sr.c+1} / span ${sr.h} / span ${sr.w}`;
+    f.innerHTML=`<div class="sel-bar"><span>${esc(sel)}</span><button data-act="edit" aria-label="Edit ${esc(sel)}" title="Edit">${sym("edit","i")}</button><button data-act="del" aria-label="Remove ${esc(sel)}" title="Remove">${sym("trash","i")}</button></div>`+
+      ["n","s","e","w"].map(x=>`<span class="hd ${x}" data-h="${x}" aria-hidden="true"></span>`).join("");
+    s.appendChild(f);
   }
+  Object.values(state.blocks).forEach(b=>{
+    if(b.type==="shader"){ const el=document.createElement("div"); el.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,${b.shade||.15});pointer-events:none;z-index:1`; s.appendChild(el); }
+  });
+  Object.entries(state.blocks).forEach(([k,b])=>{ if(b.type==="navbar"){ renderNavPreview(s,b); if(state.selected===k){ const n=s.querySelector(".pv-nav:last-of-type"); if(n) n.classList.add("is-sel"); } } });
+  if(usedAreas().some(a=>!areaInfo(state,a).rect)){
+    const wv=document.createElement("div"); wv.className="pv-invalid";
+    wv.innerHTML=`<svg class="pi" aria-hidden="true"><use href="#i-alert"/></svg><span>Layout is broken, so the device would show this jumble. See the issues below.</span>`;
+    s.appendChild(wv);
+  }
+  renderBars();
 }
 
 function indent(text,pad){ return text.split("\n").map(l=>l.length?pad+l:l).join("\n"); }
@@ -1769,6 +1914,89 @@ function makeRoom(v, edge){
     if(edge==="bottom") v.rows.push(row); else v.rows.unshift(row);
   }
 }
+function rectOf(v,a){ const i=areaInfo(v,a); return i.n ? {r:i.r0,c:i.c0,h:i.r1-i.r0+1,w:i.c1-i.c0+1} : null; }
+function cellsOf(R){ const o=[]; for(let r=R.r;r<R.r+R.h;r++) for(let c=R.c;c<R.c+R.w;c++) o.push([r,c]); return o; }
+function clampN(x,lo,hi){ return Math.max(lo, Math.min(hi, x)); }
+function fits(v,R,a){
+  if(R.r<0||R.c<0||R.w<1||R.h<1||R.r+R.h>v.rows.length||R.c+R.w>v.cols) return false;
+  return cellsOf(R).every(([r,c])=>{ const o=v.rows[r].cells[c]||"."; return o==="."||o===a; });
+}
+function setRect(v,a,R){
+  v.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]="."; }));
+  cellsOf(R).forEach(([r,c])=>v.rows[r].cells[c]=a);
+}
+function dropPlan(v,a,r,c,grab){
+  const over=(v.rows[r]&&v.rows[r].cells[c])||".";
+  if(over!=="." && over!==a && v.blocks[over] && !TYPES[v.blocks[over].type].floating) return {kind:"swap", with:over, rect:rectOf(v,over)};
+  if(over!=="." && over!==a) return null;
+  const cur=rectOf(v,a), w=cur?cur.w:1, h=cur?cur.h:1, g=grab||{dr:0,dc:0};
+  const T={r:clampN(r-g.dr,0,Math.max(0,v.rows.length-h)), c:clampN(c-g.dc,0,Math.max(0,v.cols-w)), w, h};
+  if(fits(v,T,a)) return {kind:"move", rect:T};
+  let best=null;
+  for(let hh=h;hh>=1;hh--) for(let ww=w;ww>=1;ww--) for(let r0=r-hh+1;r0<=r;r0++) for(let c0=c-ww+1;c0<=c;c0++){
+    const R={r:r0,c:c0,w:ww,h:hh};
+    if(fits(v,R,a) && (!best || ww*hh>best.w*best.h)) best=R;
+  }
+  return best ? {kind:"move", rect:best} : null;
+}
+function applyPlan(v,a,plan){
+  if(!plan) return null;
+  if(plan.kind==="swap"){
+    const b=plan.with, ra=rectOf(v,a), rb=rectOf(v,b);
+    v.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a||c===b) r.cells[i]="."; }));
+    cellsOf(rb).forEach(([r,c])=>v.rows[r].cells[c]=a);
+    if(ra){ cellsOf(ra).forEach(([r,c])=>v.rows[r].cells[c]=b); return null; }
+    return b;
+  }
+  setRect(v,a,plan.rect); return null;
+}
+function resizePlan(v,a,R,edge,pr,pc){
+  let r=R.r, c=R.c, r1=R.r+R.h-1, c1=R.c+R.w-1;
+  const okCell=(y,x)=>{ const o=(v.rows[y]&&v.rows[y].cells[x])||"."; return o==="."||o===a; };
+  const freeCol=x=>{ for(let y=r;y<=r1;y++) if(!okCell(y,x)) return false; return true; };
+  const freeRow=y=>{ for(let x=c;x<=c1;x++) if(!okCell(y,x)) return false; return true; };
+  if(edge==="e"){ const t=clampN(pc,c,v.cols-1); if(t>c1){ let x=c1; while(x<t && freeCol(x+1)) x++; c1=x; } else c1=t; }
+  if(edge==="w"){ const t=clampN(pc,0,c1); if(t<c){ let x=c; while(x>t && freeCol(x-1)) x--; c=x; } else c=t; }
+  if(edge==="s"){ const t=clampN(pr,r,v.rows.length-1); if(t>r1){ let y=r1; while(y<t && freeRow(y+1)) y++; r1=y; } else r1=t; }
+  if(edge==="n"){ const t=clampN(pr,0,r1); if(t<r){ let y=r; while(y>t && freeRow(y-1)) y--; r=y; } else r=t; }
+  return {r,c,w:c1-c+1,h:r1-r+1};
+}
+function moveBlockTo(a,r,c){
+  const plan=dropPlan(state,a,r,c,{dr:0,dc:0});
+  const pushed=applyPlan(state,a,plan);
+  if(pushed) autoPlace(pushed);
+  return plan;
+}
+function addRow(){
+  const ak=findType("assist"), last=state.rows.length-1;
+  const at = ak && last>=0 && state.rows[last].cells.includes(ak) ? last : state.rows.length;
+  state.rows.splice(at,0,{size:"1fr", cells:Array(state.cols).fill(".")});
+  state.lost={};
+}
+function addCol(){
+  const last=state.cols-1;
+  const spacer = last>0 && /px$/.test(String(state.colSizes[last])) && state.rows.every(r=>(r.cells[last]||".")===".");
+  const at = spacer ? last : state.cols;
+  state.colSizes.splice(at,0,"1fr");
+  state.rows.forEach(r=>r.cells.splice(at,0,"."));
+  state.cols++; state.lost={};
+}
+function lostAfter(fn){
+  const before=new Set(usedAreas().filter(a=>state.blocks[a]));
+  fn();
+  const after=new Set(usedAreas());
+  return [...before].filter(a=>!after.has(a));
+}
+function delRow(i){
+  if(state.rows.length<2) return [];
+  const gone=lostAfter(()=>{ state.rows.splice(i,1); state.lost={}; });
+  return gone;
+}
+function delCol(i){
+  if(state.cols<2) return [];
+  const gone=lostAfter(()=>{ state.colSizes.splice(i,1); state.rows.forEach(r=>r.cells.splice(i,1)); state.cols--; state.lost={}; });
+  return gone;
+}
 function issues(){
   const L=[], areas=usedAreas(), lost=lostMap();
   const unplaced=Object.entries(state.blocks).filter(([a,b])=>!TYPES[b.type].floating && !areas.includes(a));
@@ -1777,10 +2005,10 @@ function issues(){
     const core=["title","status","assist"].includes(b.type);
     const by=[...new Set((lost[a]||[]).map(k=>{ const [ri,ci]=k.split(",").map(Number); return state.rows[ri] && state.rows[ri].cells[ci]; }).filter(x=>x && x!=="." && x!==a))];
     L.push({
-      text:`“${a}” is not on the grid yet and will not show up.`,
+      text:`“${a}” is not on the screen yet and will not show up.`,
       hint: by.length ? `It was painted over by ${by.map(x=>`“${x}”`).join(" and ")}. “Put it back” returns its cells.`
-          : core ? "Its cells were probably painted over by another block. Put it back, or select it and click the cells it should use."
-                 : "Select it on the left and click the cells it should use, or let PanelKit find a place.",
+          : core ? "Another block probably took its place. “Put it back” finds a spot for it."
+                 : "“Find a place” puts it on the screen, then you can drag it where you want.",
       fix:{label: (by.length||core) ? "Put it back" : "Find a place", run:()=>autoPlace(a)}});
   });
   areas.forEach(a=>{
@@ -1790,11 +2018,11 @@ function issues(){
     L.push({
       text:`“${a}” is not a rectangle. CSS grid needs every area to be one solid rectangle.`,
       hint: owners.length ? `It took cells from ${owners.map(x=>`“${x}”`).join(" and ")}. “Give cells back” returns them and keeps “${a}” in one piece.`
-          : "Its cells are spread out or have a gap, often after painting one cell too many. Click the stray cells to free them, or keep the largest rectangle.",
+          : "Its parts are spread out or have a gap. Keep the largest piece, then drag the edges to resize it.",
       fix:{label: owners.length ? "Give cells back" : "Keep largest rectangle", run:()=>keepLargestRect(a)}, show:a});
   });
   areas.forEach(a=>{
-    if(!state.blocks[a]) L.push({text:`Cells named “${a}” belong to no block.`, hint:"The block was renamed or removed while its cells stayed.", fix:{label:"Free these cells", run:()=>clearArea(a)}, show:a});
+    if(!state.blocks[a]) L.push({text:`Cells named “${a}” belong to no block.`, hint:"The block was renamed or removed while its space stayed reserved.", fix:{label:"Free these cells", run:()=>clearArea(a)}, show:a});
     else if(TYPES[state.blocks[a].type].floating) L.push({text:`“${a}” floats and should not be on the grid.`, hint:"Floating blocks position themselves, so these cells only take up space.", fix:{label:"Free these cells", run:()=>clearArea(a)}, show:a});
   });
   if(!findType("assist")) L.push({
@@ -1820,7 +2048,7 @@ function issues(){
     const hit=[...new Set(edge.filter(c=>c&&c!=="."))];
     if(hit.length) L.push({
       text:`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}.`,
-      hint:`Content under the navbar cannot be tapped. Leave that edge of the grid empty, or add a free ${pos==="left"||pos==="right"?"column":"row"} for it.`,
+      hint:`Content under the navbar cannot be tapped. PanelKit can add a free ${pos==="left"||pos==="right"?"column":"row"} for it.`,
       fix:{label:"Make room for the navbar", run:()=>makeRoom(state,pos)}});
     if(!b.sync) (b.routes||[]).forEach((r,i)=>{ if(!r.target) L.push({
       text:`Navbar route ${i+1} (${r.label||"no label"}) has no target.`,
@@ -1842,7 +2070,7 @@ function renderChecks(){
   window.__issues=L;
   $("#warnings").innerHTML = L.length
     ? L.map((x,i)=>`<div class="chk">${sym("alert","i sm")}<div class="chk-body"><p class="t">${esc(x.text)}</p><p class="h">${esc(x.hint)}</p>
-        <div class="chk-actions">${x.fix?`<button class="btn sm" data-fix="${i}">${sym("wand","i sm")}${esc(x.fix.label)}</button>`:""}${x.show?`<button class="btn sm quiet" data-show="${i}">${sym("target","i sm")}Show cells</button>`:""}</div></div></div>`).join("")
+        <div class="chk-actions">${x.fix?`<button class="btn sm" data-fix="${i}">${sym("wand","i sm")}${esc(x.fix.label)}</button>`:""}${x.show?`<button class="btn sm quiet" data-show="${i}">${sym("target","i sm")}Show me</button>`:""}</div></div></div>`).join("")
     : `<div class="chk ok">${sym("check","i sm")}<span>No problems found in this view.</span></div>`;
   const b=$("#issuebadge");
   b.className = "issues"+(L.length?"":" ok");
@@ -1860,9 +2088,9 @@ function onIssueClick(e){
   const sh=e.target.closest("[data-show]");
   if(sh){
     const it=(window.__issues||[])[+sh.dataset.show]; if(!it) return;
-    flashArea=it.show; renderPainter();
-    const p=$("#painter"); if(p && p.scrollIntoView) p.scrollIntoView({behavior:"smooth", block:"center"});
-    clearTimeout(flashTimer); flashTimer=setTimeout(()=>{ flashArea=null; renderPainter(); },1700);
+    flashArea=it.show; renderPreview();
+    const p=$("#screen"); if(p && p.scrollIntoView) p.scrollIntoView({behavior:"smooth", block:"center"});
+    clearTimeout(flashTimer); flashTimer=setTimeout(()=>{ flashArea=null; renderPreview(); },1700);
   }
 }
 
@@ -2012,7 +2240,7 @@ function copyText(text, btn){
   const done = ok => { if(label){ const old=label.textContent; label.textContent = ok?"Copied":"Copy failed"; setTimeout(()=>label.textContent=old,1500); } };
   try{ navigator.clipboard.writeText(text).then(()=>done(true), ()=>done(false)); }catch(e){ done(false); }
 }
-function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderGuide(); track(); save(); }
+function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPreview(); renderChecks(); renderGuide(); track(); save(); }
 
 function switchTab(name){
   document.querySelectorAll(".panes button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
@@ -2031,18 +2259,20 @@ document.addEventListener("keydown",e=>{
   e.preventDefault(); if(e.shiftKey) histRedo(); else histUndo();
 });
 $("#snackundo").onclick=undoRemove;
-document.querySelectorAll("[data-g]").forEach(btn=>{
-  btn.onclick=()=>{
-    const g=btn.dataset.g;
-    if(["addrow","delrow","addcol","delcol"].includes(g)) state.lost={};
-    if(g==="addrow") state.rows.push({size:"1fr",cells:Array(state.cols).fill(".")});
-    if(g==="delrow"&&state.rows.length>1) state.rows.pop();
-    if(g==="addcol"&&state.cols<8){ state.cols++; state.colSizes.push("1fr"); state.rows.forEach(r=>r.cells.push(".")); }
-    if(g==="delcol"&&state.cols>1){ state.cols--; state.colSizes.pop(); state.rows.forEach(r=>r.cells.pop()); }
-    if(g==="clear"){ state.paintEmpty=!state.paintEmpty; $("#painthint").textContent = state.paintEmpty ? "Tap cells to empty them. Tap Eraser again to stop." : ""; }
-    renderAll();
-  };
-});
+$("#screen").addEventListener("pointerdown", onScreenDown);
+$("#screen").addEventListener("keydown", onScreenKey);
+$("#screen").addEventListener("click", onScreenClick);
+$("#screen").addEventListener("dblclick", onScreenDbl);
+$("#colbar").addEventListener("change", onBarChange);
+$("#rowbar").addEventListener("change", onBarChange);
+$("#colbar").addEventListener("click", onBarClick);
+$("#rowbar").addEventListener("click", onBarClick);
+$("#addrowbtn").onclick=()=>{ addRow(); renderAll(); };
+let showBars = !(window.matchMedia && window.matchMedia("(max-width:640px)").matches);
+function applyBars(){ $("#editor").classList.toggle("nobars", !showBars); $("#sizesbtn").setAttribute("aria-pressed", String(showBars)); }
+$("#sizesbtn").onclick=()=>{ showBars=!showBars; applyBars(); renderPreview(); };
+applyBars();
+$("#addcolbtn").onclick=()=>{ addCol(); renderAll(); };
 $("#viewname").onchange=e=>{
   const old=state.name, nn=safeIdent(e.target.value);
   state.name = project.views.some(v=>v!==state && v.name===nn) ? uniqueView(nn) : nn;
@@ -2102,7 +2332,7 @@ function syncInputs(){
 }
 
 try{ const t=localStorage.getItem("panelkit.theme"); if(t) document.documentElement.setAttribute("data-theme",t); }catch(e){}
-project=load(); state=project.views[project.active]; state.paintEmpty=false;
+project=load(); state=project.views[project.active];
 renderPicker(); renderAddMenu(); syncInputs(); renderAll();
 </script>
 </body>

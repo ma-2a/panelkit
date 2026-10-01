@@ -2,10 +2,12 @@
   "name": "panelkit-qa",
   "private": true,
   "scripts": {
-    "test": "node run.js && node smoke.js"
+    "test": "node run.js && node smoke.js",
+    "browser": "node browser.js"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "jsdom": "^24.1.0"
+    "jsdom": "^24.1.0",
+    "puppeteer-core": "^23.11.1"
   }
 }

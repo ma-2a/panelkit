@@ -12,7 +12,7 @@ const fail = [], pass = [];
 const check = (name, cond, detail) => (cond ? pass : fail).push(detail && !cond ? `${name} (${detail})` : name);
 
 const stubEl = () => new Proxy(
-  { style: { setProperty() {} }, options: [], dataset: {}, classList: { add() {}, remove() {} },
+  { style: { setProperty() {} }, options: [], dataset: {}, classList: { add() {}, remove() {}, toggle() {}, contains() { return false } },
     append() {}, appendChild() {}, setAttribute() {}, getAttribute() { return null }, querySelector() { return stubEl() },
     querySelectorAll() { return [] }, value: "", textContent: "", innerHTML: "", clientWidth: 900, hidden: false },
   { get: (t, p) => (p in t ? t[p] : () => stubEl()), set: (t, p, v) => { t[p] = v; return true } }
@@ -21,14 +21,15 @@ global.document = {
   querySelector: () => stubEl(), querySelectorAll: () => [], getElementById: () => null, addEventListener() {},
   createElement: () => stubEl(), documentElement: stubEl()
 };
-global.window = { addEventListener() {} };
+global.window = { addEventListener() {}, removeEventListener() {}, matchMedia: () => ({ matches: true }) };
+global.getComputedStyle = () => ({ gridTemplateColumns: "", gridTemplateRows: "" });
 global.localStorage = { getItem: () => null, setItem() {} };
 global.navigator = { clipboard: { writeText: async () => {} } };
 
 const ctx = {};
 new Function("with(this){" + src +
   "; this.__x = {TYPES,PRESETS,SCHEMAS,DEVICES,blockDefaults,buildYaml,checks,deps,yq,navTarget,tapFor,cardCfg,hacsOf," +
-  "removeBlock,undoRemove,addBlock,paintCell,deviceSize,newProject,switchView,addView,deleteView,moveView,duplicateView," +
+  "removeBlock,undoRemove,addBlock,deviceSize,dropPlan,applyPlan,resizePlan,moveBlockTo,addRow,addCol,delRow,delCol,rectOf,fits,newProject,switchView,addView,deleteView,moveView,duplicateView," +
   "buildAllViews,effectiveRoutes,applyNavbarEverywhere,hexOr,load,TABSET,issues,autoPlace,keepLargestRect,histUndo,histRedo,renderAll," +
   "setState:s=>{ if(!project||!project.views.includes(s)) project=newProject([s]); state=s; }," +
   "setProject:p=>{ project=p; state=p.views[p.active]; }, getProject:()=>project, getState:()=>state}}").call(ctx);
@@ -159,15 +160,9 @@ check("undo: cells back", st.rows[2].cells[1] === "garden");
 check("undo: order kept", Object.keys(st.blocks).indexOf("garden") === Object.keys(A.PRESETS.lights().blocks).indexOf("garden"));
 
 const add = A.PRESETS.blank(); A.setState(add);
-A.addBlock("mlight"); st = A.getState();
-check("add: block created and selected", st.selected === "light" && st.blocks.light.type === "mlight");
-check("add: unplaced is flagged", run(st, A.checks).some(m => m.includes("not on the grid")));
-A.paintCell(st.rows[1], 0); A.paintCell(st.rows[1], 1);
-check("paint: cells assigned", st.rows[1].cells.join() === "light,light");
-check("paint: warning gone", !run(st, A.checks).some(m => m.includes("not on the grid")));
-A.paintCell(st.rows[1], 1);
-check("paint: tapping own cell clears it", st.rows[1].cells[1] === ".");
-
+A.addBlock("mlight"); let st2 = A.getState();
+check("add: new block is placed right away", st2.selected === "light" && st2.rows.some(r => r.cells.includes("light")));
+check("add: view stays valid", A.checks().length === 0, A.checks().join(" / "));
 const bad = A.PRESETS.blank();
 bad.rows = [{ size: "1fr", cells: ["a", "b"] }, { size: "1fr", cells: ["b", "a"] }];
 bad.blocks = { a: A.blockDefaults("message"), b: A.blockDefaults("message") };
@@ -230,32 +225,80 @@ check("color: short hex expanded", A.hexOr("#abc", "#000000") === "#aabbcc");
 check("color: rgba falls back", A.hexOr("rgba(0,0,0,.4)", "#123456") === "#123456");
 
 const grid = v => v.rows.map(r => r.cells.join(" ")).join(" | ");
-const fixAll = (label) => { let guard = 0, L; while ((L = A.issues()).length && guard++ < 10) { const it = L.find(x => !label || x.fix.label === label) || L[0]; it.fix.run(); } return A.issues(); };
-const original = grid(A.PRESETS.lights());
-const brokenLights = () => {
+const legacyBroken = () => {
   const p = A.newProject([A.PRESETS.lights()]); A.setProject(p);
-  const v = A.getState(); v.selected = "living";
-  [[0,0],[0,1],[3,0],[3,1],[3,2]].forEach(([r,c]) => A.paintCell(v.rows[r], c));
+  const v = A.getState();
+  v.rows[0].cells = ["living", "living", "status", "."];
+  v.rows[3].cells = ["living", "living", "living", "."];
   return v;
 };
-let bl = brokenLights();
+let bl = legacyBroken();
 let L = A.issues();
-check("errors: user scenario reproduced", L.length === 3 && L.some(x => x.text.includes("“living” is not a rectangle")) && L.some(x => x.text.includes("“title” is not on the grid")) && L.some(x => x.text.includes("“assist” is not on the grid")), L.map(x => x.text).join(" / "));
+check("errors: old broken layout detected", L.length === 3 && L.some(x => x.text.includes("“living” is not a rectangle")) && L.some(x => x.text.includes("“title” is not on the screen")) && L.some(x => x.text.includes("“assist” is not on the screen")), L.map(x => x.text).join(" / "));
 check("errors: no duplicate assist message", !L.some(x => x.text.includes("no assist bar")));
 check("errors: every issue has a hint and a fix", L.every(x => x.hint && x.fix && typeof x.fix.run === "function"));
-check("errors: hint names who painted over it", L.find(x => x.text.includes("“title”")).hint.includes("“living”"));
-check("errors: living offers to give cells back", L.find(x => x.text.includes("living")).fix.label === "Give cells back");
-check("errors: unplaced listed before shape problems", L[0].text.includes("not on the grid"));
-L.find(x => x.text.includes("“title”")).fix.run();
-check("fix: title put back in its cells", bl.rows[0].cells.slice(0, 2).join() === "title,title");
-A.issues().find(x => x.text.includes("“assist”")).fix.run();
-check("fix: all clear after putting both back", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
-check("fix: grid identical to before the mistake", grid(bl) === original, grid(bl));
+check("errors: unplaced listed first", L[0].text.includes("not on the screen"));
+let guard = 0; while ((L = A.issues()).length && guard++ < 10) L[0].fix.run();
+check("errors: fixing in order clears everything", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
+check("errors: title back on top, assist back at the bottom", bl.rows[0].cells.includes("title") && bl.rows[bl.rows.length - 1].cells.includes("assist"), grid(bl));
 
-bl = brokenLights();
-A.issues().find(x => x.text.includes("living")).fix.run();
-check("fix: give cells back clears everything at once", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
-check("fix: give cells back restores the grid", grid(bl) === original, grid(bl));
+const g0 = grid(A.PRESETS.lights());
+const mv = A.newProject([A.PRESETS.lights()]); A.setProject(mv); let V = A.getState();
+let plan = A.dropPlan(V, "living", 2, 1, { dr: 0, dc: 0 });
+check("drag: drop on another block means swap", plan.kind === "swap" && plan.with === "garden");
+A.applyPlan(V, "living", plan);
+check("drag: swap exchanges places", V.rows[1].cells[0] === "garden" && V.rows[2].cells[1] === "living" && A.issues().length === 0);
+A.applyPlan(V, "living", A.dropPlan(V, "living", 1, 0, { dr: 0, dc: 0 }));
+check("drag: swapping back restores layout", grid(V) === g0, grid(V));
+delete V.blocks.garden; V.rows[2].cells[1] = ".";
+plan = A.dropPlan(V, "desk", 2, 1, { dr: 0, dc: 0 });
+check("drag: drop on empty cell moves", plan.kind === "move" && plan.rect.c === 1 && plan.rect.w === 1);
+A.applyPlan(V, "desk", plan);
+check("drag: moved", V.rows[2].cells.slice(0, 2).join() === ".,desk");
+let R = A.resizePlan(V, "desk", A.rectOf(V, "desk"), "w", 2, 0);
+check("resize: grow west into free cell", R.c === 0 && R.w === 2);
+R = A.resizePlan(V, "desk", A.rectOf(V, "desk"), "e", 2, 3);
+check("resize: growth stops at a block", R.w === 1);
+R = A.resizePlan(V, "desk", A.rectOf(V, "desk"), "n", 0, 0);
+check("resize: growth up stops at a block", R.h === 1);
+const big = A.newProject([A.PRESETS.blank()]); A.setProject(big); V = A.getState();
+V.blocks.tile = A.blockDefaults("tile"); V.rows[1].cells = ["tile", "tile"];
+R = A.resizePlan(V, "tile", A.rectOf(V, "tile"), "e", 1, 0);
+check("resize: shrink", R.w === 1 && R.c === 0);
+check("resize: never below one cell", A.resizePlan(V, "tile", { r: 1, c: 0, w: 1, h: 1 }, "e", 1, -5).w === 1);
+plan = A.dropPlan(V, "tile", 0, 1, { dr: 0, dc: 0 });
+check("drag: swap with differently sized block", plan.kind === "swap" && plan.with === "status");
+A.applyPlan(V, "tile", plan);
+check("drag: different sizes swap rectangles", V.rows[0].cells[1] === "tile" && V.rows[1].cells.join() === "status,status" && A.issues().length === 0);
+
+const un = A.newProject([A.PRESETS.blank()]); A.setProject(un); V = A.getState();
+V.blocks.cam = A.blockDefaults("camera");
+const pushed = A.applyPlan(V, "cam", A.dropPlan(V, "cam", 0, 0, null));
+check("drag: unplaced block onto a placed one pushes it", pushed === "title" && V.rows[0].cells[0] === "cam");
+A.autoPlace(pushed);
+check("drag: pushed block finds a new spot", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
+
+const rc = A.newProject([A.PRESETS.lights()]); A.setProject(rc); V = A.getState();
+A.addRow();
+check("rows: new row goes above the assist bar", V.rows.length === 5 && V.rows[4].cells.includes("assist") && V.rows[3].cells.every(c => c === "."));
+A.addCol();
+check("columns: new column goes before the navbar column", V.cols === 5 && V.colSizes[4] === "90px" && V.rows[0].cells[4] === "." && A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
+let gone = A.delRow(4);
+check("rows: deleting the assist row reports it", gone.join() === "assist");
+gone = A.delCol(3);
+check("columns: deleting an empty column loses nothing", gone.length === 0 && V.cols === 4);
+gone = A.delRow(1);
+check("rows: deleting a row with single-row blocks reports them", ["living", "floorlamp", "office"].every(x => gone.includes(x)));
+
+const hp = A.newProject([A.PRESETS.lights()]); A.setProject(hp); A.renderAll();
+const before = grid(A.getState());
+A.moveBlockTo("living", 2, 1); A.renderAll();
+check("history: move changed grid", grid(A.getState()) !== before);
+A.histUndo();
+check("history: undo restores grid", grid(A.getState()) === before);
+A.histRedo();
+check("history: redo applies again", grid(A.getState()) !== before);
+A.histUndo();
 
 const stray = A.PRESETS.blank(); A.setState(stray); stray.blocks.tile = A.blockDefaults("tile");
 stray.rows[1].cells = ["tile", "."]; stray.rows.splice(2, 0, { size: "1fr", cells: [".", "tile"] }); stray.rows.splice(3, 0, { size: "1fr", cells: [".", "tile"] });
@@ -297,16 +340,6 @@ check("fix: orphan cells freed", A.issues().length === 0);
 const dupP = A.newProject([A.PRESETS.info(), A.PRESETS.info()]); A.setProject(dupP);
 A.issues().find(x => x.text.includes("also called")).fix.run();
 check("fix: duplicate name renamed", dupP.views[0].name !== dupP.views[1].name && A.issues().length === 0);
-
-const hp = A.newProject([A.PRESETS.lights()]); A.setProject(hp); A.renderAll();
-const before = grid(A.getState());
-A.getState().selected = "living"; A.paintCell(A.getState().rows[0], 0);
-check("history: paint changed grid", grid(A.getState()) !== before);
-A.histUndo();
-check("history: undo restores grid", grid(A.getState()) === before);
-A.histRedo();
-check("history: redo applies again", grid(A.getState()) !== before);
-A.histUndo();
 
 const d1 = A.PRESETS.home();
 check("determinism", run(d1, A.buildYaml) === run(d1, A.buildYaml));

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.0 — 2026-10-01
+
+- The preview is now the editor. The separate layout grid is gone
+- Drag a block to move it, drop it on another block to swap the two
+- Drag the blue handles of the selected block to resize it. It stops at neighbouring blocks instead of overwriting them
+- A small toolbar on the selected block to edit or remove it
+- Double-click a title to edit its text in place
+- Arrow keys move the selected block, Shift with arrow keys resizes it, Delete removes it
+- Row and column sizes in plain words (Auto, Fill, Fill 2x) next to the preview, with a custom value if needed. Rows and columns can be added and deleted there
+- New rows go above the assist bar, new columns before the navbar column
+- New blocks appear on the screen right away
+- On phones the preview comes first and the size bars can be hidden
+
 ## 0.5.0 — 2026-10-01
 
 - Every problem now says why it happened and comes with a one-click fix

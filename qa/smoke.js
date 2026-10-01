@@ -178,11 +178,19 @@ step("blocks: add, remove, undo", () => {
   if ($$(".bitem").length !== n) throw new Error("undo failed");
 });
 
-step("grid tools and eraser", () => {
-  ["addrow", "addcol", "delcol", "delrow"].forEach(g => d.querySelector(`[data-g="${g}"]`).click());
-  d.querySelector('[data-g="clear"]').click();
-  if (d.querySelector('[data-g="clear"]').getAttribute("aria-pressed") !== "true") throw new Error("eraser state");
-  d.querySelector('[data-g="clear"]').click();
+step("rows and columns from the preview", () => {
+  const rows = () => w.eval("state.rows.length"), cols = () => w.eval("state.cols");
+  const r0 = rows(), c0 = cols();
+  $("#addrowbtn").click(); $("#addcolbtn").click();
+  if (rows() !== r0 + 1 || cols() !== c0 + 1) throw new Error("add failed");
+  if ($$("#rowbar .tk").length !== rows() || $$("#colbar .tk").length !== cols()) throw new Error("bars out of sync");
+  const sel = $('#rowbar select[data-row="1"]'); sel.value = "2fr"; fire(sel);
+  if (w.eval("state.rows[1].size") !== "2fr") throw new Error("row size");
+  const csel = $('#colbar select[data-col="0"]'); csel.value = "min-content"; fire(csel);
+  if (w.eval("state.colSizes[0]") !== "min-content") throw new Error("col size");
+  $(`#rowbar [data-delrow="${rows() - 2}"]`).click();
+  $(`#colbar [data-delcol="${cols() - 2}"]`).click();
+  if (rows() !== r0 || cols() !== c0) throw new Error("delete failed");
 });
 
 step("devices", () => {
@@ -216,51 +224,56 @@ step("old single view migrates", () => {
   if (w3.document.querySelector("#vabase").value !== "/va/") throw new Error("base path");
 });
 
-step("errors: user scenario in the UI", () => {
+step("select, keyboard move and resize in the preview", () => {
   const fresh = boot(); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
   [...D.querySelectorAll("#vtabs .go")].find(b => b.textContent === "Lights").click();
-  qa(".bitem").find(x => x.dataset.block === "living").querySelector(".bsel").click();
-  const cell = (r, c) => qa("#painter .cells .cell")[r * 4 + c];
-  cell(0, 0).click();
-  if (!q("#snack").hidden) throw new Error("notice too early");
-  cell(0, 1).click();
-  if (q("#snack").hidden || !q("#snacktext").textContent.includes("“title” was painted over")) throw new Error("no paint-over notice: " + q("#snacktext").textContent);
-  cell(3, 0).click(); cell(3, 1).click(); cell(3, 2).click();
-  const cards = qa("#warnings .chk:not(.ok)");
-  if (cards.length !== 3) throw new Error("cards " + cards.length);
-  if (!cards.every(c => c.querySelector("[data-fix]") && c.querySelector(".h").textContent.length > 20)) throw new Error("missing fix or hint");
-  if (q("#issuebadge").textContent !== "3 issues") throw new Error("badge " + q("#issuebadge").textContent);
-  if (q("#panebadge").hidden || q("#panebadge").textContent !== "3") throw new Error("pane badge");
-  if (qa("#painter .cell.bad").length !== 6) throw new Error("bad cells " + qa("#painter .cell.bad").length);
-  if (!q(".screen .pv-invalid")) throw new Error("no broken-layout banner in preview");
-  if (!q("#guide [data-goto-issues]")) throw new Error("guide does not warn");
-  q("#guide [data-goto-issues]").click();
-  if (!q("#pane-layout").classList.contains("active")) throw new Error("guide warning does not lead to issues");
-  const show = q("#warnings [data-show]"); show.click();
-  if (!qa("#painter .cell.flash").length) throw new Error("no flash");
-  if (q("#undobtn").disabled) throw new Error("undo disabled");
-  q("#warnings [data-fix]").click();
-  q("#warnings [data-fix]").click();
-  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("still " + qa("#warnings .chk:not(.ok)").map(c => c.textContent).join(" | "));
-  if (q("#issuebadge").textContent !== "" || !q("#panebadge").hidden) throw new Error("badges not cleared");
-  if (q(".screen .pv-invalid") || q("#guide [data-goto-issues]")) throw new Error("warnings not cleared");
-  q("#undobtn").click();
-  if (qa("#warnings .chk:not(.ok)").length === 0) throw new Error("undo did not bring the issue back");
-  q("#redobtn").click();
-  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("redo failed");
-  D.dispatchEvent(new fresh.KeyboardEvent("keydown", { key: "z", ctrlKey: true, bubbles: true }));
-  if (qa("#warnings .chk:not(.ok)").length === 0) throw new Error("ctrl+z failed");
-  D.dispatchEvent(new fresh.KeyboardEvent("keydown", { key: "Z", ctrlKey: true, shiftKey: true, bubbles: true }));
-  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("ctrl+shift+z failed");
+  fresh.eval('delete state.blocks.garden; state.rows[2].cells[1]="."; renderAll();');
+  const desk = () => q('.screen .blk[data-block="desk"]');
+  desk().dispatchEvent(new fresh.MouseEvent("pointerdown", { bubbles: true, clientX: 1, clientY: 1 }));
+  fresh.dispatchEvent(new fresh.MouseEvent("pointerup", { bubbles: true, clientX: 1, clientY: 1 }));
+  if (fresh.eval("state.selected") !== "desk") throw new Error("not selected");
+  if (!q(".screen .sel-frame") || qa(".sel-frame [data-h]").length !== 4) throw new Error("no handles");
+  if (!q('.bitem.open[data-block="desk"]')) throw new Error("sidebar not opened");
+  const key = (k, shift) => desk().dispatchEvent(new fresh.KeyboardEvent("keydown", { key: k, shiftKey: !!shift, bubbles: true }));
+  key("ArrowRight");
+  if (fresh.eval('state.rows[2].cells.join()') !== ".,desk,alloff,.") throw new Error("move: " + fresh.eval('state.rows[2].cells.join()'));
+  key("ArrowLeft", true);
+  key("ArrowLeft"); key("ArrowRight", true);
+  if (fresh.eval('state.rows[2].cells.join()') !== "desk,desk,alloff,.") throw new Error("resize: " + fresh.eval('state.rows[2].cells.join()'));
+  key("ArrowUp");
+  if (fresh.eval('state.rows[2].cells.join()') !== "desk,desk,alloff,.") throw new Error("moved into another block");
+  q('.sel-bar [data-act="del"]').click();
+  if (fresh.eval('"desk" in state.blocks')) throw new Error("toolbar delete");
+  q("#snackundo").click();
+  if (!fresh.eval('"desk" in state.blocks')) throw new Error("undo delete");
 });
 
-step("errors: put back from the block itself", () => {
+step("errors: old broken layout fixed from the preview", () => {
+  const broken = JSON.stringify({ views: [{ name: "lights", label: "Lights", icon: "", cols: 3, colSizes: ["1fr","1fr","1fr"],
+    rows: [{ size: "min-content", cells: ["living","living","status"] }, { size: "1fr", cells: ["living","floorlamp","office"] }, { size: "min-content", cells: ["living","living","living"] }],
+    blocks: { title: { type: "title", text: "Lights", style: {} }, status: { type: "status", style: {} }, assist: { type: "assist", style: {} },
+      living: { type: "mlight", entity: "light.a", style: {} }, floorlamp: { type: "mlight", entity: "light.b", style: {} }, office: { type: "mlight", entity: "light.c", style: {} } },
+    bgmode: "color", bgcolor: "#111111" }], active: 0, device: "echo5", vaBase: "/view-assist/" });
+  const fresh = boot({ "panelkit.project": broken }); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
+  const cards = qa("#warnings .chk:not(.ok)");
+  if (cards.length !== 3) throw new Error("cards " + cards.length + ": " + cards.map(c => c.textContent).join(" | "));
+  if (!cards.every(c => c.querySelector("[data-fix]") && c.querySelector(".h").textContent.length > 20)) throw new Error("missing fix or hint");
+  if (q("#issuebadge").textContent !== "3 issues") throw new Error("badge");
+  if (!q(".screen .pv-invalid")) throw new Error("no broken banner");
+  q("#warnings [data-show]").click();
+  if (!qa(".screen .blk.flash").length) throw new Error("show me");
+  let guard = 0; while (q("#warnings [data-fix]") && guard++ < 6) q("#warnings [data-fix]").click();
+  if (qa("#warnings .chk:not(.ok)").length) throw new Error("left: " + qa("#warnings .chk").map(c => c.textContent).join(" | "));
+  q("#undobtn").click();
+  if (!qa("#warnings .chk:not(.ok)").length) throw new Error("undo");
+  q("#redobtn").click();
+  if (qa("#warnings .chk:not(.ok)").length) throw new Error("redo");
+});
+
+step("unplaced block can be placed from the sidebar", () => {
   const fresh = boot(); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
-  qa(".bitem").find(x => x.dataset.block === "clockweather").querySelector(".bsel").click();
-  qa("#painter .cells .cell")[0].click();
-  const t = qa(".bitem").find(x => x.dataset.block === "title");
-  if (!t.querySelector(".bflag")) throw new Error("no flag");
-  t.querySelector(".bsel").click();
+  fresh.eval('state.rows.forEach(r=>r.cells=r.cells.map(c=>c==="title"?".":c)); state.selected="title"; state.expanded=true; renderAll();');
+  if (!q('.bitem[data-block="title"] .bflag')) throw new Error("no flag");
   q("[data-autoplace]").click();
   if (!q("#warnings .chk.ok")) throw new Error(qa("#warnings .chk").map(c => c.textContent).join(" | "));
 });

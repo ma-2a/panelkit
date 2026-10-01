@@ -11,3 +11,7 @@ jobs:
         working-directory: qa
       - run: node run.js && node smoke.js
         working-directory: qa
+      - run: node browser.js
+        working-directory: qa
+        env:
+          CHROME_PATH: /usr/bin/google-chrome

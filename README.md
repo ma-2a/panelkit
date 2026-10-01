@@ -15,13 +15,14 @@ grid, fills in the fields and hands back YAML you paste into a manual card.
 - Templates, including a tab set (home, camera, music, lights, calendar) that shares one navbar
 - A navbar that follows your views, and one click to put it on every view
 - Export one view, or all of them at once for the raw configuration editor
-- Grid editor with per-row and per-column sizing in any CSS grid unit
-- Live preview at the aspect ratio of your display
+- Edit directly in the preview: drag to move, drop on another block to swap, pull handles to resize, keyboard arrows work too
+- Row and column sizes from a menu next to the preview, custom CSS grid values if you need them
+- Undo and redo for everything
 - View Assist blocks: title, status icons, assist bar, message, timers, satellite image, web page, intent cards
 - HACS cards with proper forms: navbar-card, Mushroom chips, template and light cards, mini-media-player, clock-weather-card, Advanced Camera Card
 - Home Assistant cards: camera feed, calendar agenda, tile
 - One link field for every block: `music` becomes `/view-assist/music`, `/lovelace/0` stays as is, `script.x` or `scene.x` runs it, `https://…` opens it
-- Validation for non-rectangular areas, unplaced blocks, a missing assist bar and a navbar covering content
+- Problems are explained and come with a one-click fix
 - Lists the HACS repositories the generated view needs
 
 ## Requirements
@@ -58,10 +59,12 @@ Then open `http://localhost:8000/builder/`.
 
 `qa/run.js` renders every template and every block type, parses the generated YAML, and checks the
 grid, the custom fields, the quoting and the validation rules. `qa/smoke.js` loads the builder in jsdom
-and clicks through every template, block editor, device and grid tool.
+and clicks through every template, block editor and device. `qa/browser.js` drives a real Chrome:
+dragging, swapping, resizing, keyboard moves, inline editing and the size bars.
 
 ```
 cd qa && npm install && npm test
+CHROME_PATH=/path/to/chrome npm run browser
 ```
 
 ## Changelog

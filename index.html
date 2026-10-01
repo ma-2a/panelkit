@@ -217,7 +217,7 @@ footer.site a{color:var(--ink-2)}
     <h2>How it works</h2>
     <ol class="steps">
       <li><strong>Pick your screen and a starting point.</strong> Choose an Echo Show 5, Echo Show 8, Lenovo ThinkSmart View, Fire tablet or a custom size, then start from a template. There is a full tab set for home, camera, music, lights and calendar that shares one navbar.</li>
-      <li><strong>Lay out the grid.</strong> Set rows and columns in any CSS grid unit, then tap cells to give them to a block. PanelKit writes the <code>grid-template-areas</code> for you and warns when an area is not a valid rectangle.</li>
+      <li><strong>Arrange it right in the preview.</strong> Drag blocks to move them, drop one on another to swap them, pull the handles to resize. Rows and columns get their size from a simple menu above and beside the screen. Every change can be undone.</li>
       <li><strong>Add blocks.</strong> View Assist elements like the assist bar, status icons, messages and timers, plus popular HACS cards. Each one has a small form instead of a YAML snippet.</li>
       <li><strong>Add more views.</strong> Switch between views in the bar at the top, add one from a template or the whole tab set, reorder them. A navbar set to follow your views gets one route per view, and one click puts it on every view.</li>
       <li><strong>Add it to Home Assistant.</strong> The builder walks you through it: which cards to install from HACS, where to click, what to name the view, and how to open it on your device. The generated view is a single <code>custom:button-card</code> using the standard <code>variable_template</code> and <code>body_template</code>, so it behaves like the views that ship with View Assist.</li>
@@ -257,12 +257,12 @@ footer.site a{color:var(--ink-2)}
         <p>Link targets are written once. A view name becomes a dashboard path, a path stays as it is, <code>script.x</code> or <code>scene.x</code> runs it, a URL opens it. Navbar routes, chips and buttons all use the same field.</p>
       </div>
       <div class="box">
-        <h3>Mistakes caught early</h3>
-        <p>Non-rectangular grid areas, blocks that were never placed, a navbar sitting on top of the assist bar, routes without a target. All flagged before you paste anything into Home Assistant.</p>
+        <h3>Mistakes explained and fixed</h3>
+        <p>A navbar covering content, a missing assist bar, a duplicate view name. Each problem says what is wrong and comes with a one-click fix, before you paste anything into Home Assistant.</p>
       </div>
       <div class="box">
         <h3>A real preview</h3>
-        <p>The preview uses the same CSS grid the generated card does, at the aspect ratio of your display, so what you place is what you get.</p>
+        <p>You edit directly on a preview of your screen, at its real aspect ratio, using the same CSS grid the generated card does. What you arrange is what you get.</p>
       </div>
     </div>
   </div>
