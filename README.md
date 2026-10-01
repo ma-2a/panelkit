@@ -52,6 +52,10 @@ grid, the custom fields, the quoting and the validation rules.
 cd qa && npm install && node run.js
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## Not yet
 
 - Importing existing views

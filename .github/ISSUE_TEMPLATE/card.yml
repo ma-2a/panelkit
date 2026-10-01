@@ -1,0 +1,25 @@
+name: Card request
+description: Ask for another card to be available as a block
+labels: [card request]
+body:
+  - type: input
+    attributes:
+      label: Card
+      placeholder: Bubble Card
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Repository
+      placeholder: https://github.com/Clooos/Bubble-Card
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: A working example
+      description: A config of this card that works inside a View Assist view, so the options worth exposing are clear.
+      render: yaml
+  - type: textarea
+    attributes:
+      label: Anything special about it
+      description: Does it position itself, need a parent card, or behave differently on a kiosk display?

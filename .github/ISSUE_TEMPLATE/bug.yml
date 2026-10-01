@@ -1,0 +1,22 @@
+name: Bug report
+description: Something in the builder or the generated YAML is wrong
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Generated YAML
+      description: Paste the output from the YAML tab if the problem is in the generated view.
+      render: yaml
+  - type: input
+    attributes:
+      label: Display size and browser
+      placeholder: 1280x800, Fully Kiosk on Android 11
+  - type: input
+    attributes:
+      label: View Assist version
