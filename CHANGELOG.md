@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0 — 2026-10-01
+
+- Every problem now says why it happened and comes with a one-click fix
+- PanelKit remembers which block a cell belonged to, so “Put it back” and “Give cells back” undo an accidental paint-over exactly
+- Blocks without a place get “Find a place”, which picks a sensible row: title and status at the top, assist bar at the bottom, everything else above it
+- “Show cells” highlights the affected cells in the grid, which also marks broken areas with a dashed outline
+- Undo and redo for every change, with buttons in the top bar and Ctrl+Z / Ctrl+Shift+Z
+- A notice with Undo appears the moment a block is painted off the grid
+- The preview says when the layout is broken, and the install guide warns before you paste a view that still has problems
+- Issue count in the preview header and on the mobile Canvas tab
+- A missing assist bar is reported once instead of twice
+
 ## 0.4.0 — 2026-10-01
 
 - Rewritten install guide: step by step, with the exact cards to install and links to them, where to click in Home Assistant, the title and URL name to enter with copy buttons, and how to open the view on the device

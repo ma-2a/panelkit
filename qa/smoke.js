@@ -216,6 +216,55 @@ step("old single view migrates", () => {
   if (w3.document.querySelector("#vabase").value !== "/va/") throw new Error("base path");
 });
 
+step("errors: user scenario in the UI", () => {
+  const fresh = boot(); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
+  [...D.querySelectorAll("#vtabs .go")].find(b => b.textContent === "Lights").click();
+  qa(".bitem").find(x => x.dataset.block === "living").querySelector(".bsel").click();
+  const cell = (r, c) => qa("#painter .cells .cell")[r * 4 + c];
+  cell(0, 0).click();
+  if (!q("#snack").hidden) throw new Error("notice too early");
+  cell(0, 1).click();
+  if (q("#snack").hidden || !q("#snacktext").textContent.includes("“title” was painted over")) throw new Error("no paint-over notice: " + q("#snacktext").textContent);
+  cell(3, 0).click(); cell(3, 1).click(); cell(3, 2).click();
+  const cards = qa("#warnings .chk:not(.ok)");
+  if (cards.length !== 3) throw new Error("cards " + cards.length);
+  if (!cards.every(c => c.querySelector("[data-fix]") && c.querySelector(".h").textContent.length > 20)) throw new Error("missing fix or hint");
+  if (q("#issuebadge").textContent !== "3 issues") throw new Error("badge " + q("#issuebadge").textContent);
+  if (q("#panebadge").hidden || q("#panebadge").textContent !== "3") throw new Error("pane badge");
+  if (qa("#painter .cell.bad").length !== 6) throw new Error("bad cells " + qa("#painter .cell.bad").length);
+  if (!q(".screen .pv-invalid")) throw new Error("no broken-layout banner in preview");
+  if (!q("#guide [data-goto-issues]")) throw new Error("guide does not warn");
+  q("#guide [data-goto-issues]").click();
+  if (!q("#pane-layout").classList.contains("active")) throw new Error("guide warning does not lead to issues");
+  const show = q("#warnings [data-show]"); show.click();
+  if (!qa("#painter .cell.flash").length) throw new Error("no flash");
+  if (q("#undobtn").disabled) throw new Error("undo disabled");
+  q("#warnings [data-fix]").click();
+  q("#warnings [data-fix]").click();
+  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("still " + qa("#warnings .chk:not(.ok)").map(c => c.textContent).join(" | "));
+  if (q("#issuebadge").textContent !== "" || !q("#panebadge").hidden) throw new Error("badges not cleared");
+  if (q(".screen .pv-invalid") || q("#guide [data-goto-issues]")) throw new Error("warnings not cleared");
+  q("#undobtn").click();
+  if (qa("#warnings .chk:not(.ok)").length === 0) throw new Error("undo did not bring the issue back");
+  q("#redobtn").click();
+  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("redo failed");
+  D.dispatchEvent(new fresh.KeyboardEvent("keydown", { key: "z", ctrlKey: true, bubbles: true }));
+  if (qa("#warnings .chk:not(.ok)").length === 0) throw new Error("ctrl+z failed");
+  D.dispatchEvent(new fresh.KeyboardEvent("keydown", { key: "Z", ctrlKey: true, shiftKey: true, bubbles: true }));
+  if (qa("#warnings .chk:not(.ok)").length !== 0) throw new Error("ctrl+shift+z failed");
+});
+
+step("errors: put back from the block itself", () => {
+  const fresh = boot(); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
+  qa(".bitem").find(x => x.dataset.block === "clockweather").querySelector(".bsel").click();
+  qa("#painter .cells .cell")[0].click();
+  const t = qa(".bitem").find(x => x.dataset.block === "title");
+  if (!t.querySelector(".bflag")) throw new Error("no flag");
+  t.querySelector(".bsel").click();
+  q("[data-autoplace]").click();
+  if (!q("#warnings .chk.ok")) throw new Error(qa("#warnings .chk").map(c => c.textContent).join(" | "));
+});
+
 step("no middle dots or emoji in the UI", () => {
   if (/\u00b7/.test(d.body.textContent)) throw new Error("middle dot");
   if (/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(d.body.textContent)) throw new Error("emoji");

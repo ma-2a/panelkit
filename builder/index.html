@@ -261,10 +261,16 @@ details.sty[open] summary{margin-bottom:10px}
 .pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.15em;padding:.45em .55em;border-radius:inherit;font-size:.78em;color:#c3ccd7}
 .pv-nav .r .pi{width:1.4em;height:1.4em}
 .pv-nav.v{flex-direction:column}
+.screen > .pv-invalid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;display:flex;gap:.6em;align-items:center;max-width:80%;padding:.7em 1em;border-radius:10px;background:rgba(15,18,23,.92);color:#f0b44c;border:1px solid rgba(240,180,76,.45);font-size:.95em;text-align:left}
 
 .checks{border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:6px}
-.chk{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink)}
-.chk .i{color:var(--warn);margin-top:1px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--ink);padding:8px 10px;border-radius:8px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 22%,transparent)}
+.chk .i{color:var(--warn);margin-top:2px}
+.chk-body{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.chk-body .t{font-weight:500}
+.chk-body .h{color:var(--ink-2)}
+.chk-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chk.ok{background:none;border:none;padding:2px 0}
 .chk.ok{color:var(--ink-3)}
 .chk.ok .i{color:var(--ok)}
 
@@ -280,6 +286,12 @@ details.sty[open] summary{margin-bottom:10px}
 .sizein:focus-visible{border-color:var(--accent);color:var(--ink)}
 .cell{border:1px solid var(--line-2);border-radius:6px;min-height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink);background:var(--surface-2);padding:2px;word-break:break-all;text-align:center;transition:border-color .1s}
 .cell:hover{border-color:var(--accent)}
+.cell.bad{border-style:dashed;border-color:var(--warn) !important;box-shadow:inset 0 0 0 1px var(--warn)}
+.cell.flash{animation:flash 1.6s ease-out 1}
+@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--warn)}100%{box-shadow:0 0 0 0 transparent}}
+.issues{font-size:11.5px;font-weight:500;color:var(--warn);background:var(--warn-soft);border-radius:5px;padding:1px 7px}
+.issues.ok{color:var(--ok);background:transparent;padding:0}
+.pbadge{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:9px;background:var(--warn);color:var(--surface);font-size:10.5px;font-weight:600;margin-left:6px;padding:0 4px}
 .cell.empty{background:repeating-linear-gradient(-45deg,transparent 0 6px,var(--surface-3) 6px 7px),var(--surface-2)}
 .painthint{font-size:12.5px;color:var(--warn);min-height:0;margin-top:8px}
 .painthint:empty{display:none}
@@ -366,6 +378,10 @@ footer .grow{flex:1}
   <symbol id="i-rows" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 12h18"/></symbol>
   <symbol id="i-cols" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 10-10M15 4v3M19 8h-3M18.5 4.5l-2 2M13 9l2 2"/></symbol>
 
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="7" width="12.5" height="10" rx="2"/><path d="m15.5 11 5-3v8l-5-3"/></symbol>
@@ -410,7 +426,7 @@ footer .grow{flex:1}
   <div class="in">
     <a class="logo" href="../" aria-label="PanelKit home">
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#161c24"/><rect x="12" y="13" width="24" height="18" rx="4" fill="#4aa3ff"/><rect x="40" y="13" width="12" height="18" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="12" y="35" width="12" height="16" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="28" y="35" width="24" height="16" rx="4" fill="#ff7a3d"/></svg>
-      PanelKit <span class="ver">0.4</span>
+      PanelKit <span class="ver">0.5</span>
     </a>
     <div class="devpick">
       <label for="device">Device</label>
@@ -422,6 +438,8 @@ footer .grow{flex:1}
       </span>
     </div>
     <span class="sep"></span>
+    <button class="btn quiet icon" id="undobtn" title="Undo (Ctrl+Z)" aria-label="Undo" disabled><svg class="i"><use href="#i-undo"/></svg></button>
+    <button class="btn quiet icon" id="redobtn" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled><svg class="i"><use href="#i-redo"/></svg></button>
     <button class="btn quiet icon" id="themebtn" title="Switch light or dark" aria-label="Switch light or dark theme"><svg class="i"><use href="#i-moon"/></svg></button>
     <a class="btn quiet icon hide-sm" href="https://github.com/ma-2a/panelkit" title="Source on GitHub" aria-label="Source on GitHub"><svg class="i"><use href="#i-github"/></svg></a>
     <button class="btn primary" id="exportbtn"><svg class="i"><use href="#i-download"/></svg><span>Add to Home Assistant</span></button>
@@ -440,7 +458,7 @@ footer .grow{flex:1}
 
 <nav class="panes" role="tablist" aria-label="Sections">
   <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
-  <button role="tab" aria-selected="false" data-pane="layout">Canvas</button>
+  <button role="tab" aria-selected="false" data-pane="layout">Canvas<span class="pbadge" id="panebadge" hidden></span></button>
   <button role="tab" aria-selected="false" data-pane="yaml">Install</button>
 </nav>
 
@@ -515,6 +533,7 @@ footer .grow{flex:1}
     <div class="panel">
       <div class="panel-head canvas-head">
         <h2>Preview <span class="sub" id="vstitle"></span></h2>
+        <span class="issues" id="issuebadge"></span>
         <span class="devlabel" id="devlabel"></span>
       </div>
       <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
@@ -1111,6 +1130,7 @@ function removeBlock(a){
   state.rows.forEach((r,ri)=>r.cells.forEach((c,ci)=>{ if(c===a){ cells.push([ri,ci]); r.cells[ci]="."; } }));
   const block=state.blocks[a], order=Object.keys(state.blocks), view=state;
   delete state.blocks[a];
+  if(state.lost) delete state.lost[a];
   if(state.selected===a) state.selected=null;
   renderAll();
   showSnack(`Removed “${a}”`, ()=>{
@@ -1316,7 +1336,7 @@ function chipsHTML(b){
 function inspectorHTML(a,b,isPlaced){
   const t=TYPES[b.type], P=[];
   if(!t.floating && !isPlaced)
-    P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the grid yet. Click cells in the layout grid to place it. <button class="btn sm mobile-only" data-goto="layout">Open grid</button></span></div>`);
+    P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the grid yet. Click cells in the layout grid to place it, or let PanelKit find a place.<span class="chk-actions"><button class="btn sm" data-autoplace="${esc(a)}">${sym("wand","i sm")}Find a place</button><button class="btn sm mobile-only" data-goto="layout">Open grid</button></span></span></div>`);
   P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
   const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS. The install steps list it for you.</p>`);
   if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the grid edge it sits on empty. The templates reserve a 90px column for it.</p>`);
@@ -1343,15 +1363,7 @@ function applyNavbarEverywhere(a){
     const key = Object.keys(v.blocks).find(k=>v.blocks[k].type==="navbar");
     if(key){ v.blocks[key] = JSON.parse(JSON.stringify(src)); updated++; }
     else {
-      const edge = src.position||"right";
-      if(edge==="right"||edge==="left"){
-        v.cols+=1;
-        if(edge==="right"){ v.colSizes.push("90px"); v.rows.forEach(r=>r.cells.push(".")); }
-        else { v.colSizes.unshift("90px"); v.rows.forEach(r=>r.cells.unshift(".")); }
-      } else {
-        const row={size:"70px", cells:Array(v.cols).fill(".")};
-        if(edge==="bottom") v.rows.push(row); else v.rows.unshift(row);
-      }
+      makeRoom(v, src.position||"right");
       v.blocks[uniqueIn(v,"navbar")] = JSON.parse(JSON.stringify(src)); added++;
     }
   });
@@ -1401,6 +1413,7 @@ function bindInspector(a,b){
   }
   const del=$("#i-del"); if(del) del.onclick=()=>removeBlock(a);
   document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>switchTab(x.dataset.goto));
+  document.querySelectorAll("[data-autoplace]").forEach(x=>x.onclick=()=>{ autoPlace(x.dataset.autoplace); renderAll(); });
 }
 
 function renderPainter(){
@@ -1422,6 +1435,7 @@ function renderPainter(){
     w.appendChild(inp); rowhead.appendChild(w);
   });
   const cells=document.createElement("div"); cells.className="cells";
+  const bad=new Set(usedAreas().filter(a=>!state.blocks[a] || TYPES[state.blocks[a].type].floating || !areaInfo(state,a).rect));
   cells.style.gridTemplateColumns=`repeat(${state.cols},minmax(0,1fr))`;
   state.rows.forEach(r=>{
     for(let ci=0; ci<state.cols; ci++){
@@ -1430,6 +1444,8 @@ function renderPainter(){
       c.className="cell"+(a==="."?" empty":"");
       c.textContent = a==="." ? "" : a;
       c.setAttribute("aria-label", a==="." ? "Empty cell" : `Cell of ${a}`);
+      if(a!=="." && bad.has(a)) c.classList.add("bad");
+      if(a!=="." && a===flashArea) c.classList.add("flash");
       if(a!=="."){ const h=hueOf(a); c.style.background=tint(h,.22); c.style.borderColor=h; }
       c.onclick=()=>paintCell(r,ci);
       cells.appendChild(c);
@@ -1449,8 +1465,15 @@ function paintCell(r,ci){
   if(state.paintEmpty){ r.cells[ci]="."; renderAll(); return; }
   if(!s){ $("#painthint").textContent="Select a block on the left first."; return; }
   if(TYPES[s.type].floating){ $("#painthint").textContent=`“${state.selected}” floats above the view and is not placed in the grid.`; return; }
-  r.cells[ci] = r.cells[ci]===state.selected ? "." : state.selected;
+  const prev=r.cells[ci];
+  r.cells[ci] = prev===state.selected ? "." : state.selected;
+  if(prev!=="." && prev!==state.selected && state.blocks[prev]){
+    const lost=lostMap(), key=state.rows.indexOf(r)+","+ci;
+    lost[prev]=[...new Set([...(lost[prev]||[]), key])];
+  }
   $("#painthint").textContent=""; renderAll();
+  if(prev!=="." && prev!==state.selected && state.blocks[prev] && !usedAreas().includes(prev))
+    showSnack(`“${prev}” was painted over and is no longer on the grid`, ()=>histUndo(true));
 }
 
 function areasString(){
@@ -1552,6 +1575,11 @@ function renderPreview(){
     if(b.type==="shader"){ const el=document.createElement("div"); el.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,${b.shade||.15});pointer-events:none`; s.appendChild(el); }
   });
   Object.values(state.blocks).forEach(b=>{ if(b.type==="navbar") renderNavPreview(s,b); });
+  if(usedAreas().some(a=>!areaInfo(state,a).rect)){
+    const w=document.createElement("div"); w.className="pv-invalid";
+    w.innerHTML=`<svg class="pi" aria-hidden="true"><use href="#i-alert"/></svg><span>Layout is broken, so the device would show this jumble. See the issues below.</span>`;
+    s.appendChild(w);
+  }
 }
 
 function indent(text,pad){ return text.split("\n").map(l=>l.length?pad+l:l).join("\n"); }
@@ -1638,48 +1666,236 @@ function buildAllViews(){
   state=keep;
   return out.join("\n")+"\n";
 }
-function checks(){
-  const m=[]; const areas=usedAreas();
+function areaInfo(v,a){
+  let r0=1e9,r1=-1,c0=1e9,c1=-1,n=0;
+  v.rows.forEach((r,ri)=>{ for(let ci=0;ci<v.cols;ci++) if(r.cells[ci]===a){ n++; r0=Math.min(r0,ri); r1=Math.max(r1,ri); c0=Math.min(c0,ci); c1=Math.max(c1,ci); } });
+  return {n,r0,r1,c0,c1,rect:n>0 && n===(r1-r0+1)*(c1-c0+1)};
+}
+function findType(t){ return Object.keys(state.blocks).find(k=>state.blocks[k].type===t); }
+function contentCols(v){
+  const all=[...Array(v.cols).keys()];
+  const spacer=ci=>/px$/.test(String(v.colSizes[ci]||"")) && v.rows.every(r=>(r.cells[ci]||".")===".");
+  const cc=all.filter(ci=>!spacer(ci));
+  return cc.length ? cc : all;
+}
+function clearArea(a){ state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]="."; })); }
+function lostMap(){ if(!state.lost || typeof state.lost!=="object") state.lost={}; return state.lost; }
+function takenFrom(a){
+  const out=new Map(), lost=lostMap();
+  Object.entries(lost).forEach(([owner,keys])=>{
+    if(owner===a || !state.blocks[owner]) return;
+    keys.forEach(k=>{ const [ri,ci]=k.split(",").map(Number); if(state.rows[ri] && state.rows[ri].cells[ci]===a){ if(!out.has(owner)) out.set(owner,[]); out.get(owner).push(k); } });
+  });
+  return out;
+}
+function keepLargestRect(a){
+  const v=state, R=v.rows.length, C=v.cols, is=(r,c)=>v.rows[r].cells[c]===a;
+  const taken=new Set([...takenFrom(a).values()].flat());
+  let best=null;
+  for(let r0=0;r0<R;r0++) for(let c0=0;c0<C;c0++){
+    if(!is(r0,c0)) continue;
+    for(let r1=r0;r1<R;r1++) for(let c1=c0;c1<C;c1++){
+      let ok=true;
+      for(let r=r0;r<=r1&&ok;r++) for(let c=c0;c<=c1&&ok;c++) if(!is(r,c)) ok=false;
+      if(!ok) continue;
+      const area=(r1-r0+1)*(c1-c0+1);
+      let own=0; for(let r=r0;r<=r1;r++) for(let c=c0;c<=c1;c++) if(!taken.has(r+","+c)) own++;
+      const tk=area-own;
+      if(!best || own>best.own || (own===best.own && (tk<best.tk || (tk===best.tk && area>best.area)))) best={r0,r1,c0,c1,area,own,tk};
+    }
+  }
+  const owners=takenFrom(a), lost=lostMap();
+  v.rows.forEach((r,ri)=>r.cells.forEach((c,ci)=>{
+    if(c===a && !(best && ri>=best.r0 && ri<=best.r1 && ci>=best.c0 && ci<=best.c1)) r.cells[ci]=".";
+  }));
+  owners.forEach((keys,owner)=>{
+    keys.forEach(k=>{ const [ri,ci]=k.split(",").map(Number); if(v.rows[ri].cells[ci]===".") v.rows[ri].cells[ci]=owner; });
+    lost[owner]=(lost[owner]||[]).filter(k=>!keys.includes(k));
+    if(!lost[owner].length) delete lost[owner];
+  });
+}
+function fillRow(v, ri, a){
+  if(!v.rows[ri]) return false;
+  const free=contentCols(v).filter(ci=>(v.rows[ri].cells[ci]||".")===".");
+  if(!free.length || free[free.length-1]-free[0]+1!==free.length) return false;
+  free.forEach(ci=>v.rows[ri].cells[ci]=a);
+  return true;
+}
+function autoPlace(a){
+  const v=state, b=v.blocks[a]; if(!b || TYPES[b.type].floating) return;
+  const lost=lostMap();
+  if(lost[a] && lost[a].length){
+    const keys=lost[a].filter(k=>{ const [ri,ci]=k.split(",").map(Number); return v.rows[ri] && ci<v.cols; });
+    delete lost[a];
+    keys.forEach(k=>{ const [ri,ci]=k.split(",").map(Number); v.rows[ri].cells[ci]=a; });
+    if(keys.length && areaInfo(v,a).rect) return;
+    clearArea(a);
+  }
+  const cc=contentCols(v);
+  const newRow=(size, name)=>({size, cells:Array.from({length:v.cols},(_,ci)=>cc.includes(ci)?name:".")});
+  const placed=new Set(usedAreas());
+  const emptyRow=ri=>cc.every(ci=>(v.rows[ri].cells[ci]||".")===".");
+  if(b.type==="assist"){
+    const last=v.rows.length-1;
+    if(last>=0 && emptyRow(last)){ cc.forEach(ci=>v.rows[last].cells[ci]=a); v.rows[last].size="min-content"; return; }
+    v.rows.push(newRow("min-content",a)); return;
+  }
+  if(b.type==="title"||b.type==="status"){
+    const otherKey = findType(b.type==="title"?"status":"title");
+    if(v.rows.length && fillRow(v,0,a)) return;
+    if(b.type==="status"){
+      const t=findType("title");
+      if(t){ const inf=areaInfo(v,t); if(inf.rect && inf.r0===inf.r1 && inf.c1>inf.c0){ v.rows[inf.r0].cells[inf.c1]=a; return; } }
+    }
+    const r=newRow("min-content",a);
+    if(otherKey && !placed.has(otherKey) && cc.length>1){
+      cc.forEach((ci,i)=>{ r.cells[ci] = (i===cc.length-1) === (b.type==="status") ? a : otherKey; });
+    }
+    v.rows.unshift(r); return;
+  }
+  for(let ri=0; ri<v.rows.length; ri++){ if(emptyRow(ri)){ cc.forEach(ci=>v.rows[ri].cells[ci]=a); return; } }
+  const assistKey=findType("assist");
+  const ai=assistKey ? v.rows.findIndex(r=>r.cells.includes(assistKey)) : -1;
+  const r=newRow("1fr",a);
+  if(ai>=0) v.rows.splice(ai,0,r); else v.rows.push(r);
+}
+function makeRoom(v, edge){
+  if(edge==="right"||edge==="left"){
+    v.cols+=1;
+    if(edge==="right"){ v.colSizes.push("90px"); v.rows.forEach(r=>r.cells.push(".")); }
+    else { v.colSizes.unshift("90px"); v.rows.forEach(r=>r.cells.unshift(".")); }
+  } else {
+    const row={size:"70px", cells:Array(v.cols).fill(".")};
+    if(edge==="bottom") v.rows.push(row); else v.rows.unshift(row);
+  }
+}
+function issues(){
+  const L=[], areas=usedAreas(), lost=lostMap();
+  const unplaced=Object.entries(state.blocks).filter(([a,b])=>!TYPES[b.type].floating && !areas.includes(a));
+  const coreFirst=t=>["title","status","assist"].includes(t)?0:1;
+  unplaced.sort((x,y)=>coreFirst(x[1].type)-coreFirst(y[1].type)).forEach(([a,b])=>{
+    const core=["title","status","assist"].includes(b.type);
+    const by=[...new Set((lost[a]||[]).map(k=>{ const [ri,ci]=k.split(",").map(Number); return state.rows[ri] && state.rows[ri].cells[ci]; }).filter(x=>x && x!=="." && x!==a))];
+    L.push({
+      text:`“${a}” is not on the grid yet and will not show up.`,
+      hint: by.length ? `It was painted over by ${by.map(x=>`“${x}”`).join(" and ")}. “Put it back” returns its cells.`
+          : core ? "Its cells were probably painted over by another block. Put it back, or select it and click the cells it should use."
+                 : "Select it on the left and click the cells it should use, or let PanelKit find a place.",
+      fix:{label: (by.length||core) ? "Put it back" : "Find a place", run:()=>autoPlace(a)}});
+  });
   areas.forEach(a=>{
-    let r0=99,r1=-1,c0=99,c1=-1,n=0;
-    state.rows.forEach((r,ri)=>{ for(let ci=0;ci<state.cols;ci++) if(r.cells[ci]===a){n++;r0=Math.min(r0,ri);r1=Math.max(r1,ri);c0=Math.min(c0,ci);c1=Math.max(c1,ci);} });
-    if(n!==(r1-r0+1)*(c1-c0+1)) m.push(`“${a}” is not a rectangle. CSS grid needs every area to be one solid rectangle.`);
-  });
-  Object.entries(state.blocks).forEach(([a,b])=>{
-    if(!TYPES[b.type].floating && !areas.includes(a)) m.push(`“${a}” is not on the grid yet and will not show up.`);
+    if(!state.blocks[a]) return;
+    if(areaInfo(state,a).rect) return;
+    const owners=[...takenFrom(a).keys()];
+    L.push({
+      text:`“${a}” is not a rectangle. CSS grid needs every area to be one solid rectangle.`,
+      hint: owners.length ? `It took cells from ${owners.map(x=>`“${x}”`).join(" and ")}. “Give cells back” returns them and keeps “${a}” in one piece.`
+          : "Its cells are spread out or have a gap, often after painting one cell too many. Click the stray cells to free them, or keep the largest rectangle.",
+      fix:{label: owners.length ? "Give cells back" : "Keep largest rectangle", run:()=>keepLargestRect(a)}, show:a});
   });
   areas.forEach(a=>{
-    if(!state.blocks[a]) m.push(`Grid area “${a}” has no block.`);
-    else if(TYPES[state.blocks[a].type].floating) m.push(`“${a}” floats and should not be on the grid.`);
+    if(!state.blocks[a]) L.push({text:`Cells named “${a}” belong to no block.`, hint:"The block was renamed or removed while its cells stayed.", fix:{label:"Free these cells", run:()=>clearArea(a)}, show:a});
+    else if(TYPES[state.blocks[a].type].floating) L.push({text:`“${a}” floats and should not be on the grid.`, hint:"Floating blocks position themselves, so these cells only take up space.", fix:{label:"Free these cells", run:()=>clearArea(a)}, show:a});
   });
-  if(!areas.includes("assist")) m.push("Without an “assist” area the view shows no voice feedback.");
-  if(project && project.views.filter(v=>v.name===state.name).length>1) m.push(`Another view is also called “${state.name}”. View names must be unique.`);
-  const nb=Object.values(state.blocks).filter(b=>b.type==="navbar");
-  if(nb.length>1) m.push("There is more than one navbar. navbar-card would draw on top of itself.");
-  nb.forEach(b=>{
-    const pos=b.position||"right";
+  if(!findType("assist")) L.push({
+    text:"This view has no assist bar, so it shows no voice feedback.",
+    hint:"View Assist shows what you said and its answer in this bar.",
+    fix:{label:"Add assist bar", run:()=>{ const n=uniqueName("assist"); state.blocks[n]=blockDefaults("assist"); autoPlace(n); }}});
+  if(project && project.views.filter(v=>v.name===state.name).length>1) L.push({
+    text:`Another view is also called “${state.name}”. View names must be unique.`,
+    hint:"Two views with the same URL name cannot both be opened.",
+    fix:{label:"Rename this view", run:()=>{ state.name=uniqueView(state.name); syncInputs(); }}});
+  const navKeys=Object.keys(state.blocks).filter(k=>state.blocks[k].type==="navbar");
+  if(navKeys.length>1) L.push({
+    text:"There is more than one navbar. navbar-card would draw on top of itself.",
+    hint:"Keep one navbar per view.",
+    fix:{label:"Remove the extra navbar", run:()=>navKeys.slice(1).forEach(k=>delete state.blocks[k])}});
+  navKeys.slice(0,1).forEach(k=>{
+    const b=state.blocks[k], pos=b.position||"right";
     let edge=[];
     if(pos==="right") edge=state.rows.map(r=>r.cells[state.cols-1]);
     if(pos==="left") edge=state.rows.map(r=>r.cells[0]);
     if(pos==="bottom") edge=(state.rows[state.rows.length-1]||{cells:[]}).cells.slice(0,state.cols);
     if(pos==="top") edge=(state.rows[0]||{cells:[]}).cells.slice(0,state.cols);
     const hit=[...new Set(edge.filter(c=>c&&c!=="."))];
-    if(hit.length) m.push(`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}. Leave that edge of the grid empty.`);
-    if(!b.sync) (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (${r.label||"no label"}) has no target.`); });
+    if(hit.length) L.push({
+      text:`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}.`,
+      hint:`Content under the navbar cannot be tapped. Leave that edge of the grid empty, or add a free ${pos==="left"||pos==="right"?"column":"row"} for it.`,
+      fix:{label:"Make room for the navbar", run:()=>makeRoom(state,pos)}});
+    if(!b.sync) (b.routes||[]).forEach((r,i)=>{ if(!r.target) L.push({
+      text:`Navbar route ${i+1} (${r.label||"no label"}) has no target.`,
+      hint:"Give it a view name, a path or a web address in the navbar settings.",
+      fix:{label:"Open navbar settings", run:()=>{ state.selected=k; state.expanded=true; }, keep:true}}); });
   });
-  return m;
+  return L;
 }
+function checks(){ return issues().map(i=>i.text); }
 function deps(){
   const d=new Set(["button-card"]);
   Object.values(state.blocks).forEach(b=>{ const h=hacsOf(b); if(h) d.add(h); });
   return [...d];
 }
 
+let flashArea=null, flashTimer=null;
 function renderChecks(){
-  const m=checks();
-  $("#warnings").innerHTML = m.length
-    ? m.map(x=>`<div class="chk">${sym("alert","i sm")}<span>${esc(x)}</span></div>`).join("")
+  const L=issues();
+  window.__issues=L;
+  $("#warnings").innerHTML = L.length
+    ? L.map((x,i)=>`<div class="chk">${sym("alert","i sm")}<div class="chk-body"><p class="t">${esc(x.text)}</p><p class="h">${esc(x.hint)}</p>
+        <div class="chk-actions">${x.fix?`<button class="btn sm" data-fix="${i}">${sym("wand","i sm")}${esc(x.fix.label)}</button>`:""}${x.show?`<button class="btn sm quiet" data-show="${i}">${sym("target","i sm")}Show cells</button>`:""}</div></div></div>`).join("")
     : `<div class="chk ok">${sym("check","i sm")}<span>No problems found in this view.</span></div>`;
+  const b=$("#issuebadge");
+  b.className = "issues"+(L.length?"":" ok");
+  b.textContent = L.length ? `${L.length} ${L.length===1?"issue":"issues"}` : "";
+  const pb=$("#panebadge"); pb.hidden=!L.length; pb.textContent=L.length;
+}
+function onIssueClick(e){
+  const f=e.target.closest("[data-fix]");
+  if(f){
+    const it=(window.__issues||[])[+f.dataset.fix]; if(!it||!it.fix) return;
+    it.fix.run(); renderAll();
+    if(!it.fix.keep) showSnack(`Done: ${it.fix.label.toLowerCase()}`, ()=>histUndo(true));
+    return;
+  }
+  const sh=e.target.closest("[data-show]");
+  if(sh){
+    const it=(window.__issues||[])[+sh.dataset.show]; if(!it) return;
+    flashArea=it.show; renderPainter();
+    const p=$("#painter"); if(p && p.scrollIntoView) p.scrollIntoView({behavior:"smooth", block:"center"});
+    clearTimeout(flashTimer); flashTimer=setTimeout(()=>{ flashArea=null; renderPainter(); },1700);
+  }
+}
+
+const hist={past:[],future:[],last:null};
+const HIST_SKIP=new Set(["active","selected","expanded","paintEmpty"]);
+function snap(){ return JSON.stringify(project,(k,v)=>HIST_SKIP.has(k)?undefined:v); }
+function track(){
+  const now=snap();
+  if(hist.last!==null && now!==hist.last){ hist.past.push(hist.last); if(hist.past.length>100) hist.past.shift(); hist.future=[]; }
+  hist.last=now;
+  const u=$("#undobtn"), r=$("#redobtn");
+  if(u) u.disabled=!hist.past.length;
+  if(r) r.disabled=!hist.future.length;
+}
+function restoreSnap(str){
+  const active=project.active, sel=state&&state.selected;
+  const p=JSON.parse(str);
+  p.views.forEach(v=>{ v.selected=null; v.expanded=true; });
+  p.active=Math.min(active, p.views.length-1);
+  project=p; state=p.views[p.active];
+  if(sel && state.blocks[sel]) state.selected=sel;
+  hist.last=str;
+}
+function histUndo(silent){
+  if(!hist.past.length) return;
+  hist.future.push(hist.last); restoreSnap(hist.past.pop());
+  if(!silent){ syncInputs(); renderAll(); }
+  else syncInputs();
+}
+function histRedo(){
+  if(!hist.future.length) return;
+  hist.past.push(hist.last); restoreSnap(hist.future.pop());
+  syncInputs(); renderAll();
 }
 const DEP_INFO = {
   "button-card":{repo:"https://github.com/custom-cards/button-card", core:true},
@@ -1740,6 +1956,8 @@ function renderGuide(){
     return `<li><span class="n">${esc(name)}</span><span class="u">${esc(usedBy)}</span>${info.repo?`<a href="${info.repo}" target="_blank" rel="noopener">GitHub${sym("external","i sm")}</a>`:""}</li>`;
   }).join("");
   const S=[];
+  const open = all ? project.views.map(v=>{ const keep=state; state=v; const n=issues().length; state=keep; return n?`${viewLabel(v)} (${n})`:null; }).filter(Boolean) : (issues().length?[`${issues().length}`]:[]);
+  const warn = open.length ? `<div class="callout" style="margin:14px 18px 0;border-color:color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-soft)">${sym("alert","i sm")}<span>${all?`Some views still have problems: ${esc(open.join(", "))}.`:`This view still has ${open[0]==="1"?"a problem":open[0]+" problems"}.`} Fix ${all||open[0]!=="1"?"them":"it"} first, otherwise Home Assistant shows a broken layout. <button class="btn sm" data-goto-issues="1">Show ${all||open[0]!=="1"?"problems":"problem"}</button></span></div>` : "";
   S.push(`<li class="step"><div>
     <h3>Install the cards ${all?"these views use":"this view uses"}</h3>
     <p>Open <span class="path-ui">HACS</span> in the Home Assistant sidebar. For each card below: type the name into the search field, open the result and click <span class="kbd">Download</span>. When HACS asks you to reload the page, do it. Cards that already show as installed can be skipped.</p>
@@ -1787,14 +2005,14 @@ function renderGuide(){
         <button data-mode="view" aria-pressed="${!all}">This view</button>
         <button data-mode="all" aria-pressed="${all}">All ${project.views.length} views</button></div>`:""}
     </div>
-    <ol class="steps">${S.join("")}</ol>`;
+    ${warn}<ol class="steps">${S.join("")}</ol>`;
 }
 function copyText(text, btn){
   const label = btn.querySelector("span");
   const done = ok => { if(label){ const old=label.textContent; label.textContent = ok?"Copied":"Copy failed"; setTimeout(()=>label.textContent=old,1500); } };
   try{ navigator.clipboard.writeText(text).then(()=>done(true), ()=>done(false)); }catch(e){ done(false); }
 }
-function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderGuide(); save(); }
+function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderGuide(); track(); save(); }
 
 function switchTab(name){
   document.querySelectorAll(".panes button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
@@ -1804,10 +2022,19 @@ function switchTab(name){
 }
 
 $("#addtoggle").onclick=()=>togglePicker();
+$("#warnings").onclick=onIssueClick;
+$("#undobtn").onclick=()=>histUndo();
+$("#redobtn").onclick=()=>histRedo();
+document.addEventListener("keydown",e=>{
+  if(!(e.metaKey||e.ctrlKey) || e.key.toLowerCase()!=="z") return;
+  if(/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||"")) return;
+  e.preventDefault(); if(e.shiftKey) histRedo(); else histUndo();
+});
 $("#snackundo").onclick=undoRemove;
 document.querySelectorAll("[data-g]").forEach(btn=>{
   btn.onclick=()=>{
     const g=btn.dataset.g;
+    if(["addrow","delrow","addcol","delcol"].includes(g)) state.lost={};
     if(g==="addrow") state.rows.push({size:"1fr",cells:Array(state.cols).fill(".")});
     if(g==="delrow"&&state.rows.length>1) state.rows.pop();
     if(g==="addcol"&&state.cols<8){ state.cols++; state.colSizes.push("1fr"); state.rows.forEach(r=>r.cells.push(".")); }
@@ -1844,6 +2071,10 @@ $("#guide").onclick=e=>{
   const c=e.target.closest("[data-copy]"); if(c){ copyText(guideTexts[c.dataset.copy]||"", c); return; }
   const md=e.target.closest("[data-mode]"); if(md){ guideMode=md.dataset.mode; renderGuide(); return; }
   if(e.target.closest("[data-dl]")) downloadYaml();
+  if(e.target.closest("[data-goto-issues]")){
+    if(guideMode==="all"){ const i=project.views.findIndex(v=>{ const k=state; state=v; const n=issues().length; state=k; return n>0; }); if(i>=0 && i!==project.active) switchView(i); }
+    switchTab("layout"); const w=$("#warnings"); if(w && w.scrollIntoView) w.scrollIntoView({behavior:"smooth", block:"center"});
+  }
 };
 $("#exportbtn").onclick=()=>{
   switchTab("yaml");

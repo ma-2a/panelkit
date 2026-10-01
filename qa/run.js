@@ -29,7 +29,7 @@ const ctx = {};
 new Function("with(this){" + src +
   "; this.__x = {TYPES,PRESETS,SCHEMAS,DEVICES,blockDefaults,buildYaml,checks,deps,yq,navTarget,tapFor,cardCfg,hacsOf," +
   "removeBlock,undoRemove,addBlock,paintCell,deviceSize,newProject,switchView,addView,deleteView,moveView,duplicateView," +
-  "buildAllViews,effectiveRoutes,applyNavbarEverywhere,hexOr,load,TABSET," +
+  "buildAllViews,effectiveRoutes,applyNavbarEverywhere,hexOr,load,TABSET,issues,autoPlace,keepLargestRect,histUndo,histRedo,renderAll," +
   "setState:s=>{ if(!project||!project.views.includes(s)) project=newProject([s]); state=s; }," +
   "setProject:p=>{ project=p; state=p.views[p.active]; }, getProject:()=>project, getState:()=>state}}").call(ctx);
 const A = ctx.__x;
@@ -228,6 +228,85 @@ check("navbar: copies produce valid yaml", mix.views.every(v => { mix.active = m
 check("color: hex kept", A.hexOr("#FF7A3D", "#000000") === "#ff7a3d");
 check("color: short hex expanded", A.hexOr("#abc", "#000000") === "#aabbcc");
 check("color: rgba falls back", A.hexOr("rgba(0,0,0,.4)", "#123456") === "#123456");
+
+const grid = v => v.rows.map(r => r.cells.join(" ")).join(" | ");
+const fixAll = (label) => { let guard = 0, L; while ((L = A.issues()).length && guard++ < 10) { const it = L.find(x => !label || x.fix.label === label) || L[0]; it.fix.run(); } return A.issues(); };
+const original = grid(A.PRESETS.lights());
+const brokenLights = () => {
+  const p = A.newProject([A.PRESETS.lights()]); A.setProject(p);
+  const v = A.getState(); v.selected = "living";
+  [[0,0],[0,1],[3,0],[3,1],[3,2]].forEach(([r,c]) => A.paintCell(v.rows[r], c));
+  return v;
+};
+let bl = brokenLights();
+let L = A.issues();
+check("errors: user scenario reproduced", L.length === 3 && L.some(x => x.text.includes("“living” is not a rectangle")) && L.some(x => x.text.includes("“title” is not on the grid")) && L.some(x => x.text.includes("“assist” is not on the grid")), L.map(x => x.text).join(" / "));
+check("errors: no duplicate assist message", !L.some(x => x.text.includes("no assist bar")));
+check("errors: every issue has a hint and a fix", L.every(x => x.hint && x.fix && typeof x.fix.run === "function"));
+check("errors: hint names who painted over it", L.find(x => x.text.includes("“title”")).hint.includes("“living”"));
+check("errors: living offers to give cells back", L.find(x => x.text.includes("living")).fix.label === "Give cells back");
+check("errors: unplaced listed before shape problems", L[0].text.includes("not on the grid"));
+L.find(x => x.text.includes("“title”")).fix.run();
+check("fix: title put back in its cells", bl.rows[0].cells.slice(0, 2).join() === "title,title");
+A.issues().find(x => x.text.includes("“assist”")).fix.run();
+check("fix: all clear after putting both back", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
+check("fix: grid identical to before the mistake", grid(bl) === original, grid(bl));
+
+bl = brokenLights();
+A.issues().find(x => x.text.includes("living")).fix.run();
+check("fix: give cells back clears everything at once", A.issues().length === 0, A.issues().map(x => x.text).join(" / "));
+check("fix: give cells back restores the grid", grid(bl) === original, grid(bl));
+
+const stray = A.PRESETS.blank(); A.setState(stray); stray.blocks.tile = A.blockDefaults("tile");
+stray.rows[1].cells = ["tile", "."]; stray.rows.splice(2, 0, { size: "1fr", cells: [".", "tile"] }); stray.rows.splice(3, 0, { size: "1fr", cells: [".", "tile"] });
+let it = A.issues().find(x => x.text.includes("rectangle"));
+check("fix: unknown origin offers largest rectangle", it && it.fix.label === "Keep largest rectangle");
+it.fix.run();
+check("fix: largest rectangle kept", A.issues().length === 0 && stray.rows[2].cells[1] === "tile" && stray.rows[3].cells[1] === "tile" && stray.rows[1].cells[0] === ".");
+
+const noA = A.PRESETS.home(); A.setState(noA); delete noA.blocks.assist; noA.rows.forEach(r => r.cells = r.cells.map(c => c === "assist" ? "." : c));
+it = A.issues().find(x => x.text.includes("no assist bar"));
+check("fix: add assist bar offered", !!it);
+it.fix.run();
+check("fix: assist bar added at the bottom", A.issues().length === 0 && noA.rows[noA.rows.length - 1].cells.includes("assist"), A.issues().map(x => x.text).join(" / "));
+check("fix: assist bar keeps navbar column free", noA.rows[noA.rows.length - 1].cells[noA.cols - 1] === ".");
+
+const lost = A.PRESETS.blank(); A.setState(lost); lost.blocks.player = A.blockDefaults("media");
+A.issues().find(x => x.text.includes("“player”")).fix.run();
+check("fix: new block finds an empty row", A.issues().length === 0 && lost.rows[1].cells.join() === "player,player");
+lost.blocks.extra = A.blockDefaults("tile");
+A.issues().find(x => x.text.includes("“extra”")).fix.run();
+check("fix: second block gets a new row above assist", A.issues().length === 0 && lost.rows[lost.rows.length - 1].cells.includes("assist") && lost.rows.some(r => r.cells.includes("extra")));
+
+const titleGone = A.PRESETS.info(); A.setState(titleGone); titleGone.rows[0].cells = [".", "status"];
+A.issues().find(x => x.text.includes("“title”")).fix.run();
+check("fix: title fills the free part of the top row", titleGone.rows[0].cells.join() === "title,status" && A.issues().length === 0);
+const statusGone = A.PRESETS.info(); A.setState(statusGone); statusGone.rows[0].cells = ["title", "title"];
+A.issues().find(x => x.text.includes("“status”")).fix.run();
+check("fix: status takes the end of the title row", statusGone.rows[0].cells.join() === "title,status" && A.issues().length === 0);
+
+const cov = A.PRESETS.info(); A.setState(cov); cov.blocks.navbar = A.blockDefaults("navbar");
+A.issues().find(x => x.text.includes("covers")).fix.run();
+check("fix: room made for navbar", A.issues().length === 0 && cov.colSizes[cov.cols - 1] === "90px");
+const twoN = A.PRESETS.infonav(); A.setState(twoN); twoN.blocks.n2 = A.blockDefaults("navbar");
+A.issues().find(x => x.text.includes("more than one navbar")).fix.run();
+check("fix: extra navbar removed", !("n2" in twoN.blocks) && A.issues().length === 0);
+const orphan = A.PRESETS.blank(); A.setState(orphan); orphan.rows[1].cells = ["ghost", "ghost"];
+A.issues().find(x => x.text.includes("belong to no block")).fix.run();
+check("fix: orphan cells freed", A.issues().length === 0);
+const dupP = A.newProject([A.PRESETS.info(), A.PRESETS.info()]); A.setProject(dupP);
+A.issues().find(x => x.text.includes("also called")).fix.run();
+check("fix: duplicate name renamed", dupP.views[0].name !== dupP.views[1].name && A.issues().length === 0);
+
+const hp = A.newProject([A.PRESETS.lights()]); A.setProject(hp); A.renderAll();
+const before = grid(A.getState());
+A.getState().selected = "living"; A.paintCell(A.getState().rows[0], 0);
+check("history: paint changed grid", grid(A.getState()) !== before);
+A.histUndo();
+check("history: undo restores grid", grid(A.getState()) === before);
+A.histRedo();
+check("history: redo applies again", grid(A.getState()) !== before);
+A.histUndo();
 
 const d1 = A.PRESETS.home();
 check("determinism", run(d1, A.buildYaml) === run(d1, A.buildYaml));
