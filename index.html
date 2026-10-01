@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PanelKit — Build View Assist dashboards without writing YAML</title>
+<meta name="description" content="A visual builder for View Assist views in Home Assistant. Lay out the grid, drop in HACS cards like navbar-card and Mushroom chips, copy the YAML.">
+<meta property="og:title" content="PanelKit">
+<meta property="og:description" content="A visual builder for View Assist views in Home Assistant.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#eceff3; --panel:#ffffff; --panel-2:#f5f7fa; --line:#d5dbe3;
+  --ink:#131820; --ink-2:#4d5866; --ink-3:#7c8797;
+  --accent:#0277bd; --accent-ink:#ffffff;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
+    --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
+    --accent:#4fc3f7; --accent-ink:#0b1017;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
+  --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
+  --accent:#4fc3f7; --accent-ink:#0b1017;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.2}
+h1{font-size:clamp(32px,6vw,52px);font-weight:700}
+h2{font-size:clamp(20px,3.4vw,27px);font-weight:600;margin-bottom:14px}
+p{margin:0 0 14px}
+
+header.site{border-bottom:1px solid var(--line);background:var(--panel)}
+header.site .wrap{display:flex;align-items:center;gap:16px;padding-top:14px;padding-bottom:14px}
+.logo{font-weight:700;letter-spacing:-.02em;font-size:18px;margin-right:auto;text-decoration:none;color:var(--ink)}
+header.site nav{display:flex;gap:16px;font-size:14.5px}
+header.site nav a{color:var(--ink-2);text-decoration:none}
+header.site nav a:hover{color:var(--ink)}
+
+.hero{padding:clamp(40px,8vw,88px) 0 clamp(30px,5vw,56px)}
+.hero .lead{font-size:clamp(17px,2.4vw,20px);color:var(--ink-2);max-width:60ch;margin-top:18px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;padding:12px 22px;border-radius:10px}
+.btn.sec{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.08)}
+.note{font-size:13.5px;color:var(--ink-3)}
+
+.shot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 clamp(40px,7vw,72px)}
+.tablet{background:#11151b;border-radius:10px;padding:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.view{aspect-ratio:16/10;display:grid;grid-template-areas:"title status" "chips chips" "clock media" "assist assist";
+  grid-template-rows:min-content min-content 1fr min-content;grid-template-columns:1fr 1fr;gap:8px;
+  background:linear-gradient(140deg,#1d2733,#2a2233);border-radius:7px;padding:12px;color:#fff;font-size:clamp(9px,1.35vw,14px)}
+.view>div{display:flex;align-items:center;justify-content:center;border-radius:8px}
+.v-title{grid-area:title;justify-content:flex-start!important;font-weight:600;font-size:1.5em}
+.v-status{grid-area:status;justify-content:flex-end!important;gap:.6em;opacity:.8}
+.v-chips{grid-area:chips;gap:.5em;justify-content:flex-start!important}
+.v-chips span{background:rgba(255,255,255,.13);border-radius:999px;padding:.25em .8em;white-space:nowrap}
+.v-clock{grid-area:clock;flex-direction:column;background:rgba(255,255,255,.06)}
+.v-clock b{font-size:2.6em;font-weight:600;line-height:1.05}
+.v-media{grid-area:media;flex-direction:column;gap:.45em;background:rgba(255,255,255,.06)}
+.v-media i{display:block;width:38%;aspect-ratio:1;border-radius:7px;background:linear-gradient(135deg,#6366f1,#ec4899)}
+.v-assist{grid-area:assist;background:rgba(0,0,0,.35);gap:.6em;opacity:.85}
+.v-nav{position:absolute;left:3%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.3em;background:#262b33;border-radius:2em;padding:.5em}
+.v-nav b{display:flex;flex-direction:column;align-items:center;font-weight:400;font-size:.8em;padding:.35em .6em;border-radius:1.6em;min-width:3em}
+.v-nav b.on{background:rgba(79,195,247,.2);color:#4fc3f7}
+.viewwrap{position:relative}
+
+section{padding:0 0 clamp(36px,6vw,64px)}
+.grid3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.box h3{font-size:16px;margin-bottom:7px}
+.box p{margin:0;color:var(--ink-2);font-size:14.5px}
+ul.plain{list-style:none;padding:0;margin:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+ul.plain li{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:14.5px}
+ul.plain li span{display:block;color:var(--ink-3);font-size:12.5px;font-family:var(--mono)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ol.steps li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px 16px 54px;position:relative;color:var(--ink-2);font-size:15px}
+ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:600;font-size:14px}
+ol.steps strong{color:var(--ink);font-weight:600}
+dl.faq{margin:0;display:grid;gap:14px}
+dl.faq dt{font-weight:600;margin-bottom:3px}
+dl.faq dd{margin:0;color:var(--ink-2);font-size:15px}
+code{font-family:var(--mono);font-size:.88em;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+footer.site{border-top:1px solid var(--line);background:var(--panel);padding:26px 0;font-size:13.5px;color:var(--ink-3)}
+footer.site .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+footer.site a{color:var(--ink-2)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="./">PanelKit</a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#blocks">Blocks</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/ma-2a/panelkit">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <h1>Build View Assist dashboards without writing YAML.</h1>
+    <p class="lead">PanelKit is a visual layout editor for View Assist views in Home Assistant. Draw the grid, drop in the cards you already use, watch the preview, copy the YAML into a manual card. Everything runs in your browser.</p>
+    <div class="cta">
+      <a class="btn" href="builder/">Open the builder</a>
+      <a class="btn sec" href="https://github.com/ma-2a/panelkit">Source on GitHub</a>
+      <span class="note">Free, no account, nothing leaves your device.</span>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="shot">
+    <div class="tablet viewwrap">
+      <div class="view">
+        <div class="v-title">Home</div>
+        <div class="v-status">🔇 🔋 📶</div>
+        <div class="v-chips"><span>⛅ 21&nbsp;°C</span><span>🌡️ 21,5</span><span>🎵 Music</span></div>
+        <div class="v-clock"><b>14:32</b><span>☀️ 21° · 💧 48 %</span></div>
+        <div class="v-media"><i></i><span>Song title – Artist</span><span>⏮ ⏯ ⏭</span></div>
+        <div class="v-assist">🎙 Assist</div>
+      </div>
+      <div class="v-nav"><b class="on">🏠<span>Home</span></b><b>🕒<span>Clock</span></b><b>⛅<span>Weather</span></b><b>🎵<span>Music</span></b></div>
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Lay out the grid.</strong> Set rows and columns in any CSS grid unit, then tap cells to assign them to a block. PanelKit writes the <code>grid-template-areas</code> for you and warns when an area is not a valid rectangle.</li>
+      <li><strong>Add blocks.</strong> View Assist elements like the assist bar, status icons, messages and timers, plus popular HACS cards. Each one has a small form instead of a YAML snippet.</li>
+      <li><strong>Copy the YAML.</strong> Create a panel view in your View Assist dashboard, add a manual card, paste. The generated view is a single <code>custom:button-card</code> using the standard <code>variable_template</code> and <code>body_template</code>, so it behaves like the views that ship with View Assist.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="blocks">
+  <div class="wrap">
+    <h2>Blocks</h2>
+    <ul class="plain">
+      <li>Title, status icons, assist bar<span>View Assist</span></li>
+      <li>Message and timers<span>View Assist</span></li>
+      <li>Satellite image and web page<span>View Assist</span></li>
+      <li>Intent cards<span>layout-card</span></li>
+      <li>Navbar with routes and styles<span>navbar-card</span></li>
+      <li>Chips row<span>Mushroom</span></li>
+      <li>Template card<span>Mushroom</span></li>
+      <li>Media player<span>mini-media-player</span></li>
+      <li>Clock and weather<span>clock-weather-card</span></li>
+      <li>Tile<span>Home Assistant core</span></li>
+      <li>Dim overlay<span>CSS</span></li>
+      <li>Any other card as raw YAML<span>custom</span></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What it saves you</h2>
+    <div class="grid3">
+      <div class="box">
+        <h3>Navigation that works</h3>
+        <p>Link targets are written once. A bare view name becomes a dashboard path, an absolute path stays as it is, a URL becomes a tap action. Navbar routes, chips and tiles all use the same field.</p>
+      </div>
+      <div class="box">
+        <h3>Mistakes caught early</h3>
+        <p>Non-rectangular grid areas, blocks that were never placed, a navbar sitting on top of the assist bar, routes without a target. All flagged before you paste anything into Home Assistant.</p>
+      </div>
+      <div class="box">
+        <h3>A real preview</h3>
+        <p>The preview uses the same CSS grid the generated card does, at the aspect ratio of your display, so what you place is what you get.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Does PanelKit need access to my Home Assistant instance?</dt>
+      <dd>No. It is a single HTML page that runs entirely in your browser and produces text. There is no login, no API call, no telemetry. Your work is kept in local storage on your own device.</dd>
+
+      <dt>Does it know my entities?</dt>
+      <dd>Not yet. Entity IDs are typed in by hand. Copying them from Home Assistant developer tools is the quickest way.</dd>
+
+      <dt>Can I edit a view I already have?</dt>
+      <dd>Not in this version. Importing existing YAML is the next thing on the list.</dd>
+
+      <dt>Which cards do I need installed?</dt>
+      <dd><code>button-card</code> is always required, since every View Assist view is built on it. Anything else depends on the blocks you use, and the builder lists the HACS repositories your view needs above the generated YAML.</dd>
+
+      <dt>Is this part of View Assist?</dt>
+      <dd>No. PanelKit is an independent tool. View Assist is by dinki and the credit for the view format belongs there.</dd>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Support</h2>
+    <p>PanelKit is free and open source. If it saved you an evening of grid debugging, you can <a href="https://ko-fi.com/ma2a">buy me a coffee on Ko-fi</a>. Bug reports and card requests are just as welcome on <a href="https://github.com/ma-2a/panelkit/issues">GitHub</a>.</p>
+    <div class="cta"><a class="btn" href="builder/">Open the builder</a></div>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>PanelKit · MIT licensed</span>
+    <a href="https://github.com/ma-2a/panelkit">GitHub</a>
+    <a href="https://ko-fi.com/ma2a">Ko-fi</a>
+    <span>Not affiliated with the View Assist project or Home Assistant.</span>
+  </div>
+</footer>
+
+</body>
+</html>

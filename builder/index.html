@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PanelKit — View Assist dashboard builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#eceff3; --panel:#ffffff; --panel-2:#f5f7fa; --line:#d5dbe3;
+  --ink:#131820; --ink-2:#4d5866; --ink-3:#7c8797;
+  --accent:#0277bd; --accent-ink:#ffffff;
+  --warn:#b45309;
+  --grid-line:rgba(19,24,32,.10);
+  --radius:10px;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
+    --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
+    --accent:#4fc3f7; --accent-ink:#0b1017;
+    --warn:#fbbf24;
+    --grid-line:rgba(231,236,243,.08);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
+  --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
+  --accent:#4fc3f7; --accent-ink:#0b1017;
+  --warn:#fbbf24;
+  --grid-line:rgba(231,236,243,.08);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.45;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+
+.top{
+  display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center;
+  padding:12px 16px; background:var(--panel); border-bottom:1px solid var(--line);
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+}
+.brand{display:flex;align-items:baseline;gap:9px;margin-right:auto}
+.brand h1{font-size:16px}
+.brand span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.field{display:flex;align-items:center;gap:6px}
+.field label{font-size:12.5px;color:var(--ink-2)}
+input[type=text],select,textarea{
+  background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+  padding:6px 9px; min-width:0;
+}
+input[type=text]:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent); outline-offset:1px;
+}
+.mono{font-family:var(--mono);font-size:13px}
+
+.tabs{display:flex;gap:2px;padding:8px 12px 0;background:var(--panel);border-bottom:1px solid var(--line)}
+.tabs button{
+  flex:1; background:none;border:1px solid transparent;border-bottom:none;
+  padding:9px 6px; border-radius:9px 9px 0 0; color:var(--ink-2); cursor:pointer;
+  font-size:13.5px; font-weight:500;
+}
+.tabs button[aria-selected=true]{background:var(--bg);border-color:var(--line);color:var(--ink);margin-bottom:-1px}
+
+main{display:grid;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+@media (min-width:1080px){
+  main{grid-template-columns:300px minmax(0,1fr) minmax(320px,.85fr);align-items:start}
+  .tabs{display:none}
+  .pane{display:block !important}
+}
+.pane{display:none}
+.pane.active{display:block}
+@media (min-width:1080px){ .pane{display:block} }
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+.card > h2{font-size:13px;color:var(--ink-2);font-weight:600;margin-bottom:10px}
+.hint{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
+
+.palette{display:flex;flex-direction:column;gap:6px}
+.chip{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;
+}
+.chip[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.swatch{width:12px;height:22px;border-radius:3px;flex:none}
+.chip .nm{font-family:var(--mono);font-size:12.5px}
+.chip .ds{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.addrow{display:flex;gap:6px;margin-top:10px}
+.addrow select{flex:1}
+button.act{
+  background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;
+  padding:7px 12px;cursor:pointer;font-weight:600;font-size:13.5px;
+}
+button.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px}
+button.ghost:hover,button.act:hover{filter:brightness(1.08)}
+button.danger{color:var(--warn)}
+
+.painter{display:grid;gap:5px}
+.painter .corner{}
+.colhead,.rowhead{display:grid;gap:5px}
+.sizein{
+  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+  padding:4px 5px;font-family:var(--mono);font-size:11px;text-align:center;
+}
+.cells{display:grid;gap:5px}
+.cell{
+  border:1px solid var(--line);border-radius:7px;min-height:52px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;color:var(--ink);
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:8px 8px;
+  padding:2px;word-break:break-all;text-align:center;
+}
+.cell.empty{color:var(--ink-3)}
+.gridtools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+.stage{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;justify-content:center}
+.bezel{background:#05070a;border-radius:14px;padding:10px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.screen{
+  width:100%;display:grid;overflow:hidden;border-radius:6px;position:relative;
+  background:#1b2026 center/cover no-repeat; color:#fff;
+  font-family:var(--sans);
+}
+.screen > div{overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px}
+.pv-title{font-weight:600}
+.pv-status{gap:8px;color:#cfd8e3}
+.pv-assist{background:rgba(0,0,0,.35);gap:10px;color:#cfd8e3;font-size:.9em}
+.pv-generic{border:1px dashed rgba(255,255,255,.28);border-radius:6px;color:#e6edf5}
+.pv-label{font-family:var(--mono);opacity:.8}
+
+.rowgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rowgrid label,.stack label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
+.stack{display:flex;flex-direction:column;gap:8px}
+.stack input,.stack select,.stack textarea,.rowgrid input,.rowgrid select{width:100%}
+textarea{font-family:var(--mono);font-size:12.5px;min-height:100px;resize:vertical}
+
+pre.out{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;overflow:auto;max-height:62vh;font-family:var(--mono);font-size:12.5px;
+  white-space:pre;margin:0;
+}
+.outbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.alert{border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink);margin-bottom:10px}
+ol.steps{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)}
+ol.steps li{margin-bottom:5px}
+code.inl{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+footer{max-width:1500px;margin:0 auto;padding:4px 16px 28px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3)}
+footer a{color:var(--ink-2)}
+footer .ver{font-family:var(--mono);font-size:11.5px}
+
+.item{border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--panel-2);display:flex;flex-direction:column;gap:7px}
+.item .ihead{display:flex;align-items:center;gap:6px}
+.item .ihead strong{font-size:12.5px;font-family:var(--mono);margin-right:auto}
+.mini{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:12px;line-height:1.6}
+.list{display:flex;flex-direction:column;gap:8px}
+.badge{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:5px;border:1px solid var(--line);color:var(--ink-2);margin-left:6px;white-space:nowrap}
+.checkrow{display:flex;align-items:center;gap:7px;font-size:13px}
+.checkrow input{width:auto}
+.colorrow{display:flex;gap:6px;align-items:center}
+.colorrow input[type=color]{width:38px;height:32px;padding:0;border:1px solid var(--line);border-radius:7px;background:none;flex:none}
+.looks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.look{border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--panel-2);cursor:pointer;text-align:left;font-size:12.5px}
+.look[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.look i{display:block;height:14px;margin-bottom:6px;border-radius:4px}
+.deps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.deps span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
+.painthint{font-size:12.5px;color:var(--warn);min-height:1.2em;margin:8px 0 0}
+optgroup{font-style:normal;color:var(--ink-3)}
+
+.pv-chips{gap:.5em;flex-wrap:wrap}
+.pv-chip{background:rgba(255,255,255,.14);border-radius:999px;padding:.25em .8em;font-size:.85em;white-space:nowrap}
+.pv-mt{justify-content:flex-start !important;gap:.7em;background:rgba(255,255,255,.08);border-radius:12px}
+.pv-mt .ic{width:2.2em;height:2.2em;border-radius:50%;display:grid;place-items:center;background:rgba(255,193,7,.25);flex:none}
+.pv-mt small{display:block;opacity:.7}
+.pv-media{flex-direction:column;gap:.4em;background:rgba(255,255,255,.07);border-radius:12px}
+.pv-media .art{width:45%;aspect-ratio:1;max-height:55%;border-radius:8px;background:linear-gradient(135deg,#6366f1,#ec4899)}
+.pv-cw{flex-direction:column;gap:.2em}
+.pv-cw .t{font-size:2.6em;font-weight:600;line-height:1}
+.pv-tile{justify-content:flex-start !important;gap:.6em;background:rgba(255,255,255,.1);border-radius:12px;padding:.6em .9em !important}
+.pv-nav{position:absolute;display:flex;gap:.35em;padding:.4em;z-index:5;background:#262b33;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.1em;padding:.35em .7em;border-radius:inherit;font-size:.8em;color:#cfd8e3;min-width:2.6em}
+.pv-nav .r .e{font-size:1.35em;line-height:1}
+.pv-nav.v{flex-direction:column}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <h1>PanelKit</h1>
+    <span>View Assist · button-card · grid areas</span>
+  </div>
+  <div class="field">
+    <label for="viewname">View</label>
+    <input type="text" id="viewname" class="mono" size="12" value="meinview">
+  </div>
+  <div class="field">
+    <label for="device">Display</label>
+    <select id="device">
+      <option value="1280x800">1280 × 800</option>
+      <option value="1024x600">1024 × 600</option>
+      <option value="800x480">800 × 480</option>
+      <option value="1920x1080">1920 × 1080</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="preset">Template</label>
+    <select id="preset">
+      <option value="">choose…</option>
+      <option value="home">Home panel (chips, clock/weather, media, navbar)</option>
+      <option value="info">Info (title + text)</option>
+      <option value="infonav">Info with navbar</option>
+      <option value="infopic">Info with image</option>
+      <option value="timers">Timers &amp; alarms</option>
+      <option value="split">Two columns</option>
+      <option value="blank">Blank</option>
+    </select>
+  </div>
+  <button class="ghost" id="themebtn" title="Light / dark" aria-label="Toggle light or dark theme">◐</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
+  <button role="tab" aria-selected="false" data-pane="layout">Grid</button>
+  <button role="tab" aria-selected="false" data-pane="yaml">YAML</button>
+</nav>
+
+<datalist id="vaviews">
+  <option value="clock"><option value="weather"><option value="music"><option value="info">
+  <option value="infopic"><option value="alarm"><option value="intent"><option value="webpage">
+  <option value="camera"><option value="list"><option value="/lovelace/0"><option value="/lovelace">
+</datalist>
+
+<main>
+  <section class="pane active" id="pane-build">
+    <div class="card">
+      <h2>Blocks</h2>
+      <div class="palette" id="palette"></div>
+      <div class="addrow">
+        <select id="newtype"></select>
+        <button class="act" id="addblock">Add</button>
+      </div>
+      <p class="hint">Pick a block, then tap the grid cells it should occupy. The navbar floats above the view and needs no cell.</p>
+    </div>
+
+    <div class="card" id="inspector">
+      <h2>Settings</h2>
+      <p class="hint" id="nosel">Tap a block in the list to set its content and style.</p>
+      <div id="inspbody" class="stack" hidden></div>
+    </div>
+
+    <div class="card">
+      <h2>Background &amp; links</h2>
+      <div class="stack">
+        <div>
+          <label for="bgmode">Background source</label>
+          <select id="bgmode">
+            <option value="fixed">Fixed image file</option>
+            <option value="satellite">From the satellite entity (attributes.background)</option>
+            <option value="color">Color only</option>
+          </select>
+        </div>
+        <div id="bgpathwrap">
+          <label for="bgpath">Path or URL</label>
+          <input type="text" id="bgpath" class="mono" value="/local/viewassist/backgrounds/default.png">
+        </div>
+        <div>
+          <label for="bgcolor">Base color</label>
+          <input type="text" id="bgcolor" class="mono" value="#24292c">
+        </div>
+        <div>
+          <label for="vabase">View Assist dashboard path</label>
+          <input type="text" id="vabase" class="mono" value="/view-assist/">
+        </div>
+      </div>
+      <p class="hint">A target without a leading <code class="inl">/</code> counts as a view name and is appended to this path, e.g. <code class="inl">music</code> → <code class="inl">/view-assist/music</code>. Starting with <code class="inl">/</code>: any HA path. Starting with <code class="inl">https://</code>: external URL.</p>
+    </div>
+  </section>
+
+  <section class="pane" id="pane-layout">
+    <div class="card">
+      <h2>Grid</h2>
+      <div class="painter" id="painter"></div>
+      <p class="painthint" id="painthint"></p>
+      <div class="gridtools">
+        <button class="ghost" data-g="addrow">+ Row</button>
+        <button class="ghost" data-g="delrow">− Row</button>
+        <button class="ghost" data-g="addcol">+ Column</button>
+        <button class="ghost" data-g="delcol">− Column</button>
+        <button class="ghost" data-g="clear">Clear cell</button>
+      </div>
+      <p class="hint">Sizes accept any CSS grid value: <code class="inl">1fr</code>, <code class="inl">min-content</code>, <code class="inl">15vh</code>, <code class="inl">200px</code>.</p>
+    </div>
+
+    <div class="card">
+      <h2>Preview</h2>
+      <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
+      <p class="hint">Shows placement, sizing and navbar style. Real card content is rendered by Home Assistant.</p>
+    </div>
+  </section>
+
+  <section class="pane" id="pane-yaml">
+    <div class="card">
+      <h2>View YAML</h2>
+      <div id="warnings"></div>
+      <div class="deps" id="deps"></div>
+      <div class="outbar">
+        <button class="act" id="copy">Copy</button>
+        <button class="ghost" id="download">Download .yaml</button>
+      </div>
+      <pre class="out" id="yaml"></pre>
+    </div>
+    <div class="card">
+      <h2>How to install</h2>
+      <ol class="steps">
+        <li>Install the cards listed above from HACS under <em>Frontend</em>, then reload the browser.</li>
+        <li>In the View Assist dashboard, add a new view with exactly the name above and the <em>Panel (1 card)</em> type.</li>
+        <li>Add a card → <em>Manual</em>, clear its contents, paste the YAML, save.</li>
+        <li>Open it with <code class="inl">view_assist.navigate</code> or from the navbar of another view.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <a href="../">PanelKit</a>
+  <a href="https://github.com/ma-2a/panelkit">GitHub</a>
+  <a href="https://ko-fi.com/ma2a">Support on Ko-fi</a>
+  <a href="https://github.com/ma-2a/panelkit/issues">Report an issue</a>
+  <span class="ver">v0.1.0</span>
+  <span>Not affiliated with the View Assist project or Home Assistant.</span>
+</footer>
+
+<script>
+"use strict";
+
+const TYPES = {
+  title:   {label:"Title",          hue:"#8b5cf6", group:"va"},
+  status:  {label:"Status icons",   hue:"#f59e0b", group:"va", provided:true},
+  assist:  {label:"Assist bar",  hue:"#14b8a6", group:"va", provided:true},
+  message: {label:"Message",      hue:"#3b82f6", group:"va"},
+  image:   {label:"Satellite image", hue:"#22c55e", group:"va"},
+  timers:  {label:"Timers & alarms", hue:"#f43f5e", group:"va"},
+  intent:  {label:"Intent cards",  hue:"#06b6d4", group:"va", hacs:"layout-card"},
+  webpage: {label:"Web page",       hue:"#a855f7", group:"va"},
+
+  navbar:  {label:"Navbar",                 hue:"#e11d48", group:"hacs", hacs:"Navbar Card", floating:true},
+  chips:   {label:"Chips row",           hue:"#f97316", group:"hacs", hacs:"Mushroom"},
+  mtemplate:{label:"Mushroom template card",hue:"#eab308", group:"hacs", hacs:"Mushroom"},
+  media:   {label:"Media player",            hue:"#ec4899", group:"hacs", hacs:"Mini Media Player"},
+  clockweather:{label:"Clock & weather",       hue:"#0ea5e9", group:"hacs", hacs:"Clock Weather Card"},
+
+  tile:    {label:"Tile",  hue:"#84cc16", group:"other"},
+  shader:  {label:"Dim overlay",    hue:"#64748b", group:"other", floating:true},
+  custom:  {label:"Custom card (YAML)", hue:"#94a3b8", group:"other"}
+};
+const GROUPS = {va:"View Assist", hacs:"HACS cards", other:"Other"};
+const DEFAULT_STYLE = {fontSize:"",alignSelf:"",justifySelf:"",padding:"",background:"",radius:"",textAlign:"",overflow:""};
+
+function blockDefaults(type){
+  const b = {type, style:{...DEFAULT_STYLE}};
+  switch(type){
+    case "title":   b.text = "My title"; break;
+    case "message": b.style.alignSelf="center"; b.style.textAlign="start"; b.fontVar=true; break;
+    case "image":   b.style.alignSelf="center"; b.style.justifySelf="center"; b.width="75%"; break;
+    case "timers":  b.style.justifySelf="center"; break;
+    case "webpage": b.url = "https://www.home-assistant.io/"; break;
+    case "custom":  b.yaml = "type: markdown\ncontent: Hello from View Assist"; break;
+    case "shader":  b.shade = "0.15"; break;
+    case "navbar":
+      Object.assign(b,{look:"pill", position:"left", showLabels:true, primary:"#4fc3f7", bg:"", radius:"", autoPadding:false,
+        routes:[
+          {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"/lovelace/0"},
+          {icon:"mdi:clock-outline", iconSel:"", label:"Clock", target:"clock"},
+          {icon:"mdi:weather-partly-cloudy", iconSel:"", label:"Weather", target:"weather"},
+          {icon:"mdi:music", iconSel:"", label:"Music", target:"music"}
+        ]});
+      break;
+    case "chips":
+      b.alignment = "center"; b.style.alignSelf = "center";
+      b.chips = [
+        {kind:"weather", entity:"weather.home", icon:"", content:"", target:""},
+        {kind:"entity",  entity:"sensor.living_room_temperature", icon:"mdi:thermometer", content:"", target:""},
+        {kind:"template",entity:"", icon:"mdi:music", content:"Music", target:"music"}
+      ];
+      break;
+    case "mtemplate":
+      Object.assign(b,{entity:"light.living_room", primary:"Living room", secondary:"{{ states('light.living_room') }}", icon:"mdi:sofa", icon_color:"amber", layout:"", fill:true, target:""});
+      b.style.alignSelf="center"; b.style.padding="2%";
+      break;
+    case "media":
+      Object.assign(b,{entity:"media_player.living_room", artwork:"cover", info:"scroll", hideVolume:false, hidePower:true, hideSource:true, hideControls:false});
+      b.style.alignSelf="center"; b.style.padding="2%";
+      break;
+    case "clockweather":
+      Object.assign(b,{entity:"weather.home", locale:"en", time_format:"24", forecast_rows:"3", hideForecast:false, showHumidity:true, animated:true});
+      b.style.alignSelf="center";
+      break;
+    case "tile":
+      Object.assign(b,{entity:"light.living_room", name:"", icon:"", picture:false, target:""});
+      b.style.alignSelf="center"; b.style.padding="2%";
+      break;
+  }
+  return b;
+}
+
+const COLORS = ["","red","pink","purple","deep-purple","indigo","blue","light-blue","cyan","teal","green","light-green","lime","yellow","amber","orange","deep-orange","brown","grey","white"];
+const SCHEMAS = {
+  mtemplate:[
+    {k:"entity",l:"Entity",ph:"light.living_room"},
+    {k:"primary",l:"Primary text (Jinja allowed)"},
+    {k:"secondary",l:"Secondary text (Jinja allowed)"},
+    {k:"icon",l:"Icon",ph:"mdi:sofa"},
+    {k:"icon_color",l:"Icon color",kind:"select",opts:COLORS},
+    {k:"layout",l:"Layout",kind:"select",opts:["","vertical","horizontal"]},
+    {k:"fill",l:"Fill the area",kind:"check"},
+    {k:"target",l:"Tap opens",kind:"target"}
+  ],
+  media:[
+    {k:"entity",l:"Media player entity",ph:"media_player.living_room"},
+    {k:"artwork",l:"Artwork",kind:"select",opts:["","cover","full-cover","full-cover-fit","material","none"]},
+    {k:"info",l:"Track info",kind:"select",opts:["","short","scroll"]},
+    {k:"hideVolume",l:"Hide volume",kind:"check"},
+    {k:"hidePower",l:"Hide power",kind:"check"},
+    {k:"hideSource",l:"Hide source",kind:"check"},
+    {k:"hideControls",l:"Hide controls",kind:"check"}
+  ],
+  clockweather:[
+    {k:"entity",l:"Weather entity",ph:"weather.home"},
+    {k:"locale",l:"Locale",ph:"en"},
+    {k:"time_format",l:"Time format",kind:"select",opts:["24","12"]},
+    {k:"forecast_rows",l:"Forecast rows",ph:"3"},
+    {k:"hideForecast",l:"Hide forecast",kind:"check"},
+    {k:"showHumidity",l:"Show humidity",kind:"check"},
+    {k:"animated",l:"Animated icons",kind:"check"}
+  ],
+  tile:[
+    {k:"entity",l:"Entity",ph:"light.living_room"},
+    {k:"name",l:"Name (optional)"},
+    {k:"icon",l:"Icon (optional)",ph:"mdi:lamp"},
+    {k:"picture",l:"Show entity picture",kind:"check"},
+    {k:"target",l:"Tap opens (otherwise default)",kind:"target"}
+  ]
+};
+const NAV_LOOKS = {
+  standard:   {l:"Plain",   sw:"background:#2d333b"},
+  pill:       {l:"Pill",      sw:"background:#2d333b;border-radius:999px"},
+  glass:      {l:"Glass",       sw:"background:rgba(120,140,170,.35);border:1px solid rgba(255,255,255,.25)"},
+  transparent:{l:"Transparent",sw:"background:transparent;border:1px dashed var(--line)"}
+};
+const CHIP_KINDS = {weather:"Weather", entity:"Entity", template:"Text + icon", action:"Icon only", back:"Back"};
+
+let state;
+function base(){
+  return {name:"meinview", cols:2, colSizes:["1fr","1fr"], rows:[], blocks:{},
+    bgmode:"fixed", bgpath:"/local/viewassist/backgrounds/default.png", bgcolor:"#24292c",
+    vaBase:"/view-assist/", device:"1280x800", selected:null};
+}
+function presetInfo(){
+  const s = base();
+  s.rows=[{size:"min-content",cells:["title","status"]},{size:"4fr",cells:["message","message"]},{size:"min-content",cells:["assist","assist"]}];
+  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),message:blockDefaults("message"),assist:blockDefaults("assist")};
+  s.selected="message"; return s;
+}
+function presetInfonav(){ const s=presetInfo(); s.blocks.navbar=blockDefaults("navbar"); s.selected="navbar"; return s; }
+function presetInfopic(){
+  const s=presetInfo(); s.colSizes=["1fr","2fr"]; s.rows[1].cells=["image","message"];
+  s.blocks.image=blockDefaults("image"); s.selected="image"; return s;
+}
+function presetTimers(){
+  const s=presetInfo();
+  s.rows=[{size:"15vh",cells:["title","status"]},{size:"max-content",cells:["timers","timers"]},{size:"10vh",cells:["assist","assist"]}];
+  delete s.blocks.message; s.blocks.timers=blockDefaults("timers"); s.blocks.title.text="Timers & alarms";
+  s.selected="timers"; return s;
+}
+function presetSplit(){
+  const s=presetInfo(); s.rows[1]={size:"1fr",cells:["message","card"]};
+  s.blocks.card=blockDefaults("custom"); s.selected="card"; return s;
+}
+function presetHome(){
+  const s=base();
+  s.colSizes=["1fr","1fr"];
+  s.rows=[
+    {size:"min-content",cells:["title","status"]},
+    {size:"min-content",cells:["chips","chips"]},
+    {size:"1fr",cells:["clockweather","media"]},
+    {size:"min-content",cells:["assist","assist"]}
+  ];
+  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),chips:blockDefaults("chips"),
+    clockweather:blockDefaults("clockweather"),media:blockDefaults("media"),assist:blockDefaults("assist"),navbar:blockDefaults("navbar")};
+  s.blocks.title.text="Home"; s.name="home"; s.selected="navbar"; return s;
+}
+function presetBlank(){
+  const s=base(); s.bgmode="color";
+  s.rows=[{size:"min-content",cells:["title","status"]},{size:"1fr",cells:[".","."]},{size:"min-content",cells:["assist","assist"]}];
+  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),assist:blockDefaults("assist")};
+  s.selected="title"; return s;
+}
+const PRESETS = {home:presetHome, info:presetInfo, infonav:presetInfonav, infopic:presetInfopic, timers:presetTimers, split:presetSplit, blank:presetBlank};
+
+const KEY = "panelkit.view";
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const p = JSON.parse(raw); if(p && p.rows && p.blocks){ return Object.assign(base(), p); } }
+  }catch(e){}
+  return presetHome();
+}
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function hueOf(a){ const b=state.blocks[a]; return b ? TYPES[b.type].hue : "#64748b"; }
+function tint(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function uniqueName(b){ let n=b,i=2; while(state.blocks[n]) n=b+i++; return n; }
+function safeIdent(s){ return (s||"").toLowerCase().replace(/[^a-z0-9_]/g,"_").replace(/^([0-9])/,"a$1") || "feld"; }
+
+function navTarget(t){
+  t = (t||"").trim(); if(!t) return null;
+  if(/^https?:\/\//i.test(t)) return {kind:"url", v:t};
+  if(t.startsWith("/")) return {kind:"path", v:t};
+  const b = (state.vaBase||"/view-assist/").replace(/\/?$/,"/");
+  return {kind:"path", v:b+t};
+}
+function tapFor(t){
+  const n = navTarget(t); if(!n) return undefined;
+  return n.kind==="url" ? {action:"url", url_path:n.v} : {action:"navigate", navigation_path:n.v};
+}
+
+const EMOJI = [["home","🏠"],["clock","🕒"],["alarm","⏰"],["timer","⏲️"],["weather","⛅"],["sun","☀️"],["music","🎵"],["play","▶️"],
+  ["speaker","🔊"],["light","💡"],["lamp","💡"],["thermo","🌡️"],["calendar","📅"],["camera","📷"],["cog","⚙️"],["info","ℹ️"],
+  ["web","🌐"],["cart","🛒"],["list","📝"],["check","✅"],["micro","🎙️"],["sofa","🛋️"],["bed","🛏️"],["fire","🔥"],["lock","🔒"],
+  ["dots","⋯"],["arrow-left","←"],["chevron-left","←"],["star","⭐"],["heart","❤️"],["robot","🤖"],["power","⏻"],["water","💧"]];
+function emo(icon){ const i=(icon||"").toLowerCase(); for(const [k,e] of EMOJI) if(i.includes(k)) return e; return "●"; }
+
+const isObj = v => v && typeof v==="object" && !Array.isArray(v);
+const RESERVED = /^(true|false|yes|no|on|off|null|~|y|n)$/i;
+function yq(v){
+  v = String(v);
+  if(/^[A-Za-z0-9_\-./]+(:[A-Za-z0-9_\-./]+)*$/.test(v) && !RESERVED.test(v) && !/^[-+]?[0-9.]+$/.test(v)) return v;
+  return JSON.stringify(v);
+}
+function scalar(x, ind){
+  if(typeof x==="boolean" || typeof x==="number") return String(x);
+  if(typeof x==="string" && x.includes("\n")) return "|\n" + x.split("\n").map(l=>" ".repeat(ind)+l).join("\n");
+  return yq(x);
+}
+function clean(v){
+  if(Array.isArray(v)) return v.map(clean).filter(x=>x!==undefined);
+  if(isObj(v)){
+    const o={}; for(const [k,x] of Object.entries(v)){ const c=clean(x); if(c!==undefined && c!=="" && c!==null && !(isObj(c)&&!Object.keys(c).length)) o[k]=c; }
+    return o;
+  }
+  return v;
+}
+function toYaml(v, ind=0){
+  const pad = " ".repeat(ind);
+  if(Array.isArray(v)){
+    return v.map(it=>{
+      if(isObj(it) || Array.isArray(it)){ const inner=toYaml(it, ind+2); return pad+"- "+inner.slice(ind+2); }
+      return pad+"- "+scalar(it, ind+2);
+    }).join("\n");
+  }
+  if(isObj(v)){
+    return Object.entries(v).map(([k,x])=>{
+      if(Array.isArray(x) && !x.length) return `${pad}${k}: []`;
+      if(isObj(x) || Array.isArray(x)) return `${pad}${k}:\n`+toYaml(x, ind+2);
+      return `${pad}${k}: `+scalar(x, ind+2);
+    }).join("\n");
+  }
+  return pad+scalar(v, ind);
+}
+
+function navbarCss(b){
+  const L=[];
+  if(b.primary) L.push(`--navbar-primary-color: ${b.primary};`);
+  const rad = b.look==="pill" ? "999px" : b.radius;
+  if(rad) L.push(`--navbar-border-radius: ${rad};`);
+  if(b.look==="glass") L.push("background: rgba(20, 24, 30, 0.45);","backdrop-filter: blur(12px);","-webkit-backdrop-filter: blur(12px);");
+  if(b.look==="transparent") L.push("background: transparent;","box-shadow: none;");
+  if(b.bg && b.look!=="transparent") L.push(`background: ${b.bg};`);
+  return L.length ? ".navbar {\n" + L.map(l=>"  "+l).join("\n") + "\n}" : "";
+}
+function cardCfg(b){
+  switch(b.type){
+    case "navbar": {
+      const routes = (b.routes||[]).map(r=>{
+        const o={}; const n=navTarget(r.target);
+        if(n && n.kind==="path") o.url=n.v;
+        o.icon = r.icon || "mdi:circle-outline";
+        if(r.iconSel) o.icon_selected = r.iconSel;
+        if(r.label) o.label = r.label;
+        if(n && n.kind==="url") o.tap_action = {action:"url", url_path:n.v};
+        return o;
+      });
+      const cfg = {type:"custom:navbar-card",
+        desktop:{position:b.position||"left", show_labels:!!b.showLabels},
+        mobile:{show_labels:!!b.showLabels},
+        layout:{auto_padding:{enabled:!!b.autoPadding}},
+        routes};
+      const css = navbarCss(b); if(css) cfg.styles = css;
+      return cfg;
+    }
+    case "chips":
+      return {type:"custom:mushroom-chips-card", alignment:b.alignment||undefined,
+        chips:(b.chips||[]).map(c=>{
+          switch(c.kind){
+            case "weather":  return {type:"weather", entity:c.entity, show_conditions:true, show_temperature:true};
+            case "entity":   return {type:"entity", entity:c.entity, icon:c.icon, tap_action:tapFor(c.target)};
+            case "template": return {type:"template", icon:c.icon, content:c.content, tap_action:tapFor(c.target)};
+            case "action":   return {type:"action", icon:c.icon, tap_action:tapFor(c.target)};
+            case "back":     return {type:"back"};
+          }
+        })};
+    case "mtemplate":
+      return {type:"custom:mushroom-template-card", entity:b.entity, primary:b.primary, secondary:b.secondary,
+        icon:b.icon, icon_color:b.icon_color, layout:b.layout, fill_container:b.fill||undefined, tap_action:tapFor(b.target)};
+    case "media": {
+      const hide={}; if(b.hideVolume) hide.volume=true; if(b.hidePower) hide.power=true; if(b.hideSource) hide.source=true; if(b.hideControls) hide.controls=true;
+      return {type:"custom:mini-media-player", entity:b.entity, artwork:b.artwork, info:b.info, hide};
+    }
+    case "clockweather":
+      return {type:"custom:clock-weather-card", entity:b.entity, locale:b.locale,
+        time_format:Number(b.time_format)||24, forecast_rows:Number(b.forecast_rows)||undefined,
+        hide_forecast_section:b.hideForecast||undefined, show_humidity:b.showHumidity||undefined, animated_icon:b.animated||undefined};
+    case "tile":
+      return {type:"tile", entity:b.entity, name:b.name, icon:b.icon, show_entity_picture:b.picture||undefined, tap_action:tapFor(b.target)};
+  }
+  return null;
+}
+
+function renderPalette(){
+  const el=$("#palette"); el.innerHTML="";
+  const names=Object.keys(state.blocks);
+  if(!names.length) el.innerHTML='<p class="hint">No blocks yet. Add one below.</p>';
+  names.forEach(a=>{
+    const b=state.blocks[a], t=TYPES[b.type];
+    const btn=document.createElement("button");
+    btn.className="chip"; btn.setAttribute("aria-pressed", String(state.selected===a));
+    btn.innerHTML=`<span class="swatch" style="background:${t.hue}${t.floating?';border-radius:50%;height:12px':''}"></span>
+      <span class="nm">${esc(a)}</span><span class="ds">${esc(t.label)}</span>`;
+    btn.onclick=()=>{ state.selected=a; renderAll(); };
+    el.appendChild(btn);
+  });
+  const sel=$("#newtype");
+  if(!sel.options.length){
+    Object.entries(GROUPS).forEach(([g,gl])=>{
+      const og=document.createElement("optgroup"); og.label=gl;
+      Object.entries(TYPES).filter(([,v])=>v.group===g).forEach(([k,v])=>{
+        const o=document.createElement("option"); o.value=k; o.textContent=v.label + (v.hacs&&g==="hacs" ? ` (${v.hacs})` : ""); og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    sel.value="navbar";
+  }
+}
+
+function renderPainter(){
+  const p=$("#painter");
+  const corner=document.createElement("div");
+  const colhead=document.createElement("div"); colhead.className="colhead";
+  colhead.style.gridTemplateColumns=`repeat(${state.cols},minmax(0,1fr))`;
+  state.colSizes.forEach((v,i)=>{
+    const inp=document.createElement("input"); inp.className="sizein"; inp.value=v; inp.setAttribute("aria-label",`Width of column ${i+1}`);
+    inp.onchange=e=>{ state.colSizes[i]=e.target.value.trim()||"1fr"; renderAll(); };
+    colhead.appendChild(inp);
+  });
+  const rowhead=document.createElement("div"); rowhead.className="rowhead";
+  rowhead.style.gridTemplateRows=`repeat(${state.rows.length},minmax(52px,auto))`;
+  state.rows.forEach((r,i)=>{
+    const w=document.createElement("div"); w.style.display="flex"; w.style.alignItems="center";
+    const inp=document.createElement("input"); inp.className="sizein"; inp.value=r.size; inp.setAttribute("aria-label",`Height of row ${i+1}`);
+    inp.onchange=e=>{ state.rows[i].size=e.target.value.trim()||"1fr"; renderAll(); };
+    w.appendChild(inp); rowhead.appendChild(w);
+  });
+  const cells=document.createElement("div"); cells.className="cells";
+  cells.style.gridTemplateColumns=`repeat(${state.cols},minmax(0,1fr))`;
+  state.rows.forEach(r=>{
+    for(let ci=0; ci<state.cols; ci++){
+      const a=r.cells[ci]||".";
+      const c=document.createElement("button");
+      c.className="cell"+(a==="."?" empty":""); c.textContent=a==="."?"·":a;
+      if(a!=="."){ const h=hueOf(a); c.style.background=tint(h,.22); c.style.borderColor=h; }
+      c.onclick=()=>{
+        const selB = state.selected && state.blocks[state.selected];
+        if(!state.paintEmpty && selB && TYPES[selB.type].floating){
+          $("#painthint").textContent = `“${state.selected}” floats above the view and is not placed in the grid.`;
+          return;
+        }
+        r.cells[ci] = state.paintEmpty ? "." : (state.selected || ".");
+        state.paintEmpty=false; $("#painthint").textContent=""; renderAll();
+      };
+      cells.appendChild(c);
+    }
+  });
+  p.innerHTML=""; p.style.gridTemplateColumns="62px minmax(0,1fr)";
+  p.append(corner, colhead, rowhead, cells);
+}
+
+function areasString(){
+  return state.rows.map(r=>{ const c=[]; for(let i=0;i<state.cols;i++) c.push(r.cells[i]||"."); return '"'+c.join(" ")+'"'; }).join("\n");
+}
+function usedAreas(){
+  const s=new Set(); state.rows.forEach(r=>r.cells.slice(0,state.cols).forEach(c=>{ if(c&&c!==".") s.add(c); })); return [...s];
+}
+function isCurrent(target){
+  const n=navTarget(target); if(!n) return false;
+  return n.v.replace(/\/$/,"").endsWith("/"+state.name);
+}
+function mockHTML(a,b){
+  switch(b.type){
+    case "title":   return ["pv-title", esc(b.text||"Title")];
+    case "status":  return ["pv-status","🔇  🔋  📶"];
+    case "assist":  return ["pv-assist","🎙  Assist"];
+    case "message": return ["pv-generic",'<span>Message from <span class="pv-label">var_message</span></span>'];
+    case "image":   return ["pv-generic",'<span class="pv-label">Image</span>'];
+    case "timers":  return ["pv-generic",'<span class="pv-label">Timer cards</span>'];
+    case "intent":  return ["pv-generic",'<span class="pv-label">Intent cards</span>'];
+    case "webpage": return ["pv-generic",'<span class="pv-label">iframe</span>'];
+    case "chips":   return ["pv-chips", (b.chips||[]).map(c=>`<span class="pv-chip">${
+        c.kind==="weather"?"⛅ 21 °C":c.kind==="back"?"←":emo(c.icon)+(c.kind==="template"&&c.content?" "+esc(c.content):c.kind==="entity"?" 21,5":"")}</span>`).join("")];
+    case "mtemplate": return ["pv-mt", `<span class="ic">${emo(b.icon)}</span><span>${esc(b.primary||"Title")}<small>${esc((b.secondary||"").replace(/\{\{.*?\}\}/g,"on"))}</small></span>`];
+    case "media":   return ["pv-media", `<span class="art"></span><span>Song title – Artist</span><span>⏮ ⏯ ⏭${b.hideVolume?"":"  🔊"}</span>`];
+    case "clockweather": return ["pv-cw", `<span class="t">${b.time_format==="12"?"2:32":"14:32"}</span><span>☀️ 21 °${b.showHumidity?" · 💧 48 %":""}</span>${b.hideForecast?"":`<small style="opacity:.7">Mon 22° · Tue 19° · Wed 17°</small>`}`];
+    case "tile":    return ["pv-tile", `<span>${emo(b.icon||b.entity)}</span><span>${esc(b.name||b.entity||"Tile")}</span>`];
+    default:        return ["pv-generic", `<span class="pv-label">${esc(a)}</span>`];
+  }
+}
+function renderNavPreview(s, b){
+  const nav=document.createElement("div");
+  const vert = b.position==="left" || b.position==="right";
+  nav.className="pv-nav"+(vert?" v":"");
+  const rad = b.look==="pill" ? "999px" : (b.radius || "14px");
+  nav.style.borderRadius = vert && b.look==="pill" ? "2em" : rad;
+  if(b.look==="glass"){ nav.style.background="rgba(20,24,30,.45)"; nav.style.backdropFilter="blur(10px)"; }
+  if(b.look==="transparent"){ nav.style.background="transparent"; nav.style.boxShadow="none"; }
+  if(b.bg && b.look!=="transparent") nav.style.background=b.bg;
+  const m="2.5%";
+  if(b.position==="bottom"){ nav.style.bottom=m; nav.style.left="50%"; nav.style.transform="translateX(-50%)"; }
+  if(b.position==="top"){ nav.style.top=m; nav.style.left="50%"; nav.style.transform="translateX(-50%)"; }
+  if(b.position==="left"){ nav.style.left="1.5%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
+  if(b.position==="right"){ nav.style.right="1.5%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
+  const prim = b.primary || "#4fc3f7";
+  (b.routes||[]).forEach(r=>{
+    const cur=isCurrent(r.target);
+    const d=document.createElement("div"); d.className="r";
+    if(cur){ d.style.color=prim; d.style.background=tint(prim.startsWith("#")&&prim.length===7?prim:"#4fc3f7",.18); }
+    d.innerHTML=`<span class="e">${emo(cur&&r.iconSel?r.iconSel:r.icon)}</span>${b.showLabels&&r.label?`<span>${esc(r.label)}</span>`:""}`;
+    nav.appendChild(d);
+  });
+  s.appendChild(nav);
+}
+function renderPreview(){
+  const s=$("#screen");
+  const [w,h]=state.device.split("x").map(Number);
+  s.style.aspectRatio=`${w} / ${h}`;
+  s.style.gridTemplateAreas=areasString();
+  s.style.gridTemplateRows=state.rows.map(r=>r.size).join(" ");
+  s.style.gridTemplateColumns=state.colSizes.slice(0,state.cols).join(" ");
+  s.style.fontSize=Math.max(9, Math.round((s.clientWidth||640)/64))+"px";
+  s.style.backgroundColor=state.bgcolor||"#24292c";
+  s.style.backgroundImage=(state.bgmode==="fixed"&&state.bgpath)?`url("${state.bgpath}")`:"none";
+  s.innerHTML="";
+  usedAreas().forEach(a=>{
+    const b=state.blocks[a]; const d=document.createElement("div"); d.style.gridArea=a;
+    if(!b){ d.className="pv-generic"; d.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(d); return; }
+    const st=b.style||{};
+    if(st.alignSelf)   d.style.alignItems = st.alignSelf==="middle"?"center":st.alignSelf;
+    if(st.justifySelf) d.style.justifyContent = st.justifySelf;
+    if(st.textAlign)   d.style.textAlign = st.textAlign;
+    if(st.padding)     d.style.padding = st.padding;
+    if(st.background)  d.style.background = st.background;
+    if(st.radius)      d.style.borderRadius = st.radius;
+    const [cls,html]=mockHTML(a,b); d.className=cls; d.innerHTML=html;
+    s.appendChild(d);
+  });
+  Object.values(state.blocks).forEach(b=>{
+    if(b.type==="shader"){ const d=document.createElement("div"); d.style.position="absolute"; d.style.inset="0"; d.style.background=`rgba(0,0,0,${b.shade||.15})`; d.style.pointerEvents="none"; s.appendChild(d); }
+  });
+  Object.values(state.blocks).forEach(b=>{ if(b.type==="navbar") renderNavPreview(s,b); });
+}
+
+function sel(id, opts, val, labels){
+  return `<select id="${id}">`+opts.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(labels&&labels[o]||o||"—")}</option>`).join("")+`</select>`;
+}
+function fieldHTML(f, b, idp){
+  const id=idp+f.k, v=b[f.k];
+  if(f.kind==="check") return `<label class="checkrow"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
+  if(f.kind==="select") return `<div><label for="${id}">${esc(f.l)}</label>${sel(id,f.opts,v??"")}</div>`;
+  const list = f.kind==="target" ? ` list="vaviews" placeholder="clock, /lovelace/0 oder https://…"` : (f.ph?` placeholder="${esc(f.ph)}"`:"");
+  return `<div><label for="${id}">${esc(f.l)}</label><input type="text" id="${id}" class="mono" value="${esc(v??"")}"${list}></div>`;
+}
+function bindField(f, obj, idp){
+  const e=document.getElementById(idp+f.k); if(!e) return;
+  e.onchange=()=>{ obj[f.k] = f.kind==="check" ? e.checked : e.value; renderAll(); };
+}
+function styleHTML(b){
+  return `<details ${b.type==="message"||b.type==="title"?"open":""}><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);margin-bottom:6px">Area style</summary><div class="rowgrid">
+    <div><label for="s-font">font-size</label><input type="text" id="s-font" class="mono" value="${esc(b.style.fontSize)}" placeholder="4vh"></div>
+    <div><label for="s-pad">padding</label><input type="text" id="s-pad" class="mono" value="${esc(b.style.padding)}" placeholder="2%"></div>
+    <div><label for="s-align">align-self</label>${sel("s-align",["","start","center","end","stretch"],b.style.alignSelf)}</div>
+    <div><label for="s-just">justify-self</label>${sel("s-just",["","start","center","end","stretch"],b.style.justifySelf)}</div>
+    <div><label for="s-text">text-align</label>${sel("s-text",["","start","center","end"],b.style.textAlign)}</div>
+    <div><label for="s-ovf">overflow-y</label>${sel("s-ovf",["","auto","scroll","hidden"],b.style.overflow)}</div>
+    <div><label for="s-bg">background</label><input type="text" id="s-bg" class="mono" value="${esc(b.style.background)}" placeholder="rgba(0,0,0,.4)"></div>
+    <div><label for="s-rad">border-radius</label><input type="text" id="s-rad" class="mono" value="${esc(b.style.radius)}" placeholder="12px"></div>
+  </div></details>`;
+}
+function bindStyle(b){
+  const m={"s-font":"fontSize","s-pad":"padding","s-align":"alignSelf","s-just":"justifySelf","s-text":"textAlign","s-ovf":"overflow","s-bg":"background","s-rad":"radius"};
+  Object.entries(m).forEach(([id,k])=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ b.style[k]=e.value; renderAll(); }; });
+}
+function moveItem(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; [arr[i],arr[j]]=[arr[j],arr[i]]; }
+
+function navbarHTML(b){
+  const looks = Object.entries(NAV_LOOKS).map(([k,v])=>`<button class="look" data-look="${k}" aria-pressed="${b.look===k}"><i style="${v.sw}"></i>${esc(v.l)}</button>`).join("");
+  const routes = (b.routes||[]).map((r,i)=>`
+    <div class="item">
+      <div class="ihead"><strong>${emo(r.icon)} ${esc(r.label||"Route "+(i+1))}</strong>
+        <button class="mini" data-rmv="${i}" data-d="-1" aria-label="Move up">↑</button>
+        <button class="mini" data-rmv="${i}" data-d="1" aria-label="Move down">↓</button>
+        <button class="mini" data-rdel="${i}" aria-label="Remove route">✕</button></div>
+      <div class="rowgrid">
+        <div><label>Label</label><input type="text" data-r="${i}" data-k="label" value="${esc(r.label)}"></div>
+        <div><label>Target</label><input type="text" class="mono" list="vaviews" data-r="${i}" data-k="target" value="${esc(r.target)}" placeholder="music"></div>
+        <div><label>Icon</label><input type="text" class="mono" data-r="${i}" data-k="icon" value="${esc(r.icon)}" placeholder="mdi:music"></div>
+        <div><label>Active icon</label><input type="text" class="mono" data-r="${i}" data-k="iconSel" value="${esc(r.iconSel)}" placeholder="optional"></div>
+      </div>
+    </div>`).join("");
+  return `
+    <div><label>Style</label><div class="looks">${looks}</div></div>
+    <div class="rowgrid">
+      <div><label for="n-pos">Position (tablet)</label>${sel("n-pos",["left","right","bottom","top"],b.position,{left:"left",right:"right",bottom:"bottom",top:"top"})}</div>
+      <div><label for="n-rad">Corner radius</label><input type="text" id="n-rad" class="mono" value="${esc(b.radius)}" placeholder="${b.look==="pill"?"999px (pill)":"16px"}" ${b.look==="pill"?"disabled":""}></div>
+      <div><label for="n-prim">Accent color</label><div class="colorrow"><input type="color" id="n-primc" value="${/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:"#4fc3f7"}"><input type="text" id="n-prim" class="mono" value="${esc(b.primary)}"></div></div>
+      <div><label for="n-bg">Background</label><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div>
+    </div>
+    <label class="checkrow"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
+    <label class="checkrow"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding (keeps content clear of the navbar)</label>
+    <div><label>Routes</label><div class="list">${routes}</div></div>
+    <div><button class="ghost" id="n-add">+ Route</button></div>`;
+}
+function bindNavbar(b){
+  document.querySelectorAll("[data-look]").forEach(x=>x.onclick=()=>{ b.look=x.dataset.look; renderAll(); });
+  const on=(id,fn)=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ fn(e); renderAll(); }; };
+  on("n-pos",e=>b.position=e.value); on("n-rad",e=>b.radius=e.value); on("n-bg",e=>b.bg=e.value);
+  on("n-prim",e=>b.primary=e.value); on("n-primc",e=>b.primary=e.value);
+  on("n-lab",e=>b.showLabels=e.checked); on("n-pad",e=>b.autoPadding=e.checked);
+  document.querySelectorAll("[data-r]").forEach(e=>e.onchange=()=>{ b.routes[+e.dataset.r][e.dataset.k]=e.value; renderAll(); });
+  document.querySelectorAll("[data-rmv]").forEach(e=>e.onclick=()=>{ moveItem(b.routes,+e.dataset.rmv,+e.dataset.d); renderAll(); });
+  document.querySelectorAll("[data-rdel]").forEach(e=>e.onclick=()=>{ b.routes.splice(+e.dataset.rdel,1); renderAll(); });
+  const add=$("#n-add"); if(add) add.onclick=()=>{ b.routes.push({icon:"mdi:star-outline",iconSel:"",label:"New",target:""}); renderAll(); };
+}
+
+function chipsHTML(b){
+  const items=(b.chips||[]).map((c,i)=>{
+    const needEntity = c.kind==="weather"||c.kind==="entity";
+    const needIcon = c.kind==="entity"||c.kind==="template"||c.kind==="action";
+    const needTarget = c.kind==="entity"||c.kind==="template"||c.kind==="action";
+    return `<div class="item">
+      <div class="ihead"><strong>${emo(c.icon||c.kind)} ${esc(CHIP_KINDS[c.kind])}</strong>
+        <button class="mini" data-cmv="${i}" data-d="-1" aria-label="Move up">↑</button>
+        <button class="mini" data-cmv="${i}" data-d="1" aria-label="Move down">↓</button>
+        <button class="mini" data-cdel="${i}" aria-label="Remove chip">✕</button></div>
+      <div class="rowgrid">
+        <div><label>Kind</label>${sel("ck"+i,Object.keys(CHIP_KINDS),c.kind,CHIP_KINDS).replace("<select",`<select data-c="${i}" data-k="kind"`)}</div>
+        ${needEntity?`<div><label>Entity</label><input type="text" class="mono" data-c="${i}" data-k="entity" value="${esc(c.entity)}"></div>`:""}
+        ${needIcon?`<div><label>Icon</label><input type="text" class="mono" data-c="${i}" data-k="icon" value="${esc(c.icon)}" placeholder="mdi:…"></div>`:""}
+        ${c.kind==="template"?`<div><label>Text</label><input type="text" data-c="${i}" data-k="content" value="${esc(c.content)}"></div>`:""}
+        ${needTarget?`<div><label>Tap opens</label><input type="text" class="mono" list="vaviews" data-c="${i}" data-k="target" value="${esc(c.target)}"></div>`:""}
+      </div></div>`;
+  }).join("");
+  return `<div><label for="c-align">Alignment</label>${sel("c-align",["start","center","end","justify"],b.alignment,{start:"left",center:"center",end:"right",justify:"justify"})}</div>
+    <div><label>Chips</label><div class="list">${items}</div></div>
+    <div><button class="ghost" id="c-add">+ Chip</button></div>`;
+}
+function bindChips(b){
+  const a=$("#c-align"); if(a) a.onchange=()=>{ b.alignment=a.value; renderAll(); };
+  document.querySelectorAll("[data-c]").forEach(e=>e.onchange=()=>{ b.chips[+e.dataset.c][e.dataset.k]=e.value; renderAll(); });
+  document.querySelectorAll("[data-cmv]").forEach(e=>e.onclick=()=>{ moveItem(b.chips,+e.dataset.cmv,+e.dataset.d); renderAll(); });
+  document.querySelectorAll("[data-cdel]").forEach(e=>e.onclick=()=>{ b.chips.splice(+e.dataset.cdel,1); renderAll(); });
+  const add=$("#c-add"); if(add) add.onclick=()=>{ b.chips.push({kind:"template",entity:"",icon:"mdi:star-outline",content:"New",target:""}); renderAll(); };
+}
+
+function renderInspector(){
+  const body=$("#inspbody"), none=$("#nosel");
+  const a=state.selected, b=a&&state.blocks[a];
+  if(!b){ body.hidden=true; none.hidden=false; return; }
+  body.hidden=false; none.hidden=true;
+  const t=TYPES[b.type];
+  const P=[];
+  P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
+  if(t.hacs) P.push(`<p class="hint" style="margin:0">Requires HACS: <strong>${esc(t.hacs)}</strong></p>`);
+
+  if(b.type==="title")   P.push(`<div><label for="i-text">Title text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
+  if(b.type==="webpage") P.push(`<div><label for="i-url">Fallback-URL</label><input type="text" id="i-url" class="mono" value="${esc(b.url)}"></div>`);
+  if(b.type==="image")   P.push(`<div><label for="i-width">Image width</label><input type="text" id="i-width" class="mono" value="${esc(b.width||"75%")}"></div>`);
+  if(b.type==="shader")  P.push(`<div><label for="i-shade">Opacity (0–1)</label><input type="text" id="i-shade" class="mono" value="${esc(b.shade||"0.15")}"></div>`);
+  if(b.type==="custom")  P.push(`<div><label for="i-yaml">Card YAML</label><textarea id="i-yaml">${esc(b.yaml)}</textarea></div>`);
+  if(b.type==="message") P.push(`<label class="checkrow"><input type="checkbox" id="i-fontvar" ${b.fontVar?"checked":""}> Font size from <span class="mono">var_font_size</span></label>`);
+  if(b.type==="navbar")  P.push(navbarHTML(b));
+  if(b.type==="chips")   P.push(chipsHTML(b));
+  if(SCHEMAS[b.type])    P.push(SCHEMAS[b.type].map(f=>fieldHTML(f,b,"f-")).join(""));
+
+  if(t.provided) P.push(`<p class="hint">Content and style come from <span class="mono">body_template</span>. Only its position in the grid is set here.</p>`);
+  else if(!t.floating) P.push(styleHTML(b));
+  P.push(`<div><button class="ghost danger" id="i-del">Remove block</button></div>`);
+  body.innerHTML=P.join("");
+
+  const bind=(id,fn)=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ fn(e); renderAll(); }; };
+  bind("i-name",e=>{
+    const nn=safeIdent(e.value); if(nn===a||state.blocks[nn]) return;
+    state.blocks[nn]=state.blocks[a]; delete state.blocks[a];
+    state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]=nn; }));
+    state.selected=nn;
+  });
+  bind("i-text",e=>b.text=e.value); bind("i-url",e=>b.url=e.value); bind("i-width",e=>b.width=e.value);
+  bind("i-shade",e=>b.shade=e.value); bind("i-yaml",e=>b.yaml=e.value); bind("i-fontvar",e=>b.fontVar=e.checked);
+  if(b.type==="navbar") bindNavbar(b);
+  if(b.type==="chips") bindChips(b);
+  if(SCHEMAS[b.type]) SCHEMAS[b.type].forEach(f=>bindField(f,b,"f-"));
+  bindStyle(b);
+  const del=$("#i-del");
+  if(del) del.onclick=()=>{
+    delete state.blocks[a];
+    state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]="."; }));
+    state.selected=Object.keys(state.blocks)[0]||null; renderAll();
+  };
+}
+
+function indent(text,pad){ return text.split("\n").map(l=>l.length?pad+l:l).join("\n"); }
+function buildYaml(){
+  const L=[]; const vname=safeIdent(state.name);
+  L.push("type: custom:button-card");
+  const vars=[];
+  if(state.bgmode==="fixed"&&state.bgpath) vars.push(`  background: ${yq(state.bgpath)}`);
+  Object.values(state.blocks).forEach(b=>{
+    if(b.type==="webpage") vars.push(`  var_url: >-\n    [[[ try {return hass.states[variables.var_assistsat_entity].attributes.data["url"]} catch { return "${b.url||""}"}]]]`);
+  });
+  vars.push(`  ${vname}cardversion: 1.0.0`);
+  L.push("variables:",...vars);
+  L.push("template:","  - variable_template","  - body_template");
+
+  L.push("styles:","  grid:","    - grid-template-areas: |");
+  areasString().split("\n").forEach(r=>L.push("        "+r));
+  L.push(`    - grid-template-rows: ${state.rows.map(r=>r.size).join(" ")}`);
+  L.push(`    - grid-template-columns: ${state.colSizes.slice(0,state.cols).join(" ")}`);
+  L.push("  card:");
+  if(state.bgmode==="fixed"&&state.bgpath){
+    L.push("    - background: '[[[ return `center / cover no-repeat url(${variables.background})` ]]]'","    - background-size: cover");
+  } else if(state.bgmode==="satellite"){
+    L.push("    - background: >-","        [[[ try {return `center / cover no-repeat","        url(${hass.states[variables.var_assistsat_entity].attributes.background})`} catch","        {return \"\"} ]]]","    - background-size: cover");
+  }
+  L.push(`    - background-color: ${JSON.stringify(state.bgcolor||"#24292c")}`,"    - border-width: 0px","    - border-radius: 0px");
+
+  const fieldStyles=[];
+  Object.entries(state.blocks).forEach(([a,b])=>{
+    const t=TYPES[b.type]; if(t.provided) return;
+    const S=[];
+    if(b.type==="shader"){ S.push("position: absolute","top: 0","left: 0","height: 100%","width: 100%",`background-color: rgba(0,0,0,${b.shade||0.15})`,"pointer-events: none"); }
+    else if(b.type==="navbar"){ S.push("position: absolute","top: 0","left: 0"); }
+    else {
+      const s=b.style;
+      if(b.type==="message"&&b.fontVar) S.push("font-size: '[[[ return variables.var_font_size ]]]'"); else if(s.fontSize) S.push(`font-size: ${s.fontSize}`);
+      if(s.alignSelf) S.push(`align-self: ${s.alignSelf}`);
+      if(s.justifySelf) S.push(`justify-self: ${s.justifySelf}`);
+      if(s.textAlign) S.push(`text-align: ${s.textAlign}`);
+      if(s.overflow) S.push(`overflow-y: ${s.overflow}`);
+      if(s.padding) S.push(`padding: ${s.padding}`);
+      if(s.background) S.push(`background: ${s.background}`);
+      if(s.radius) S.push(`border-radius: ${s.radius}`);
+      if(b.type==="image"&&b.width) S.push("object-fit: contain",`width: ${b.width}`);
+      if(b.type==="message") S.push("position: relative","text-wrap: wrap");
+      if(cardCfg(b)) S.push("width: 100%");
+    }
+    if(S.length) fieldStyles.push([a,S]);
+  });
+  if(fieldStyles.length){
+    L.push("  custom_fields:");
+    fieldStyles.forEach(([a,S])=>{ L.push(`    ${a}:`); S.forEach(x=>L.push(`      - ${x}`)); });
+  }
+
+  const content=Object.entries(state.blocks).filter(([,b])=>!TYPES[b.type].provided);
+  if(content.length){
+    L.push("custom_fields:");
+    content.forEach(([a,b])=>{
+      const cfg=cardCfg(b);
+      if(cfg){ L.push(`  ${a}:`,"    card:", toYaml(clean(cfg),6)); return; }
+      switch(b.type){
+        case "title":   L.push(`  ${a}: ${JSON.stringify(b.text||"")}`); break;
+        case "message": L.push(`  ${a}: '[[[ return variables.var_message ]]]'`); break;
+        case "shader":  L.push(`  ${a}: ""`); break;
+        case "timers":  L.push(`  ${a}:`,`    card: "[[[ return viewassist.helpers.timerCards() ]]]"`); break;
+        case "image":   L.push(`  ${a}:`,"    card:","      type: picture","      image: '[[[ return states[variables.var_assistsat_entity].attributes.image; ]]]'"); break;
+        case "intent":  L.push(`  ${a}:`,"    card:","      type: custom:layout-card","      layout_type: custom:masonry-layout","      layout:","        max_cols: 3","      cards: >-",'        [[[ try {return hass.states[variables.var_assistsat_entity].attributes.intent_entities} catch { return ""}]]]'); break;
+        case "webpage": L.push(`  ${a}:`,"    card:","      type: iframe","      url: '[[[ return variables.var_url ]]]'","      aspect_ratio: 50%"); break;
+        default:        L.push(`  ${a}:`,"    card:", indent((b.yaml||'type: markdown\ncontent: ""').trimEnd(),"      "));
+      }
+    });
+  }
+  return L.join("\n")+"\n";
+}
+
+function checks(){
+  const m=[]; const areas=usedAreas();
+  areas.forEach(a=>{
+    let r0=99,r1=-1,c0=99,c1=-1,n=0;
+    state.rows.forEach((r,ri)=>{ for(let ci=0;ci<state.cols;ci++) if(r.cells[ci]===a){n++;r0=Math.min(r0,ri);r1=Math.max(r1,ri);c0=Math.min(c0,ci);c1=Math.max(c1,ci);} });
+    if(n!==(r1-r0+1)*(c1-c0+1)) m.push(`“${a}” is not a rectangle. CSS grid requires contiguous, rectangular areas.`);
+  });
+  Object.entries(state.blocks).forEach(([a,b])=>{
+    if(!TYPES[b.type].floating && !areas.includes(a)) m.push(`“${a}” is not assigned to any grid cell and will not appear.`);
+  });
+  areas.forEach(a=>{
+    if(!state.blocks[a]) m.push(`Grid cell “${a}” has no block.`);
+    else if(TYPES[state.blocks[a].type].floating) m.push(`“${a}” floats and should not be placed in the grid.`);
+  });
+  if(!areas.includes("assist")) m.push("Without an “assist” area the view shows no voice feedback.");
+  const nb=Object.values(state.blocks).filter(b=>b.type==="navbar");
+  if(nb.length>1) m.push("More than one navbar: navbar-card would overlap itself.");
+  nb.forEach(b=>{
+    if(b.position==="bottom" && areas.includes("assist") && state.rows[state.rows.length-1].cells.includes("assist"))
+      m.push("A navbar at the bottom sits on top of the assist bar. Left or right usually works better on tablets.");
+    (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (“${r.label||"no label"}”) has no target.`); });
+  });
+  return m;
+}
+function deps(){
+  const d=new Set(["button-card"]);
+  Object.values(state.blocks).forEach(b=>{ const h=TYPES[b.type].hacs; if(h) d.add(h); });
+  return [...d];
+}
+
+function renderYaml(){
+  $("#yaml").textContent=buildYaml();
+  const m=checks(); $("#warnings").innerHTML=m.map(x=>`<div class="alert">${esc(x)}</div>`).join("");
+  $("#deps").innerHTML='<span style="border:none;background:none;padding-left:0">HACS:</span>'+deps().map(x=>`<span>${esc(x)}</span>`).join("");
+}
+function renderAll(){ renderPalette(); renderPainter(); renderPreview(); renderInspector(); renderYaml(); save(); }
+
+$("#addblock").onclick=()=>{
+  const t=$("#newtype").value;
+  const nameMap={custom:"card",mtemplate:"template"};
+  const a=uniqueName(nameMap[t]||t);
+  state.blocks[a]=blockDefaults(t); state.selected=a;
+  if(!TYPES[t].floating && !TYPES[t].provided){
+    $("#painthint").textContent=""; 
+  }
+  renderAll();
+};
+document.querySelectorAll("[data-g]").forEach(btn=>{
+  btn.onclick=()=>{
+    const g=btn.dataset.g;
+    if(g==="addrow") state.rows.push({size:"1fr",cells:Array(state.cols).fill(".")});
+    if(g==="delrow"&&state.rows.length>1) state.rows.pop();
+    if(g==="addcol"&&state.cols<6){ state.cols++; state.colSizes.push("1fr"); state.rows.forEach(r=>r.cells.push(".")); }
+    if(g==="delcol"&&state.cols>1){ state.cols--; state.colSizes.pop(); state.rows.forEach(r=>r.cells.pop()); }
+    if(g==="clear"){ state.paintEmpty=true; $("#painthint").textContent="The next cell you tap will be cleared."; renderPalette(); renderPreview(); renderYaml(); return; }
+    renderAll();
+  };
+});
+$("#viewname").onchange=e=>{ state.name=e.target.value; renderAll(); };
+$("#device").onchange=e=>{ state.device=e.target.value; renderAll(); };
+$("#bgmode").onchange=e=>{ state.bgmode=e.target.value; $("#bgpathwrap").hidden=e.target.value!=="fixed"; renderAll(); };
+$("#bgpath").onchange=e=>{ state.bgpath=e.target.value; renderAll(); };
+$("#bgcolor").onchange=e=>{ state.bgcolor=e.target.value; renderAll(); };
+$("#vabase").onchange=e=>{ state.vaBase=e.target.value||"/view-assist/"; renderAll(); };
+$("#preset").onchange=e=>{
+  const f=PRESETS[e.target.value];
+  if(f){ const keep=state.vaBase; state=f(); state.vaBase=keep||state.vaBase; syncInputs(); renderAll(); }
+  e.target.value="";
+};
+$("#copy").onclick=async()=>{
+  const btn=$("#copy");
+  try{ await navigator.clipboard.writeText(buildYaml()); btn.textContent="Copied"; }
+  catch(e){ btn.textContent="Copy failed"; }
+  setTimeout(()=>btn.textContent="Copy",1600);
+};
+$("#download").onclick=()=>{
+  const blob=new Blob([buildYaml()],{type:"text/yaml"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=safeIdent(state.name)+".yaml";
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+$("#themebtn").onclick=()=>{
+  const cur=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+  document.documentElement.setAttribute("data-theme",cur);
+  try{ localStorage.setItem("panelkit.theme",cur); }catch(e){}
+};
+document.querySelectorAll(".tabs button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected","false"));
+    b.setAttribute("aria-selected","true");
+    document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
+    document.getElementById("pane-"+b.dataset.pane).classList.add("active");
+    renderPreview();
+  };
+});
+window.addEventListener("resize",()=>renderPreview());
+
+function syncInputs(){
+  $("#viewname").value=state.name; $("#device").value=state.device;
+  $("#bgmode").value=state.bgmode; $("#bgpath").value=state.bgpath; $("#bgcolor").value=state.bgcolor;
+  $("#vabase").value=state.vaBase; $("#bgpathwrap").hidden=state.bgmode!=="fixed";
+}
+
+try{ const t=localStorage.getItem("panelkit.theme"); if(t) document.documentElement.setAttribute("data-theme",t); }catch(e){}
+state=load(); state.paintEmpty=false;
+syncInputs(); renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "panelkit-qa",
+  "private": true,
+  "scripts": { "test": "node run.js" },
+  "dependencies": { "js-yaml": "^4.1.0" }
+}
