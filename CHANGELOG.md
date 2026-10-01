@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 — 2026-10-01
+
+- New layout: blocks on the left, preview and grid on the right, YAML below
+- Blocks open in place to show their settings, so it is clear what you are editing
+- Every block can be removed from the list, with undo
+- Device presets for common View Assist screens, plus a custom size
+- Tab set templates: home, camera, music, lights and calendar, sharing one navbar on the right
+- New blocks: camera (built in or Advanced Camera Card), calendar, Mushroom light card
+- Link targets can now run a script, scene or automation
+- The navbar check now catches it covering any content, not only the assist bar
+- Tapping a cell that already belongs to the selected block clears it
+
 ## 0.1.0 — 2026-10-01
 
 First release.

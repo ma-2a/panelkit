@@ -9,5 +9,5 @@ jobs:
         with: { node-version: 20 }
       - run: npm install
         working-directory: qa
-      - run: node run.js
+      - run: node run.js && node smoke.js
         working-directory: qa

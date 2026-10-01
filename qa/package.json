@@ -1,6 +1,11 @@
 {
   "name": "panelkit-qa",
   "private": true,
-  "scripts": { "test": "node run.js" },
-  "dependencies": { "js-yaml": "^4.1.0" }
+  "scripts": {
+    "test": "node run.js && node smoke.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "jsdom": "^24.1.0"
+  }
 }

@@ -2,7 +2,7 @@
 
 A visual layout editor for [View Assist](https://dinki.github.io/View-Assist/) views in Home Assistant.
 
-**[Open the builder](https://ma-2a.github.io/panelkit/builder/)** · no install, nothing leaves your browser.
+**[Open the builder](https://ma-2a.github.io/panelkit/builder/)**. No install, nothing leaves your browser.
 
 View Assist views are a single `custom:button-card` with a `grid-template-areas` layout and a set of
 `custom_fields`. That is a flexible format, and an awkward one to write by hand. PanelKit draws the
@@ -10,12 +10,15 @@ grid, fills in the fields and hands back YAML you paste into a manual card.
 
 ## What it does
 
+- Device presets: Echo Show 5, 8 and 10, Lenovo ThinkSmart View, Fire HD 8 and 10, 7 inch tablets, Raspberry Pi display, or any custom size
+- Templates, including a tab set (home, camera, music, lights, calendar) that shares one navbar
 - Grid editor with per-row and per-column sizing in any CSS grid unit
 - Live preview at the aspect ratio of your display
 - View Assist blocks: title, status icons, assist bar, message, timers, satellite image, web page, intent cards
-- HACS cards with proper forms: navbar-card, Mushroom chips, Mushroom template card, mini-media-player, clock-weather-card
-- One link field for every block: `music` becomes `/view-assist/music`, `/lovelace/0` stays as is, `https://…` becomes a tap action
-- Validation for non-rectangular areas, unplaced blocks, missing assist bar, navbar overlapping the assist bar
+- HACS cards with proper forms: navbar-card, Mushroom chips, template and light cards, mini-media-player, clock-weather-card, Advanced Camera Card
+- Home Assistant cards: camera feed, calendar agenda, tile
+- One link field for every block: `music` becomes `/view-assist/music`, `/lovelace/0` stays as is, `script.x` or `scene.x` runs it, `https://…` opens it
+- Validation for non-rectangular areas, unplaced blocks, a missing assist bar and a navbar covering content
 - Lists the HACS repositories the generated view needs
 
 ## Requirements
@@ -46,10 +49,11 @@ Then open `http://localhost:8000/builder/`.
 ## Tests
 
 `qa/run.js` renders every template and every block type, parses the generated YAML, and checks the
-grid, the custom fields, the quoting and the validation rules.
+grid, the custom fields, the quoting and the validation rules. `qa/smoke.js` loads the builder in jsdom
+and clicks through every template, block editor, device and grid tool.
 
 ```
-cd qa && npm install && node run.js
+cd qa && npm install && npm test
 ```
 
 ## Changelog

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PanelKit — Build View Assist dashboards without writing YAML</title>
+<title>PanelKit, build View Assist dashboards without writing YAML</title>
 <meta name="description" content="A visual builder for View Assist views in Home Assistant. Lay out the grid, drop in HACS cards like navbar-card and Mushroom chips, copy the YAML.">
 <meta property="og:title" content="PanelKit">
 <meta property="og:description" content="A visual builder for View Assist views in Home Assistant.">
@@ -62,8 +62,8 @@ header.site nav a:hover{color:var(--ink)}
 
 .shot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 clamp(40px,7vw,72px)}
 .tablet{background:#11151b;border-radius:10px;padding:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.view{aspect-ratio:16/10;display:grid;grid-template-areas:"title status" "chips chips" "clock media" "assist assist";
-  grid-template-rows:min-content min-content 1fr min-content;grid-template-columns:1fr 1fr;gap:8px;
+.view{aspect-ratio:2/1;display:grid;grid-template-areas:"title status ." "chips chips ." "clock media ." "assist assist .";
+  grid-template-rows:min-content min-content 1fr min-content;grid-template-columns:1fr 1fr 9%;gap:8px;
   background:linear-gradient(140deg,#1d2733,#2a2233);border-radius:7px;padding:12px;color:#fff;font-size:clamp(9px,1.35vw,14px)}
 .view>div{display:flex;align-items:center;justify-content:center;border-radius:8px}
 .v-title{grid-area:title;justify-content:flex-start!important;font-weight:600;font-size:1.5em}
@@ -75,9 +75,9 @@ header.site nav a:hover{color:var(--ink)}
 .v-media{grid-area:media;flex-direction:column;gap:.45em;background:rgba(255,255,255,.06)}
 .v-media i{display:block;width:38%;aspect-ratio:1;border-radius:7px;background:linear-gradient(135deg,#6366f1,#ec4899)}
 .v-assist{grid-area:assist;background:rgba(0,0,0,.35);gap:.6em;opacity:.85}
-.v-nav{position:absolute;left:3%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.3em;background:#262b33;border-radius:2em;padding:.5em}
+.v-nav{position:absolute;right:2.2%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.3em;background:rgba(20,24,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:1.4em;padding:.45em}
 .v-nav b{display:flex;flex-direction:column;align-items:center;font-weight:400;font-size:.8em;padding:.35em .6em;border-radius:1.6em;min-width:3em}
-.v-nav b.on{background:rgba(79,195,247,.2);color:#4fc3f7}
+.v-nav b.on{background:rgba(255,122,61,.22);color:#ff7a3d}
 .viewwrap{position:relative}
 
 section{padding:0 0 clamp(36px,6vw,64px)}
@@ -120,7 +120,7 @@ footer.site a{color:var(--ink-2)}
 <section class="hero">
   <div class="wrap">
     <h1>Build View Assist dashboards without writing YAML.</h1>
-    <p class="lead">PanelKit is a visual layout editor for View Assist views in Home Assistant. Draw the grid, drop in the cards you already use, watch the preview, copy the YAML into a manual card. Everything runs in your browser.</p>
+    <p class="lead">PanelKit is a visual layout editor for View Assist views in Home Assistant. Pick your device, start from a template, drop in the cards you already use, copy the YAML into a manual card. Everything runs in your browser.</p>
     <div class="cta">
       <a class="btn" href="builder/">Open the builder</a>
       <a class="btn sec" href="https://github.com/ma-2a/panelkit">Source on GitHub</a>
@@ -136,11 +136,11 @@ footer.site a{color:var(--ink-2)}
         <div class="v-title">Home</div>
         <div class="v-status">🔇 🔋 📶</div>
         <div class="v-chips"><span>⛅ 21&nbsp;°C</span><span>🌡️ 21,5</span><span>🎵 Music</span></div>
-        <div class="v-clock"><b>14:32</b><span>☀️ 21° · 💧 48 %</span></div>
+        <div class="v-clock"><b>14:32</b><span>☀️ 21°&nbsp;&nbsp;&nbsp;💧 48 %</span></div>
         <div class="v-media"><i></i><span>Song title – Artist</span><span>⏮ ⏯ ⏭</span></div>
         <div class="v-assist">🎙 Assist</div>
       </div>
-      <div class="v-nav"><b class="on">🏠<span>Home</span></b><b>🕒<span>Clock</span></b><b>⛅<span>Weather</span></b><b>🎵<span>Music</span></b></div>
+      <div class="v-nav"><b class="on">🏠</b><b>📹</b><b>🎵</b><b>💡</b><b>📅</b></div>
     </div>
   </div>
 </div>
@@ -149,7 +149,8 @@ footer.site a{color:var(--ink-2)}
   <div class="wrap">
     <h2>How it works</h2>
     <ol class="steps">
-      <li><strong>Lay out the grid.</strong> Set rows and columns in any CSS grid unit, then tap cells to assign them to a block. PanelKit writes the <code>grid-template-areas</code> for you and warns when an area is not a valid rectangle.</li>
+      <li><strong>Pick your screen and a starting point.</strong> Choose an Echo Show 5, Echo Show 8, Lenovo ThinkSmart View, Fire tablet or a custom size, then start from a template. There is a full tab set for home, camera, music, lights and calendar that shares one navbar.</li>
+      <li><strong>Lay out the grid.</strong> Set rows and columns in any CSS grid unit, then tap cells to give them to a block. PanelKit writes the <code>grid-template-areas</code> for you and warns when an area is not a valid rectangle.</li>
       <li><strong>Add blocks.</strong> View Assist elements like the assist bar, status icons, messages and timers, plus popular HACS cards. Each one has a small form instead of a YAML snippet.</li>
       <li><strong>Copy the YAML.</strong> Create a panel view in your View Assist dashboard, add a manual card, paste. The generated view is a single <code>custom:button-card</code> using the standard <code>variable_template</code> and <code>body_template</code>, so it behaves like the views that ship with View Assist.</li>
     </ol>
@@ -163,6 +164,9 @@ footer.site a{color:var(--ink-2)}
       <li>Title, status icons, assist bar<span>View Assist</span></li>
       <li>Message and timers<span>View Assist</span></li>
       <li>Satellite image and web page<span>View Assist</span></li>
+      <li>Camera feed<span>core or Advanced Camera Card</span></li>
+      <li>Calendar agenda<span>Home Assistant core</span></li>
+      <li>Lights with brightness<span>Mushroom</span></li>
       <li>Intent cards<span>layout-card</span></li>
       <li>Navbar with routes and styles<span>navbar-card</span></li>
       <li>Chips row<span>Mushroom</span></li>
@@ -182,7 +186,7 @@ footer.site a{color:var(--ink-2)}
     <div class="grid3">
       <div class="box">
         <h3>Navigation that works</h3>
-        <p>Link targets are written once. A bare view name becomes a dashboard path, an absolute path stays as it is, a URL becomes a tap action. Navbar routes, chips and tiles all use the same field.</p>
+        <p>Link targets are written once. A view name becomes a dashboard path, a path stays as it is, <code>script.x</code> or <code>scene.x</code> runs it, a URL opens it. Navbar routes, chips and buttons all use the same field.</p>
       </div>
       <div class="box">
         <h3>Mistakes caught early</h3>
@@ -229,7 +233,7 @@ footer.site a{color:var(--ink-2)}
 
 <footer class="site">
   <div class="wrap">
-    <span>PanelKit · MIT licensed</span>
+    <span>PanelKit, MIT licensed</span>
     <a href="https://github.com/ma-2a/panelkit">GitHub</a>
     <a href="https://ko-fi.com/ma2a">Ko-fi</a>
     <span>Not affiliated with the View Assist project or Home Assistant.</span>

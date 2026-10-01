@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PanelKit — View Assist dashboard builder</title>
+<title>PanelKit, View Assist dashboard builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,161 +39,177 @@
   --grid-line:rgba(231,236,243,.08);
 }
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust:100%}
-body{
-  margin:0; background:var(--bg); color:var(--ink);
-  font-family:var(--sans); font-size:15px; line-height:1.45;
-}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
 button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+input[type=text],input[type=number],select,textarea{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.mono{font-family:var(--mono);font-size:13px}
+.hint{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
+code.inl{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
 
-.top{
-  display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center;
-  padding:12px 16px; background:var(--panel); border-bottom:1px solid var(--line);
-  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
-}
-.brand{display:flex;align-items:baseline;gap:9px;margin-right:auto}
-.brand h1{font-size:16px}
-.brand span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.top{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{font-size:17px}
+.brand span{font-size:12px;color:var(--ink-3)}
 .field{display:flex;align-items:center;gap:6px}
 .field label{font-size:12.5px;color:var(--ink-2)}
-input[type=text],select,textarea{
-  background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
-  padding:6px 9px; min-width:0;
-}
-input[type=text]:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
-  outline:2px solid var(--accent); outline-offset:1px;
-}
-.mono{font-family:var(--mono);font-size:13px}
+.custom-size{display:flex;align-items:center;gap:4px}
+.custom-size input{width:72px}
+.custom-size[hidden]{display:none}
 
-.tabs{display:flex;gap:2px;padding:8px 12px 0;background:var(--panel);border-bottom:1px solid var(--line)}
-.tabs button{
-  flex:1; background:none;border:1px solid transparent;border-bottom:none;
-  padding:9px 6px; border-radius:9px 9px 0 0; color:var(--ink-2); cursor:pointer;
-  font-size:13.5px; font-weight:500;
-}
-.tabs button[aria-selected=true]{background:var(--bg);border-color:var(--line);color:var(--ink);margin-bottom:-1px}
-
-main{display:grid;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
-@media (min-width:1080px){
-  main{grid-template-columns:300px minmax(0,1fr) minmax(320px,.85fr);align-items:start}
-  .tabs{display:none}
-  .pane{display:block !important}
-}
-.pane{display:none}
-.pane.active{display:block}
-@media (min-width:1080px){ .pane{display:block} }
-
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
-.card > h2{font-size:13px;color:var(--ink-2);font-weight:600;margin-bottom:10px}
-.hint{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
-
-.palette{display:flex;flex-direction:column;gap:6px}
-.chip{
-  display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
-  background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;
-}
-.chip[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.swatch{width:12px;height:22px;border-radius:3px;flex:none}
-.chip .nm{font-family:var(--mono);font-size:12.5px}
-.chip .ds{font-size:11.5px;color:var(--ink-3);margin-left:auto}
-.addrow{display:flex;gap:6px;margin-top:10px}
-.addrow select{flex:1}
-button.act{
-  background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;
-  padding:7px 12px;cursor:pointer;font-weight:600;font-size:13.5px;
-}
+button.act{background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13.5px}
 button.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px}
 button.ghost:hover,button.act:hover{filter:brightness(1.08)}
 button.danger{color:var(--warn)}
 
-.painter{display:grid;gap:5px}
-.painter .corner{}
-.colhead,.rowhead{display:grid;gap:5px}
-.sizein{
-  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
-  padding:4px 5px;font-family:var(--mono);font-size:11px;text-align:center;
+.tabs{display:flex;gap:2px;padding:8px 12px 0;background:var(--panel);border-bottom:1px solid var(--line)}
+.tabs button{flex:1;background:none;border:1px solid transparent;border-bottom:none;padding:9px 6px;border-radius:9px 9px 0 0;color:var(--ink-2);cursor:pointer;font-size:13.5px;font-weight:500}
+.tabs button[aria-selected=true]{background:var(--bg);border-color:var(--line);color:var(--ink);margin-bottom:-1px}
+
+.layout{display:grid;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+.pane{display:none;min-width:0}
+.pane.active{display:block}
+.yamlwrap{max-width:1500px;margin:0 auto;padding:0 14px 14px}
+.yamlwrap.pane.active{display:block}
+@media (min-width:960px){
+  .tabs{display:none}
+  .layout{grid-template-columns:minmax(340px,410px) minmax(0,1fr);align-items:start}
+  .pane,.yamlwrap.pane{display:block}
+  .yamlgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
+  .mobile-only{display:none !important}
 }
-.cells{display:grid;gap:5px}
-.cell{
-  border:1px solid var(--line);border-radius:7px;min-height:52px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:11px;color:var(--ink);
-  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
-  background-size:8px 8px;
-  padding:2px;word-break:break-all;text-align:center;
-}
-.cell.empty{color:var(--ink-3)}
-.gridtools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+.cardhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cardhead h2{font-size:14px;margin-right:auto}
+.count{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:6px}
+
+.picker{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:12px;margin-bottom:12px}
+.picker[hidden]{display:none}
+.pgroup + .pgroup{margin-top:12px}
+.pgroup h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:7px;font-weight:600}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ptile{display:flex;gap:8px;align-items:flex-start;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 9px;cursor:pointer}
+.ptile:hover{border-color:var(--hue)}
+.ptile strong{display:block;font-size:13px;font-weight:600}
+.ptile small{display:block;font-size:11.5px;color:var(--ink-3);line-height:1.3;margin-top:1px}
+.swatch{width:10px;height:10px;border-radius:3px;flex:none;background:var(--hue);margin-top:4px}
+
+.blist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.blist .empty{font-size:13px;color:var(--ink-3);padding:10px 4px}
+.bitem{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);overflow:hidden}
+.bitem.sel{border-color:var(--hue);box-shadow:inset 3px 0 0 var(--hue)}
+.brow{display:flex;align-items:stretch}
+.bsel{flex:1;display:flex;align-items:center;gap:9px;min-width:0;background:none;border:none;padding:9px 6px 9px 12px;cursor:pointer;text-align:left}
+.bsel .swatch{margin-top:0}
+.bname{font-family:var(--mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btype{font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bflag{font-size:11px;color:var(--warn);border:1px solid currentColor;border-radius:999px;padding:0 6px;white-space:nowrap}
+.bflag.float{color:var(--ink-3)}
+.chev{margin-left:auto;color:var(--ink-3);transition:transform .15s}
+.bitem.open .chev{transform:rotate(180deg)}
+.bdel{background:none;border:none;border-left:1px solid var(--line);color:var(--ink-3);padding:0 13px;cursor:pointer;font-size:13px}
+.bdel:hover{color:var(--warn);background:var(--panel)}
+.bbody{border-top:1px solid var(--line);background:var(--panel);padding:12px;display:flex;flex-direction:column;gap:10px}
+
+.rowgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bbody label,.vs label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
+.bbody input[type=text],.bbody select,.bbody textarea,.vs input,.vs select{width:100%}
+textarea{font-family:var(--mono);font-size:12.5px;min-height:100px;resize:vertical}
+.checkrow{display:flex !important;align-items:center;gap:7px;font-size:13px !important;color:var(--ink) !important;margin:0 !important}
+.checkrow input{width:auto}
+.note{font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;margin:0}
+.place{font-size:12.5px;border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+details.sty summary{cursor:pointer;font-size:12.5px;color:var(--ink-2)}
+details.sty[open] summary{margin-bottom:8px}
+.item{border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--panel-2);display:flex;flex-direction:column;gap:7px}
+.ihead{display:flex;align-items:center;gap:6px}
+.ihead strong{font-size:12.5px;font-family:var(--mono);margin-right:auto}
+.mini{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:12px;line-height:1.6}
+.list{display:flex;flex-direction:column;gap:8px}
+.colorrow{display:flex;gap:6px;align-items:center}
+.colorrow input[type=color]{width:38px;height:32px;padding:0;border:1px solid var(--line);border-radius:7px;background:none;flex:none}
+.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.look{border:1px solid var(--line);border-radius:9px;padding:7px;background:var(--panel-2);cursor:pointer;text-align:left;font-size:12px}
+.look[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.look i{display:block;height:12px;margin-bottom:5px;border-radius:4px}
+
+details.vs summary{cursor:pointer;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center}
+details.vs summary::-webkit-details-marker{display:none}
+details.vs summary::after{content:"▾";margin-left:auto;color:var(--ink-3);transition:transform .15s}
+details.vs[open] summary::after{transform:rotate(180deg)}
+details.vs[open] summary{margin-bottom:12px}
+.vs .stack{display:flex;flex-direction:column;gap:9px}
 
 .stage{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;justify-content:center}
 .bezel{background:#05070a;border-radius:14px;padding:10px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.screen{
-  width:100%;display:grid;overflow:hidden;border-radius:6px;position:relative;
-  background:#1b2026 center/cover no-repeat; color:#fff;
-  font-family:var(--sans);
-}
-.screen > div{overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px}
-.pv-title{font-weight:600}
+.screen{width:100%;display:grid;overflow:hidden;border-radius:6px;position:relative;background:#1b2026 center/cover no-repeat;color:#fff;font-family:var(--sans)}
+.screen > div{overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px;min-width:0;min-height:0}
+.devlabel{font-size:12.5px;color:var(--ink-3)}
+.pv-title{font-weight:600;justify-content:flex-start !important}
 .pv-status{gap:8px;color:#cfd8e3}
 .pv-assist{background:rgba(0,0,0,.35);gap:10px;color:#cfd8e3;font-size:.9em}
 .pv-generic{border:1px dashed rgba(255,255,255,.28);border-radius:6px;color:#e6edf5}
 .pv-label{font-family:var(--mono);opacity:.8}
-
-.rowgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.rowgrid label,.stack label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
-.stack{display:flex;flex-direction:column;gap:8px}
-.stack input,.stack select,.stack textarea,.rowgrid input,.rowgrid select{width:100%}
-textarea{font-family:var(--mono);font-size:12.5px;min-height:100px;resize:vertical}
-
-pre.out{
-  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);
-  padding:12px;overflow:auto;max-height:62vh;font-family:var(--mono);font-size:12.5px;
-  white-space:pre;margin:0;
-}
-.outbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.alert{border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink);margin-bottom:10px}
-ol.steps{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)}
-ol.steps li{margin-bottom:5px}
-code.inl{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
-@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
-footer{max-width:1500px;margin:0 auto;padding:4px 16px 28px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3)}
-footer a{color:var(--ink-2)}
-footer .ver{font-family:var(--mono);font-size:11.5px}
-
-.item{border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--panel-2);display:flex;flex-direction:column;gap:7px}
-.item .ihead{display:flex;align-items:center;gap:6px}
-.item .ihead strong{font-size:12.5px;font-family:var(--mono);margin-right:auto}
-.mini{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:12px;line-height:1.6}
-.list{display:flex;flex-direction:column;gap:8px}
-.badge{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:5px;border:1px solid var(--line);color:var(--ink-2);margin-left:6px;white-space:nowrap}
-.checkrow{display:flex;align-items:center;gap:7px;font-size:13px}
-.checkrow input{width:auto}
-.colorrow{display:flex;gap:6px;align-items:center}
-.colorrow input[type=color]{width:38px;height:32px;padding:0;border:1px solid var(--line);border-radius:7px;background:none;flex:none}
-.looks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.look{border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--panel-2);cursor:pointer;text-align:left;font-size:12.5px}
-.look[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.look i{display:block;height:14px;margin-bottom:6px;border-radius:4px}
-.deps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.deps span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
-.painthint{font-size:12.5px;color:var(--warn);min-height:1.2em;margin:8px 0 0}
-optgroup{font-style:normal;color:var(--ink-3)}
-
 .pv-chips{gap:.5em;flex-wrap:wrap}
 .pv-chip{background:rgba(255,255,255,.14);border-radius:999px;padding:.25em .8em;font-size:.85em;white-space:nowrap}
 .pv-mt{justify-content:flex-start !important;gap:.7em;background:rgba(255,255,255,.08);border-radius:12px}
-.pv-mt .ic{width:2.2em;height:2.2em;border-radius:50%;display:grid;place-items:center;background:rgba(255,193,7,.25);flex:none}
+.pv-mt .ic{width:2.2em;height:2.2em;border-radius:50%;display:grid;place-items:center;background:rgba(255,122,61,.25);flex:none}
 .pv-mt small{display:block;opacity:.7}
+.pv-ml{flex-direction:column;gap:.35em;background:rgba(255,255,255,.08);border-radius:12px}
+.pv-ml .ic{width:2.4em;height:2.4em;border-radius:50%;display:grid;place-items:center;background:rgba(255,193,7,.28)}
+.pv-ml .bar{width:70%;height:.45em;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden}
+.pv-ml .bar i{display:block;height:100%;width:62%;background:#ffc107}
 .pv-media{flex-direction:column;gap:.4em;background:rgba(255,255,255,.07);border-radius:12px}
-.pv-media .art{width:45%;aspect-ratio:1;max-height:55%;border-radius:8px;background:linear-gradient(135deg,#6366f1,#ec4899)}
-.pv-cw{flex-direction:column;gap:.2em}
+.pv-media .art{width:42%;aspect-ratio:1;max-height:55%;border-radius:8px;background:linear-gradient(135deg,#6366f1,#ec4899)}
+.pv-media.full{background:linear-gradient(135deg,rgba(99,102,241,.55),rgba(236,72,153,.55))}
+.pv-cw{flex-direction:column;gap:.25em}
 .pv-cw .t{font-size:2.6em;font-weight:600;line-height:1}
+.pv-cw .r{display:flex;gap:1.2em;opacity:.85}
 .pv-tile{justify-content:flex-start !important;gap:.6em;background:rgba(255,255,255,.1);border-radius:12px;padding:.6em .9em !important}
+.pv-cal{flex-direction:column;align-items:stretch !important;justify-content:flex-start !important;gap:.35em;background:rgba(255,255,255,.06);border-radius:12px;padding:.7em !important}
+.pv-cal div{display:flex;gap:.8em;padding:.35em .5em;border-radius:7px;background:rgba(255,255,255,.07);font-size:.9em}
+.pv-cal b{min-width:4.2em;font-weight:500;opacity:.75}
+.pv-cam{background:linear-gradient(160deg,#2b3542,#11161c);border-radius:10px;position:relative}
+.pv-cam .live{position:absolute;top:.6em;left:.6em;font-size:.75em;background:rgba(0,0,0,.5);padding:.15em .55em;border-radius:5px}
+.pv-cam .live::before{content:"";display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#ef4444;margin-right:.35em}
 .pv-nav{position:absolute;display:flex;gap:.35em;padding:.4em;z-index:5;background:#262b33;box-shadow:0 4px 16px rgba(0,0,0,.4)}
-.pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.1em;padding:.35em .7em;border-radius:inherit;font-size:.8em;color:#cfd8e3;min-width:2.6em}
-.pv-nav .r .e{font-size:1.35em;line-height:1}
+.pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.1em;padding:.4em .6em;border-radius:inherit;font-size:.8em;color:#cfd8e3;min-width:2.4em}
+.pv-nav .r .e{font-size:1.3em;line-height:1}
 .pv-nav.v{flex-direction:column}
+
+.gridhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.gridhead h2{font-size:14px;margin-right:auto}
+.painting{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.painting .swatch{margin-top:0}
+.painter{display:grid;gap:5px}
+.colhead,.rowhead,.cells{display:grid;gap:5px}
+.sizein{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:4px 5px;font-family:var(--mono);font-size:11px;text-align:center}
+.cell{border:1px solid var(--line);border-radius:7px;min-height:46px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:8px 8px;padding:2px;word-break:break-all;text-align:center}
+.cell.empty{color:var(--ink-3)}
+.gridtools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.gridtools button[aria-pressed=true]{border-color:var(--warn);color:var(--warn)}
+.painthint{font-size:12.5px;color:var(--warn);min-height:1.2em;margin:8px 0 0}
+
+.alert{border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink);margin-bottom:8px}
+.ok{font-size:12.5px;color:var(--ink-3)}
+pre.out{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:12px;overflow:auto;max-height:70vh;font-family:var(--mono);font-size:12.5px;white-space:pre;margin:0}
+.outbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.deps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:12.5px;color:var(--ink-2)}
+.deps span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink)}
+ol.steps{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)}
+ol.steps li{margin-bottom:6px}
+
+.snack{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:10px;padding:9px 10px 9px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.snack[hidden]{display:none}
+.snack button{background:none;border:1px solid currentColor;color:inherit;border-radius:7px;padding:3px 10px;cursor:pointer;font-weight:600}
+
+footer{max-width:1500px;margin:0 auto;padding:4px 16px 28px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3)}
+footer a{color:var(--ink-2)}
+footer .ver{font-family:var(--mono);font-size:11.5px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
 <body>
@@ -201,98 +217,112 @@ optgroup{font-style:normal;color:var(--ink-3)}
 <header class="top">
   <div class="brand">
     <h1>PanelKit</h1>
-    <span>View Assist · button-card · grid areas</span>
+    <span>View Assist dashboard builder</span>
   </div>
   <div class="field">
     <label for="viewname">View</label>
-    <input type="text" id="viewname" class="mono" size="12" value="meinview">
+    <input type="text" id="viewname" class="mono" size="11" value="home">
   </div>
   <div class="field">
-    <label for="device">Display</label>
-    <select id="device">
-      <option value="1280x800">1280 × 800</option>
-      <option value="1024x600">1024 × 600</option>
-      <option value="800x480">800 × 480</option>
-      <option value="1920x1080">1920 × 1080</option>
-    </select>
+    <label for="device">Device</label>
+    <select id="device"></select>
+    <span class="custom-size" id="customsize" hidden>
+      <input type="number" id="cw" min="200" max="4000" aria-label="Width in pixels">
+      <span>×</span>
+      <input type="number" id="ch" min="200" max="4000" aria-label="Height in pixels">
+    </span>
   </div>
   <div class="field">
     <label for="preset">Template</label>
     <select id="preset">
       <option value="">choose…</option>
-      <option value="home">Home panel (chips, clock/weather, media, navbar)</option>
-      <option value="info">Info (title + text)</option>
-      <option value="infonav">Info with navbar</option>
-      <option value="infopic">Info with image</option>
-      <option value="timers">Timers &amp; alarms</option>
-      <option value="split">Two columns</option>
-      <option value="blank">Blank</option>
+      <optgroup label="Tab set with navbar">
+        <option value="home">Home (clock, weather, chips)</option>
+        <option value="camera">Camera (live feed, floodlight)</option>
+        <option value="music">Music (player, favorites)</option>
+        <option value="lights">Lights (room tiles, all off)</option>
+        <option value="calendar">Calendar (agenda)</option>
+      </optgroup>
+      <optgroup label="Single views">
+        <option value="info">Info (title and text)</option>
+        <option value="infonav">Info with navbar</option>
+        <option value="infopic">Info with image</option>
+        <option value="timers">Timers and alarms</option>
+        <option value="split">Two columns</option>
+        <option value="blank">Blank</option>
+      </optgroup>
     </select>
   </div>
-  <button class="ghost" id="themebtn" title="Light / dark" aria-label="Toggle light or dark theme">◐</button>
+  <button class="ghost" id="themebtn" title="Light or dark" aria-label="Toggle light or dark theme">◐</button>
 </header>
 
 <nav class="tabs" role="tablist">
   <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
-  <button role="tab" aria-selected="false" data-pane="layout">Grid</button>
+  <button role="tab" aria-selected="false" data-pane="layout">Preview</button>
   <button role="tab" aria-selected="false" data-pane="yaml">YAML</button>
 </nav>
 
-<datalist id="vaviews">
-  <option value="clock"><option value="weather"><option value="music"><option value="info">
-  <option value="infopic"><option value="alarm"><option value="intent"><option value="webpage">
-  <option value="camera"><option value="list"><option value="/lovelace/0"><option value="/lovelace">
+<datalist id="targets">
+  <option value="home"><option value="clock"><option value="camera"><option value="music"><option value="lights">
+  <option value="calendar"><option value="weather"><option value="info"><option value="alarm"><option value="intent">
+  <option value="/lovelace/0"><option value="script."><option value="scene.">
 </datalist>
 
-<main>
-  <section class="pane active" id="pane-build">
-    <div class="card">
-      <h2>Blocks</h2>
-      <div class="palette" id="palette"></div>
-      <div class="addrow">
-        <select id="newtype"></select>
-        <button class="act" id="addblock">Add</button>
+<div class="layout">
+  <aside class="pane active" id="pane-build">
+    <section class="card">
+      <div class="cardhead">
+        <h2>Blocks<span class="count" id="blockcount">0</span></h2>
+        <button class="act" id="addtoggle" aria-expanded="false" aria-controls="picker">+ Add block</button>
       </div>
-      <p class="hint">Pick a block, then tap the grid cells it should occupy. The navbar floats above the view and needs no cell.</p>
-    </div>
+      <div class="picker" id="picker" hidden></div>
+      <ol class="blist" id="blocklist"></ol>
+      <p class="hint">Open a block to edit it. The selected block is what you place when tapping grid cells.</p>
+    </section>
 
-    <div class="card" id="inspector">
-      <h2>Settings</h2>
-      <p class="hint" id="nosel">Tap a block in the list to set its content and style.</p>
-      <div id="inspbody" class="stack" hidden></div>
-    </div>
-
-    <div class="card">
-      <h2>Background &amp; links</h2>
+    <details class="card vs" id="viewsettings">
+      <summary>View settings</summary>
       <div class="stack">
         <div>
-          <label for="bgmode">Background source</label>
+          <label for="bgmode">Background</label>
           <select id="bgmode">
-            <option value="fixed">Fixed image file</option>
-            <option value="satellite">From the satellite entity (attributes.background)</option>
+            <option value="fixed">Image file</option>
+            <option value="satellite">From the satellite entity</option>
             <option value="color">Color only</option>
           </select>
         </div>
         <div id="bgpathwrap">
-          <label for="bgpath">Path or URL</label>
-          <input type="text" id="bgpath" class="mono" value="/local/viewassist/backgrounds/default.png">
+          <label for="bgpath">Image path or URL</label>
+          <input type="text" id="bgpath" class="mono">
         </div>
         <div>
           <label for="bgcolor">Base color</label>
-          <input type="text" id="bgcolor" class="mono" value="#24292c">
+          <input type="text" id="bgcolor" class="mono">
         </div>
         <div>
           <label for="vabase">View Assist dashboard path</label>
-          <input type="text" id="vabase" class="mono" value="/view-assist/">
+          <input type="text" id="vabase" class="mono">
         </div>
+        <p class="hint" style="margin:0">Link targets work the same everywhere. A plain name like <code class="inl">music</code> opens that view on this dashboard. A path like <code class="inl">/lovelace/0</code> opens any dashboard. <code class="inl">script.x</code> or <code class="inl">scene.x</code> runs it. <code class="inl">https://</code> opens a website.</p>
       </div>
-      <p class="hint">A target without a leading <code class="inl">/</code> counts as a view name and is appended to this path, e.g. <code class="inl">music</code> → <code class="inl">/view-assist/music</code>. Starting with <code class="inl">/</code>: any HA path. Starting with <code class="inl">https://</code>: external URL.</p>
-    </div>
-  </section>
+    </details>
+  </aside>
 
   <section class="pane" id="pane-layout">
     <div class="card">
-      <h2>Grid</h2>
+      <div class="cardhead">
+        <h2>Preview</h2>
+        <span class="devlabel" id="devlabel"></span>
+      </div>
+      <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
+      <div id="warnings" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="gridhead">
+        <h2>Grid</h2>
+        <span class="painting" id="painting"></span>
+      </div>
       <div class="painter" id="painter"></div>
       <p class="painthint" id="painthint"></p>
       <div class="gridtools">
@@ -300,22 +330,17 @@ optgroup{font-style:normal;color:var(--ink-3)}
         <button class="ghost" data-g="delrow">− Row</button>
         <button class="ghost" data-g="addcol">+ Column</button>
         <button class="ghost" data-g="delcol">− Column</button>
-        <button class="ghost" data-g="clear">Clear cell</button>
+        <button class="ghost" data-g="clear" aria-pressed="false">Eraser</button>
       </div>
-      <p class="hint">Sizes accept any CSS grid value: <code class="inl">1fr</code>, <code class="inl">min-content</code>, <code class="inl">15vh</code>, <code class="inl">200px</code>.</p>
-    </div>
-
-    <div class="card">
-      <h2>Preview</h2>
-      <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
-      <p class="hint">Shows placement, sizing and navbar style. Real card content is rendered by Home Assistant.</p>
+      <p class="hint">Tap cells to give them to the selected block. Sizes take any CSS grid value, for example <code class="inl">1fr</code>, <code class="inl">min-content</code>, <code class="inl">15vh</code> or <code class="inl">90px</code>.</p>
     </div>
   </section>
+</div>
 
-  <section class="pane" id="pane-yaml">
+<section class="yamlwrap pane" id="pane-yaml">
+  <div class="yamlgrid">
     <div class="card">
-      <h2>View YAML</h2>
-      <div id="warnings"></div>
+      <div class="cardhead"><h2>View YAML</h2></div>
       <div class="deps" id="deps"></div>
       <div class="outbar">
         <button class="act" id="copy">Copy</button>
@@ -324,51 +349,71 @@ optgroup{font-style:normal;color:var(--ink-3)}
       <pre class="out" id="yaml"></pre>
     </div>
     <div class="card">
-      <h2>How to install</h2>
+      <div class="cardhead"><h2>How to install</h2></div>
       <ol class="steps">
         <li>Install the cards listed above from HACS under <em>Frontend</em>, then reload the browser.</li>
-        <li>In the View Assist dashboard, add a new view with exactly the name above and the <em>Panel (1 card)</em> type.</li>
-        <li>Add a card → <em>Manual</em>, clear its contents, paste the YAML, save.</li>
+        <li>In the View Assist dashboard, add a view with exactly the name above and the <em>Panel (1 card)</em> type.</li>
+        <li>Add a card, choose <em>Manual</em>, clear it, paste the YAML, save.</li>
         <li>Open it with <code class="inl">view_assist.navigate</code> or from the navbar of another view.</li>
       </ol>
+      <p class="hint">Building a tab set? Create one view per template with the same navbar, and the active tab lights up on each.</p>
     </div>
-  </section>
-</main>
+  </div>
+</section>
 
 <footer>
   <a href="../">PanelKit</a>
   <a href="https://github.com/ma-2a/panelkit">GitHub</a>
   <a href="https://ko-fi.com/ma2a">Support on Ko-fi</a>
   <a href="https://github.com/ma-2a/panelkit/issues">Report an issue</a>
-  <span class="ver">v0.1.0</span>
+  <span class="ver">v0.2.0</span>
   <span>Not affiliated with the View Assist project or Home Assistant.</span>
 </footer>
+
+<div class="snack" id="snack" role="status" hidden><span id="snacktext"></span><button id="snackundo">Undo</button></div>
 
 <script>
 "use strict";
 
+const DEVICES = [
+  {id:"echo5",      label:"Echo Show 5",            w:960,  h:480},
+  {id:"echo8",      label:"Echo Show 8",            w:1280, h:800},
+  {id:"echo10",     label:"Echo Show 10",           w:1280, h:800},
+  {id:"thinksmart", label:"Lenovo ThinkSmart View", w:1280, h:800},
+  {id:"firehd8",    label:"Fire HD 8",              w:1280, h:800},
+  {id:"firehd10",   label:"Fire HD 10",             w:1920, h:1200},
+  {id:"tab7",       label:"7 inch tablet",          w:1024, h:600},
+  {id:"pi7",        label:"Raspberry Pi touch display", w:800, h:480},
+  {id:"fhd",        label:"Full HD screen",         w:1920, h:1080},
+  {id:"custom",     label:"Custom size"}
+];
+
 const TYPES = {
-  title:   {label:"Title",          hue:"#8b5cf6", group:"va"},
-  status:  {label:"Status icons",   hue:"#f59e0b", group:"va", provided:true},
-  assist:  {label:"Assist bar",  hue:"#14b8a6", group:"va", provided:true},
-  message: {label:"Message",      hue:"#3b82f6", group:"va"},
-  image:   {label:"Satellite image", hue:"#22c55e", group:"va"},
-  timers:  {label:"Timers & alarms", hue:"#f43f5e", group:"va"},
-  intent:  {label:"Intent cards",  hue:"#06b6d4", group:"va", hacs:"layout-card"},
-  webpage: {label:"Web page",       hue:"#a855f7", group:"va"},
+  title:   {label:"Title",          desc:"Heading text",               hue:"#8b5cf6", group:"va"},
+  status:  {label:"Status icons",   desc:"Mic, battery, network",      hue:"#f59e0b", group:"va", provided:true},
+  assist:  {label:"Assist bar",     desc:"Voice feedback",             hue:"#14b8a6", group:"va", provided:true},
+  message: {label:"Message",        desc:"Text from the satellite",    hue:"#3b82f6", group:"va"},
+  image:   {label:"Satellite image",desc:"Image the satellite shows",  hue:"#22c55e", group:"va"},
+  timers:  {label:"Timers and alarms", desc:"Running timers",          hue:"#f43f5e", group:"va"},
+  intent:  {label:"Intent cards",   desc:"Entities from a voice command", hue:"#06b6d4", group:"va", hacs:"layout-card"},
+  webpage: {label:"Web page",       desc:"Embedded page",              hue:"#a855f7", group:"va"},
 
-  navbar:  {label:"Navbar",                 hue:"#e11d48", group:"hacs", hacs:"Navbar Card", floating:true},
-  chips:   {label:"Chips row",           hue:"#f97316", group:"hacs", hacs:"Mushroom"},
-  mtemplate:{label:"Mushroom template card",hue:"#eab308", group:"hacs", hacs:"Mushroom"},
-  media:   {label:"Media player",            hue:"#ec4899", group:"hacs", hacs:"Mini Media Player"},
-  clockweather:{label:"Clock & weather",       hue:"#0ea5e9", group:"hacs", hacs:"Clock Weather Card"},
+  navbar:  {label:"Navbar",         desc:"Floating tab bar",           hue:"#e11d48", group:"hacs", hacs:"Navbar Card", floating:true},
+  chips:   {label:"Chips row",      desc:"Small status pills",         hue:"#f97316", group:"hacs", hacs:"Mushroom"},
+  mtemplate:{label:"Template card", desc:"Icon with two lines of text",hue:"#eab308", group:"hacs", hacs:"Mushroom"},
+  mlight:  {label:"Light",          desc:"Light with brightness",      hue:"#facc15", group:"hacs", hacs:"Mushroom"},
+  media:   {label:"Media player",   desc:"Cover and controls",         hue:"#ec4899", group:"hacs", hacs:"Mini Media Player"},
+  clockweather:{label:"Clock and weather", desc:"Time with forecast",  hue:"#0ea5e9", group:"hacs", hacs:"Clock Weather Card"},
 
-  tile:    {label:"Tile",  hue:"#84cc16", group:"other"},
-  shader:  {label:"Dim overlay",    hue:"#64748b", group:"other", floating:true},
-  custom:  {label:"Custom card (YAML)", hue:"#94a3b8", group:"other"}
+  camera:  {label:"Camera",         desc:"Live feed",                  hue:"#64748b", group:"core"},
+  calendar:{label:"Calendar",       desc:"Agenda, day or month",       hue:"#10b981", group:"core"},
+  tile:    {label:"Tile",           desc:"Any entity",                 hue:"#84cc16", group:"core"},
+  shader:  {label:"Dim overlay",    desc:"Darkens the background",     hue:"#475569", group:"core", floating:true},
+  custom:  {label:"Custom card",    desc:"Paste any card YAML",        hue:"#94a3b8", group:"core"}
 };
-const GROUPS = {va:"View Assist", hacs:"HACS cards", other:"Other"};
+const GROUPS = {va:"View Assist", hacs:"HACS cards", core:"Home Assistant"};
 const DEFAULT_STYLE = {fontSize:"",alignSelf:"",justifySelf:"",padding:"",background:"",radius:"",textAlign:"",overflow:""};
+const ACCENT = "#ff7a3d";
 
 function blockDefaults(type){
   const b = {type, style:{...DEFAULT_STYLE}};
@@ -381,25 +426,27 @@ function blockDefaults(type){
     case "custom":  b.yaml = "type: markdown\ncontent: Hello from View Assist"; break;
     case "shader":  b.shade = "0.15"; break;
     case "navbar":
-      Object.assign(b,{look:"pill", position:"left", showLabels:true, primary:"#4fc3f7", bg:"", radius:"", autoPadding:false,
+      Object.assign(b,{look:"glass", position:"right", showLabels:false, primary:ACCENT, bg:"", radius:"", autoPadding:false,
         routes:[
-          {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"/lovelace/0"},
-          {icon:"mdi:clock-outline", iconSel:"", label:"Clock", target:"clock"},
-          {icon:"mdi:weather-partly-cloudy", iconSel:"", label:"Weather", target:"weather"},
-          {icon:"mdi:music", iconSel:"", label:"Music", target:"music"}
+          {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"home"},
+          {icon:"mdi:music", iconSel:"", label:"Music", target:"music"},
+          {icon:"mdi:calendar-month-outline", iconSel:"mdi:calendar-month", label:"Calendar", target:"calendar"}
         ]});
       break;
     case "chips":
       b.alignment = "center"; b.style.alignSelf = "center";
       b.chips = [
         {kind:"weather", entity:"weather.home", icon:"", content:"", target:""},
-        {kind:"entity",  entity:"sensor.living_room_temperature", icon:"mdi:thermometer", content:"", target:""},
-        {kind:"template",entity:"", icon:"mdi:music", content:"Music", target:"music"}
+        {kind:"entity", entity:"sensor.living_room_temperature", icon:"mdi:thermometer", content:"", target:""}
       ];
       break;
     case "mtemplate":
-      Object.assign(b,{entity:"light.living_room", primary:"Living room", secondary:"{{ states('light.living_room') }}", icon:"mdi:sofa", icon_color:"amber", layout:"", fill:true, target:""});
-      b.style.alignSelf="center"; b.style.padding="2%";
+      Object.assign(b,{entity:"", primary:"Living room", secondary:"", icon:"mdi:sofa", icon_color:"amber", layout:"", fill:true, target:""});
+      b.style.alignSelf="stretch"; b.style.padding="2%";
+      break;
+    case "mlight":
+      Object.assign(b,{entity:"light.living_room", name:"", icon:"", brightness:true, lightColor:true, layout:"vertical", fill:true});
+      b.style.alignSelf="stretch"; b.style.padding="2%";
       break;
     case "media":
       Object.assign(b,{entity:"media_player.living_room", artwork:"cover", info:"scroll", hideVolume:false, hidePower:true, hideSource:true, hideControls:false});
@@ -413,6 +460,14 @@ function blockDefaults(type){
       Object.assign(b,{entity:"light.living_room", name:"", icon:"", picture:false, target:""});
       b.style.alignSelf="center"; b.style.padding="2%";
       break;
+    case "camera":
+      Object.assign(b,{entity:"camera.front_door", engine:"core", live:true});
+      b.style.alignSelf="stretch"; b.style.padding="1%"; b.style.radius="12px"; b.style.overflow="hidden";
+      break;
+    case "calendar":
+      Object.assign(b,{entities:"calendar.family", view:"listWeek", title:""});
+      b.style.alignSelf="stretch"; b.style.padding="1% 2%"; b.style.overflow="auto";
+      break;
   }
   return b;
 }
@@ -420,14 +475,23 @@ function blockDefaults(type){
 const COLORS = ["","red","pink","purple","deep-purple","indigo","blue","light-blue","cyan","teal","green","light-green","lime","yellow","amber","orange","deep-orange","brown","grey","white"];
 const SCHEMAS = {
   mtemplate:[
-    {k:"entity",l:"Entity",ph:"light.living_room"},
-    {k:"primary",l:"Primary text (Jinja allowed)"},
-    {k:"secondary",l:"Secondary text (Jinja allowed)"},
+    {k:"entity",l:"Entity (optional)",ph:"light.living_room"},
+    {k:"primary",l:"Primary text, Jinja allowed"},
+    {k:"secondary",l:"Secondary text, Jinja allowed"},
     {k:"icon",l:"Icon",ph:"mdi:sofa"},
     {k:"icon_color",l:"Icon color",kind:"select",opts:COLORS},
     {k:"layout",l:"Layout",kind:"select",opts:["","vertical","horizontal"]},
     {k:"fill",l:"Fill the area",kind:"check"},
-    {k:"target",l:"Tap opens",kind:"target"}
+    {k:"target",l:"Tap opens or runs",kind:"target"}
+  ],
+  mlight:[
+    {k:"entity",l:"Light entity",ph:"light.living_room"},
+    {k:"name",l:"Name (optional)"},
+    {k:"icon",l:"Icon (optional)",ph:"mdi:lamp"},
+    {k:"layout",l:"Layout",kind:"select",opts:["","vertical","horizontal"]},
+    {k:"brightness",l:"Brightness slider",kind:"check"},
+    {k:"lightColor",l:"Use the light's color",kind:"check"},
+    {k:"fill",l:"Fill the area",kind:"check"}
   ],
   media:[
     {k:"entity",l:"Media player entity",ph:"media_player.living_room"},
@@ -452,71 +516,172 @@ const SCHEMAS = {
     {k:"name",l:"Name (optional)"},
     {k:"icon",l:"Icon (optional)",ph:"mdi:lamp"},
     {k:"picture",l:"Show entity picture",kind:"check"},
-    {k:"target",l:"Tap opens (otherwise default)",kind:"target"}
+    {k:"target",l:"Tap opens or runs (empty: toggle)",kind:"target"}
+  ],
+  camera:[
+    {k:"entity",l:"Camera entity",ph:"camera.front_door"},
+    {k:"engine",l:"Card",kind:"select",opts:["core","advanced"],labels:{core:"Picture entity (built in)",advanced:"Advanced Camera Card (HACS)"}},
+    {k:"live",l:"Live stream instead of snapshots",kind:"check",only:b=>b.engine!=="advanced"}
+  ],
+  calendar:[
+    {k:"entities",l:"Calendars, comma separated",ph:"calendar.family, calendar.birthdays"},
+    {k:"view",l:"View",kind:"select",opts:["listWeek","dayGridDay","dayGridMonth"],labels:{listWeek:"Agenda (week list)",dayGridDay:"Day",dayGridMonth:"Month"}},
+    {k:"title",l:"Title (optional)"}
   ]
 };
 const NAV_LOOKS = {
-  standard:   {l:"Plain",   sw:"background:#2d333b"},
-  pill:       {l:"Pill",      sw:"background:#2d333b;border-radius:999px"},
-  glass:      {l:"Glass",       sw:"background:rgba(120,140,170,.35);border:1px solid rgba(255,255,255,.25)"},
-  transparent:{l:"Transparent",sw:"background:transparent;border:1px dashed var(--line)"}
+  standard:   {l:"Plain",      sw:"background:#2d333b"},
+  pill:       {l:"Pill",       sw:"background:#2d333b;border-radius:999px"},
+  glass:      {l:"Glass",      sw:"background:rgba(120,140,170,.35);border:1px solid rgba(255,255,255,.25)"},
+  transparent:{l:"Clear",      sw:"background:transparent;border:1px dashed var(--line)"}
 };
-const CHIP_KINDS = {weather:"Weather", entity:"Entity", template:"Text + icon", action:"Icon only", back:"Back"};
+const CHIP_KINDS = {weather:"Weather", entity:"Entity", template:"Text and icon", action:"Icon only", back:"Back"};
 
 let state;
 function base(){
-  return {name:"meinview", cols:2, colSizes:["1fr","1fr"], rows:[], blocks:{},
-    bgmode:"fixed", bgpath:"/local/viewassist/backgrounds/default.png", bgcolor:"#24292c",
-    vaBase:"/view-assist/", device:"1280x800", selected:null};
+  return {name:"home", cols:2, colSizes:["1fr","1fr"], rows:[], blocks:{},
+    bgmode:"color", bgpath:"/local/viewassist/backgrounds/default.png", bgcolor:"#1b1f24",
+    vaBase:"/view-assist/", device:"echo5", customW:1280, customH:800, selected:null, expanded:true};
+}
+function tabNavbar(){
+  const b = blockDefaults("navbar");
+  b.routes = [
+    {icon:"mdi:home-outline", iconSel:"mdi:home", label:"Home", target:"home"},
+    {icon:"mdi:cctv", iconSel:"", label:"Camera", target:"camera"},
+    {icon:"mdi:music", iconSel:"", label:"Music", target:"music"},
+    {icon:"mdi:lightbulb-group-outline", iconSel:"mdi:lightbulb-group", label:"Lights", target:"lights"},
+    {icon:"mdi:calendar-month-outline", iconSel:"mdi:calendar-month", label:"Calendar", target:"calendar"}
+  ];
+  return b;
+}
+function withNav(s){
+  s.cols += 1; s.colSizes.push("90px");
+  s.rows.forEach(r=>r.cells.push("."));
+  s.blocks.navbar = tabNavbar();
+  return s;
+}
+function titled(text){ const t=blockDefaults("title"); t.text=text; return t; }
+function provided(){ return {status:blockDefaults("status"), assist:blockDefaults("assist")}; }
+
+function presetHome(){
+  const s=base(); s.name="home";
+  s.rows=[
+    {size:"min-content",cells:["title","status"]},
+    {size:"1fr",cells:["clockweather","clockweather"]},
+    {size:"min-content",cells:["chips","chips"]},
+    {size:"min-content",cells:["assist","assist"]}
+  ];
+  const chips=blockDefaults("chips");
+  chips.chips=[
+    {kind:"weather", entity:"weather.home", icon:"", content:"", target:""},
+    {kind:"template", entity:"", icon:"mdi:calendar", content:"{{ state_attr('calendar.family', 'message') or 'No events' }}", target:"calendar"},
+    {kind:"template", entity:"", icon:"mdi:music", content:"Music", target:"music"}
+  ];
+  s.blocks={title:titled("Home"), ...provided(), clockweather:blockDefaults("clockweather"), chips};
+  s.selected="clockweather"; return withNav(s);
+}
+function presetCamera(){
+  const s=base(); s.name="camera"; s.colSizes=["3fr","1fr"];
+  s.rows=[
+    {size:"min-content",cells:["title","status"]},
+    {size:"1fr",cells:["camera","floodlight"]},
+    {size:"min-content",cells:["assist","assist"]}
+  ];
+  const fl=blockDefaults("mlight"); Object.assign(fl,{entity:"light.front_door_floodlight", name:"Floodlight", icon:"mdi:light-flood-down"});
+  s.blocks={title:titled("Camera"), ...provided(), camera:blockDefaults("camera"), floodlight:fl};
+  s.selected="camera"; return withNav(s);
+}
+function presetMusic(){
+  const s=base(); s.name="music";
+  s.rows=[
+    {size:"min-content",cells:["title","status"]},
+    {size:"1fr",cells:["player","player"]},
+    {size:"min-content",cells:["favorites","radio"]},
+    {size:"min-content",cells:["assist","assist"]}
+  ];
+  const player=blockDefaults("media"); Object.assign(player,{artwork:"full-cover", hideSource:false});
+  const fav=blockDefaults("mtemplate"); Object.assign(fav,{primary:"Favorites", icon:"mdi:heart", icon_color:"deep-orange", layout:"horizontal", target:"script.play_favorites"});
+  const radio=blockDefaults("mtemplate"); Object.assign(radio,{primary:"Radio", icon:"mdi:radio", icon_color:"blue", layout:"horizontal", target:"script.play_radio"});
+  s.blocks={title:titled("Music"), ...provided(), player, favorites:fav, radio};
+  s.selected="player"; return withNav(s);
+}
+function presetLights(){
+  const s=base(); s.name="lights"; s.cols=3; s.colSizes=["1fr","1fr","1fr"];
+  s.rows=[
+    {size:"min-content",cells:["title","title","status"]},
+    {size:"1fr",cells:["living","floorlamp","office"]},
+    {size:"1fr",cells:["desk","garden","alloff"]},
+    {size:"min-content",cells:["assist","assist","assist"]}
+  ];
+  const L=(e,n,i)=>{ const b=blockDefaults("mlight"); Object.assign(b,{entity:e,name:n,icon:i}); return b; };
+  const off=blockDefaults("mtemplate"); Object.assign(off,{primary:"All off", icon:"mdi:power", icon_color:"red", layout:"vertical", target:"script.all_lights_off"});
+  s.blocks={title:titled("Lights"), ...provided(),
+    living:L("light.living_room","Living room","mdi:sofa"),
+    floorlamp:L("light.living_room_floor_lamp","Floor lamp","mdi:floor-lamp"),
+    office:L("light.office","Office","mdi:desk"),
+    desk:L("light.office_desk_lamp","Desk lamp","mdi:desk-lamp"),
+    garden:L("light.garden","Garden","mdi:flower"),
+    alloff:off};
+  s.selected="living"; return withNav(s);
+}
+function presetCalendar(){
+  const s=base(); s.name="calendar";
+  s.rows=[
+    {size:"min-content",cells:["title","status"]},
+    {size:"1fr",cells:["agenda","agenda"]},
+    {size:"min-content",cells:["assist","assist"]}
+  ];
+  const cal=blockDefaults("calendar"); cal.entities="calendar.family, calendar.birthdays";
+  s.blocks={title:titled("Calendar"), ...provided(), agenda:cal};
+  s.selected="agenda"; return withNav(s);
 }
 function presetInfo(){
-  const s = base();
+  const s=base(); s.name="info"; s.bgmode="fixed";
   s.rows=[{size:"min-content",cells:["title","status"]},{size:"4fr",cells:["message","message"]},{size:"min-content",cells:["assist","assist"]}];
-  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),message:blockDefaults("message"),assist:blockDefaults("assist")};
+  s.blocks={title:titled("Info"), ...provided(), message:blockDefaults("message")};
   s.selected="message"; return s;
 }
-function presetInfonav(){ const s=presetInfo(); s.blocks.navbar=blockDefaults("navbar"); s.selected="navbar"; return s; }
+function presetInfonav(){ const s=withNav(presetInfo()); s.selected="navbar"; return s; }
 function presetInfopic(){
-  const s=presetInfo(); s.colSizes=["1fr","2fr"]; s.rows[1].cells=["image","message"];
+  const s=presetInfo(); s.name="infopic"; s.colSizes=["1fr","2fr"]; s.rows[1].cells=["image","message"];
   s.blocks.image=blockDefaults("image"); s.selected="image"; return s;
 }
 function presetTimers(){
-  const s=presetInfo();
+  const s=presetInfo(); s.name="timers";
   s.rows=[{size:"15vh",cells:["title","status"]},{size:"max-content",cells:["timers","timers"]},{size:"10vh",cells:["assist","assist"]}];
-  delete s.blocks.message; s.blocks.timers=blockDefaults("timers"); s.blocks.title.text="Timers & alarms";
+  delete s.blocks.message; s.blocks.timers=blockDefaults("timers"); s.blocks.title.text="Timers and alarms";
   s.selected="timers"; return s;
 }
 function presetSplit(){
-  const s=presetInfo(); s.rows[1]={size:"1fr",cells:["message","card"]};
+  const s=presetInfo(); s.name="split"; s.rows[1]={size:"1fr",cells:["message","card"]};
   s.blocks.card=blockDefaults("custom"); s.selected="card"; return s;
 }
-function presetHome(){
-  const s=base();
-  s.colSizes=["1fr","1fr"];
-  s.rows=[
-    {size:"min-content",cells:["title","status"]},
-    {size:"min-content",cells:["chips","chips"]},
-    {size:"1fr",cells:["clockweather","media"]},
-    {size:"min-content",cells:["assist","assist"]}
-  ];
-  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),chips:blockDefaults("chips"),
-    clockweather:blockDefaults("clockweather"),media:blockDefaults("media"),assist:blockDefaults("assist"),navbar:blockDefaults("navbar")};
-  s.blocks.title.text="Home"; s.name="home"; s.selected="navbar"; return s;
-}
 function presetBlank(){
-  const s=base(); s.bgmode="color";
+  const s=base(); s.name="myview";
   s.rows=[{size:"min-content",cells:["title","status"]},{size:"1fr",cells:[".","."]},{size:"min-content",cells:["assist","assist"]}];
-  s.blocks={title:blockDefaults("title"),status:blockDefaults("status"),assist:blockDefaults("assist")};
+  s.blocks={title:blockDefaults("title"), ...provided()};
   s.selected="title"; return s;
 }
-const PRESETS = {home:presetHome, info:presetInfo, infonav:presetInfonav, infopic:presetInfopic, timers:presetTimers, split:presetSplit, blank:presetBlank};
+const PRESETS = {home:presetHome, camera:presetCamera, music:presetMusic, lights:presetLights, calendar:presetCalendar,
+  info:presetInfo, infonav:presetInfonav, infopic:presetInfopic, timers:presetTimers, split:presetSplit, blank:presetBlank};
 
 const KEY = "panelkit.view";
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    if(raw){ const p = JSON.parse(raw); if(p && p.rows && p.blocks){ return Object.assign(base(), p); } }
+    if(raw){
+      const p = JSON.parse(raw);
+      if(p && p.rows && p.blocks){
+        const s = Object.assign(base(), p);
+        if(!DEVICES.some(d=>d.id===s.device)){
+          const m = /^(\d+)x(\d+)$/.exec(String(s.device||""));
+          const hit = m && DEVICES.find(d=>d.w==+m[1] && d.h==+m[2]);
+          s.device = hit ? hit.id : "echo5";
+        }
+        return s;
+      }
+    }
   }catch(e){}
   return presetHome();
 }
@@ -524,26 +689,37 @@ function load(){
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function hueOf(a){ const b=state.blocks[a]; return b ? TYPES[b.type].hue : "#64748b"; }
-function tint(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function tint(hex,a){ const n=parseInt(String(hex).slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
 function uniqueName(b){ let n=b,i=2; while(state.blocks[n]) n=b+i++; return n; }
-function safeIdent(s){ return (s||"").toLowerCase().replace(/[^a-z0-9_]/g,"_").replace(/^([0-9])/,"a$1") || "feld"; }
+function safeIdent(s){ return (s||"").toLowerCase().replace(/[^a-z0-9_]/g,"_").replace(/^([0-9])/,"a$1") || "block"; }
+function deviceSize(){
+  const d = DEVICES.find(x=>x.id===state.device);
+  if(!d || d.id==="custom") return [Math.max(200,+state.customW||1280), Math.max(200,+state.customH||800)];
+  return [d.w, d.h];
+}
 
 function navTarget(t){
   t = (t||"").trim(); if(!t) return null;
   if(/^https?:\/\//i.test(t)) return {kind:"url", v:t};
+  if(/^(script|scene|automation)\.[a-z0-9_]+$/i.test(t)) return {kind:"action", v:t};
   if(t.startsWith("/")) return {kind:"path", v:t};
   const b = (state.vaBase||"/view-assist/").replace(/\/?$/,"/");
   return {kind:"path", v:b+t};
 }
-function tapFor(t){
-  const n = navTarget(t); if(!n) return undefined;
-  return n.kind==="url" ? {action:"url", url_path:n.v} : {action:"navigate", navigation_path:n.v};
+function actionFor(n){
+  if(n.kind==="url") return {action:"url", url_path:n.v};
+  if(n.kind==="action"){
+    const domain = n.v.split(".")[0];
+    return {action:"perform-action", perform_action: domain==="automation" ? "automation.trigger" : domain+".turn_on", target:{entity_id:n.v}};
+  }
+  return {action:"navigate", navigation_path:n.v};
 }
+function tapFor(t){ const n=navTarget(t); return n ? actionFor(n) : undefined; }
 
-const EMOJI = [["home","🏠"],["clock","🕒"],["alarm","⏰"],["timer","⏲️"],["weather","⛅"],["sun","☀️"],["music","🎵"],["play","▶️"],
-  ["speaker","🔊"],["light","💡"],["lamp","💡"],["thermo","🌡️"],["calendar","📅"],["camera","📷"],["cog","⚙️"],["info","ℹ️"],
-  ["web","🌐"],["cart","🛒"],["list","📝"],["check","✅"],["micro","🎙️"],["sofa","🛋️"],["bed","🛏️"],["fire","🔥"],["lock","🔒"],
-  ["dots","⋯"],["arrow-left","←"],["chevron-left","←"],["star","⭐"],["heart","❤️"],["robot","🤖"],["power","⏻"],["water","💧"]];
+const EMOJI = [["home","🏠"],["clock","🕒"],["alarm","⏰"],["timer","⏲️"],["weather","⛅"],["sun","☀️"],["music","🎵"],["radio","📻"],["play","▶️"],
+  ["speaker","🔊"],["flood","🔦"],["floor-lamp","🪔"],["desk","💡"],["light","💡"],["lamp","💡"],["thermo","🌡️"],["calendar","📅"],["cctv","📹"],["camera","📷"],
+  ["cog","⚙️"],["info","ℹ️"],["web","🌐"],["cart","🛒"],["list","📝"],["check","✅"],["micro","🎙️"],["sofa","🛋️"],["bed","🛏️"],
+  ["fire","🔥"],["lock","🔒"],["dots","⋯"],["arrow-left","←"],["star","⭐"],["heart","❤️"],["robot","🤖"],["power","⏻"],["water","💧"],["flower","🌷"]];
 function emo(icon){ const i=(icon||"").toLowerCase(); for(const [k,e] of EMOJI) if(i.includes(k)) return e; return "●"; }
 
 const isObj = v => v && typeof v==="object" && !Array.isArray(v);
@@ -561,7 +737,8 @@ function scalar(x, ind){
 function clean(v){
   if(Array.isArray(v)) return v.map(clean).filter(x=>x!==undefined);
   if(isObj(v)){
-    const o={}; for(const [k,x] of Object.entries(v)){ const c=clean(x); if(c!==undefined && c!=="" && c!==null && !(isObj(c)&&!Object.keys(c).length)) o[k]=c; }
+    const o={};
+    for(const [k,x] of Object.entries(v)){ const c=clean(x); if(c!==undefined && c!=="" && c!==null && !(isObj(c)&&!Object.keys(c).length)) o[k]=c; }
     return o;
   }
   return v;
@@ -594,6 +771,7 @@ function navbarCss(b){
   if(b.bg && b.look!=="transparent") L.push(`background: ${b.bg};`);
   return L.length ? ".navbar {\n" + L.map(l=>"  "+l).join("\n") + "\n}" : "";
 }
+function calEntities(b){ return String(b.entities||"").split(/[,\s]+/).map(x=>x.trim()).filter(Boolean); }
 function cardCfg(b){
   switch(b.type){
     case "navbar": {
@@ -603,11 +781,11 @@ function cardCfg(b){
         o.icon = r.icon || "mdi:circle-outline";
         if(r.iconSel) o.icon_selected = r.iconSel;
         if(r.label) o.label = r.label;
-        if(n && n.kind==="url") o.tap_action = {action:"url", url_path:n.v};
+        if(n && n.kind!=="path") o.tap_action = actionFor(n);
         return o;
       });
       const cfg = {type:"custom:navbar-card",
-        desktop:{position:b.position||"left", show_labels:!!b.showLabels},
+        desktop:{position:b.position||"right", show_labels:!!b.showLabels},
         mobile:{show_labels:!!b.showLabels},
         layout:{auto_padding:{enabled:!!b.autoPadding}},
         routes};
@@ -628,6 +806,9 @@ function cardCfg(b){
     case "mtemplate":
       return {type:"custom:mushroom-template-card", entity:b.entity, primary:b.primary, secondary:b.secondary,
         icon:b.icon, icon_color:b.icon_color, layout:b.layout, fill_container:b.fill||undefined, tap_action:tapFor(b.target)};
+    case "mlight":
+      return {type:"custom:mushroom-light-card", entity:b.entity, name:b.name, icon:b.icon, layout:b.layout,
+        show_brightness_control:b.brightness||undefined, use_light_color:b.lightColor||undefined, fill_container:b.fill||undefined};
     case "media": {
       const hide={}; if(b.hideVolume) hide.volume=true; if(b.hidePower) hide.power=true; if(b.hideSource) hide.source=true; if(b.hideControls) hide.controls=true;
       return {type:"custom:mini-media-player", entity:b.entity, artwork:b.artwork, info:b.info, hide};
@@ -638,34 +819,243 @@ function cardCfg(b){
         hide_forecast_section:b.hideForecast||undefined, show_humidity:b.showHumidity||undefined, animated_icon:b.animated||undefined};
     case "tile":
       return {type:"tile", entity:b.entity, name:b.name, icon:b.icon, show_entity_picture:b.picture||undefined, tap_action:tapFor(b.target)};
+    case "camera":
+      if(b.engine==="advanced") return {type:"custom:advanced-camera-card", cameras:[{camera_entity:b.entity}]};
+      return {type:"picture-entity", entity:b.entity, camera_view:b.live?"live":"auto", show_name:false, show_state:false};
+    case "calendar":
+      return {type:"calendar", title:b.title, initial_view:b.view||"listWeek", entities:calEntities(b)};
   }
   return null;
 }
+function hacsOf(b){
+  if(b.type==="camera") return b.engine==="advanced" ? "Advanced Camera Card" : null;
+  return TYPES[b.type].hacs || null;
+}
 
-function renderPalette(){
-  const el=$("#palette"); el.innerHTML="";
+function renderDevices(){
+  const sel=$("#device");
+  if(!sel.options.length){
+    DEVICES.forEach(d=>{
+      const o=document.createElement("option"); o.value=d.id;
+      o.textContent = d.w ? `${d.label} (${d.w} × ${d.h})` : d.label;
+      sel.appendChild(o);
+    });
+  }
+  sel.value=state.device;
+  $("#customsize").hidden = state.device!=="custom";
+  $("#cw").value=state.customW; $("#ch").value=state.customH;
+}
+
+function renderPicker(){
+  const p=$("#picker");
+  p.innerHTML = Object.entries(GROUPS).map(([g,gl])=>`<div class="pgroup"><h3>${esc(gl)}</h3><div class="pgrid">${
+    Object.entries(TYPES).filter(([,v])=>v.group===g).map(([k,v])=>
+      `<button class="ptile" data-add="${k}" style="--hue:${v.hue}"><span class="swatch"></span><span><strong>${esc(v.label)}</strong><small>${esc(v.desc)}${v.hacs&&g==="hacs"?`, ${esc(v.hacs)}`:""}</small></span></button>`
+    ).join("")}</div></div>`).join("");
+  p.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addBlock(b.dataset.add));
+}
+function togglePicker(open){
+  const p=$("#picker"), b=$("#addtoggle");
+  const show = open ?? p.hidden;
+  p.hidden = !show; b.setAttribute("aria-expanded", String(show)); b.textContent = show ? "Close" : "+ Add block";
+}
+function addBlock(t){
+  const nameMap={custom:"card",mtemplate:"button",mlight:"light",clockweather:"clockweather"};
+  const a=uniqueName(nameMap[t]||t);
+  state.blocks[a]=blockDefaults(t); state.selected=a; state.expanded=true; state.paintEmpty=false;
+  togglePicker(false);
+  $("#painthint").textContent = TYPES[t].floating ? "" : `Tap grid cells to place “${a}”.`;
+  renderAll();
+  const el=document.querySelector(`[data-block="${a}"]`); if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
+
+let undoState=null, snackTimer=null;
+function removeBlock(a){
+  const cells=[];
+  state.rows.forEach((r,ri)=>r.cells.forEach((c,ci)=>{ if(c===a){ cells.push([ri,ci]); r.cells[ci]="."; } }));
+  undoState={a, block:state.blocks[a], cells, order:Object.keys(state.blocks)};
+  delete state.blocks[a];
+  if(state.selected===a) state.selected=null;
+  renderAll();
+  showSnack(`Removed “${a}”`);
+}
+function undoRemove(){
+  if(!undoState) return;
+  const {a, block, cells, order} = undoState;
+  const nb={}; order.forEach(k=>{ if(k===a) nb[a]=block; else if(state.blocks[k]) nb[k]=state.blocks[k]; });
+  Object.keys(state.blocks).forEach(k=>{ if(!(k in nb)) nb[k]=state.blocks[k]; });
+  state.blocks=nb;
+  cells.forEach(([ri,ci])=>{ if(state.rows[ri] && ci<state.rows[ri].cells.length && state.rows[ri].cells[ci]===".") state.rows[ri].cells[ci]=a; });
+  state.selected=a; state.expanded=true; undoState=null;
+  hideSnack(); renderAll();
+}
+function showSnack(text){
+  $("#snacktext").textContent=text; $("#snack").hidden=false;
+  clearTimeout(snackTimer); snackTimer=setTimeout(hideSnack,6000);
+}
+function hideSnack(){ $("#snack").hidden=true; }
+
+function renderBlocks(){
+  const list=$("#blocklist"); list.innerHTML="";
   const names=Object.keys(state.blocks);
-  if(!names.length) el.innerHTML='<p class="hint">No blocks yet. Add one below.</p>';
+  $("#blockcount").textContent=names.length;
+  if(!names.length){ list.innerHTML='<li class="empty">No blocks yet. Use “+ Add block” or pick a template at the top.</li>'; return; }
+  const placed=new Set(usedAreas());
   names.forEach(a=>{
     const b=state.blocks[a], t=TYPES[b.type];
-    const btn=document.createElement("button");
-    btn.className="chip"; btn.setAttribute("aria-pressed", String(state.selected===a));
-    btn.innerHTML=`<span class="swatch" style="background:${t.hue}${t.floating?';border-radius:50%;height:12px':''}"></span>
-      <span class="nm">${esc(a)}</span><span class="ds">${esc(t.label)}</span>`;
-    btn.onclick=()=>{ state.selected=a; renderAll(); };
-    el.appendChild(btn);
+    const sel=state.selected===a, open=sel && state.expanded;
+    const li=document.createElement("li");
+    li.className="bitem"+(sel?" sel":"")+(open?" open":"");
+    li.dataset.block=a;
+    li.style.setProperty("--hue", t.hue);
+    let flag="";
+    if(t.floating) flag='<span class="bflag float">floats</span>';
+    else if(!placed.has(a)) flag='<span class="bflag">not placed</span>';
+    li.innerHTML=`<div class="brow">
+      <button class="bsel" aria-expanded="${open}"><span class="swatch"></span><span class="bname">${esc(a)}</span><span class="btype">${esc(t.label)}</span>${flag}<span class="chev" aria-hidden="true">▾</span></button>
+      <button class="bdel" aria-label="Remove ${esc(a)}" title="Remove">✕</button></div>`;
+    li.querySelector(".bsel").onclick=()=>{
+      if(state.selected===a) state.expanded=!state.expanded; else { state.selected=a; state.expanded=true; }
+      state.paintEmpty=false; $("#painthint").textContent=""; renderAll();
+    };
+    li.querySelector(".bdel").onclick=()=>removeBlock(a);
+    if(open){
+      const body=document.createElement("div"); body.className="bbody";
+      body.innerHTML=inspectorHTML(a,b,placed.has(a));
+      li.appendChild(body);
+    }
+    list.appendChild(li);
   });
-  const sel=$("#newtype");
-  if(!sel.options.length){
-    Object.entries(GROUPS).forEach(([g,gl])=>{
-      const og=document.createElement("optgroup"); og.label=gl;
-      Object.entries(TYPES).filter(([,v])=>v.group===g).forEach(([k,v])=>{
-        const o=document.createElement("option"); o.value=k; o.textContent=v.label + (v.hacs&&g==="hacs" ? ` (${v.hacs})` : ""); og.appendChild(o);
-      });
-      sel.appendChild(og);
-    });
-    sel.value="navbar";
+  if(state.selected && state.expanded && state.blocks[state.selected]) bindInspector(state.selected, state.blocks[state.selected]);
+}
+
+function sel(id, opts, val, labels, extra=""){
+  return `<select id="${id}"${extra}>`+opts.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(labels&&labels[o]||o||"default")}</option>`).join("")+`</select>`;
+}
+function fieldHTML(f, b){
+  if(f.only && !f.only(b)) return "";
+  const id="f-"+f.k, v=b[f.k];
+  if(f.kind==="check") return `<label class="checkrow"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
+  if(f.kind==="select") return `<div><label for="${id}">${esc(f.l)}</label>${sel(id,f.opts,v??"",f.labels)}</div>`;
+  const extra = f.kind==="target" ? ` list="targets" placeholder="music, /lovelace/0, script.x"` : (f.ph?` placeholder="${esc(f.ph)}"`:"");
+  return `<div><label for="${id}">${esc(f.l)}</label><input type="text" id="${id}" class="mono" value="${esc(v??"")}"${extra}></div>`;
+}
+function styleHTML(b){
+  return `<details class="sty"><summary>Area style</summary><div class="rowgrid">
+    <div><label for="s-font">font-size</label><input type="text" id="s-font" class="mono" value="${esc(b.style.fontSize)}" placeholder="4vh"></div>
+    <div><label for="s-pad">padding</label><input type="text" id="s-pad" class="mono" value="${esc(b.style.padding)}" placeholder="2%"></div>
+    <div><label for="s-align">align-self</label>${sel("s-align",["","start","center","end","stretch"],b.style.alignSelf)}</div>
+    <div><label for="s-just">justify-self</label>${sel("s-just",["","start","center","end","stretch"],b.style.justifySelf)}</div>
+    <div><label for="s-text">text-align</label>${sel("s-text",["","start","center","end"],b.style.textAlign)}</div>
+    <div><label for="s-ovf">overflow</label>${sel("s-ovf",["","auto","scroll","hidden"],b.style.overflow)}</div>
+    <div><label for="s-bg">background</label><input type="text" id="s-bg" class="mono" value="${esc(b.style.background)}" placeholder="rgba(0,0,0,.4)"></div>
+    <div><label for="s-rad">border-radius</label><input type="text" id="s-rad" class="mono" value="${esc(b.style.radius)}" placeholder="12px"></div>
+  </div></details>`;
+}
+function navbarHTML(b){
+  const looks=Object.entries(NAV_LOOKS).map(([k,v])=>`<button class="look" data-look="${k}" aria-pressed="${b.look===k}"><i style="${v.sw}"></i>${esc(v.l)}</button>`).join("");
+  const routes=(b.routes||[]).map((r,i)=>`
+    <div class="item">
+      <div class="ihead"><strong>${emo(r.icon)} ${esc(r.label||"Route "+(i+1))}</strong>
+        <button class="mini" data-rmv="${i}" data-d="-1" aria-label="Move up">↑</button>
+        <button class="mini" data-rmv="${i}" data-d="1" aria-label="Move down">↓</button>
+        <button class="mini" data-rdel="${i}" aria-label="Remove route">✕</button></div>
+      <div class="rowgrid">
+        <div><label>Label</label><input type="text" data-r="${i}" data-k="label" value="${esc(r.label)}"></div>
+        <div><label>Target</label><input type="text" class="mono" list="targets" data-r="${i}" data-k="target" value="${esc(r.target)}" placeholder="music"></div>
+        <div><label>Icon</label><input type="text" class="mono" data-r="${i}" data-k="icon" value="${esc(r.icon)}" placeholder="mdi:music"></div>
+        <div><label>Active icon</label><input type="text" class="mono" data-r="${i}" data-k="iconSel" value="${esc(r.iconSel)}" placeholder="optional"></div>
+      </div>
+    </div>`).join("");
+  return `
+    <div><label>Style</label><div class="looks">${looks}</div></div>
+    <div class="rowgrid">
+      <div><label for="n-pos">Position</label>${sel("n-pos",["right","left","bottom","top"],b.position)}</div>
+      <div><label for="n-rad">Corner radius</label><input type="text" id="n-rad" class="mono" value="${esc(b.radius)}" placeholder="${b.look==="pill"?"999px (pill)":"16px"}" ${b.look==="pill"?"disabled":""}></div>
+      <div><label for="n-prim">Accent color</label><div class="colorrow"><input type="color" id="n-primc" value="${/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:ACCENT}" aria-label="Pick accent color"><input type="text" id="n-prim" class="mono" value="${esc(b.primary)}"></div></div>
+      <div><label for="n-bg">Background</label><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div>
+    </div>
+    <label class="checkrow"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
+    <label class="checkrow"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding</label>
+    <div><label>Routes</label><div class="list">${routes}</div></div>
+    <div><button class="ghost" id="n-add">+ Route</button></div>`;
+}
+function chipsHTML(b){
+  const items=(b.chips||[]).map((c,i)=>{
+    const needEntity=c.kind==="weather"||c.kind==="entity";
+    const needIcon=c.kind==="entity"||c.kind==="template"||c.kind==="action";
+    return `<div class="item">
+      <div class="ihead"><strong>${emo(c.icon||c.kind)} ${esc(CHIP_KINDS[c.kind])}</strong>
+        <button class="mini" data-cmv="${i}" data-d="-1" aria-label="Move up">↑</button>
+        <button class="mini" data-cmv="${i}" data-d="1" aria-label="Move down">↓</button>
+        <button class="mini" data-cdel="${i}" aria-label="Remove chip">✕</button></div>
+      <div class="rowgrid">
+        <div><label>Kind</label>${sel("ck"+i,Object.keys(CHIP_KINDS),c.kind,CHIP_KINDS,` data-c="${i}" data-k="kind"`)}</div>
+        ${needEntity?`<div><label>Entity</label><input type="text" class="mono" data-c="${i}" data-k="entity" value="${esc(c.entity)}"></div>`:""}
+        ${needIcon?`<div><label>Icon</label><input type="text" class="mono" data-c="${i}" data-k="icon" value="${esc(c.icon)}" placeholder="mdi:…"></div>`:""}
+        ${c.kind==="template"?`<div><label>Text, Jinja allowed</label><input type="text" data-c="${i}" data-k="content" value="${esc(c.content)}"></div>`:""}
+        ${needIcon?`<div><label>Tap opens or runs</label><input type="text" class="mono" list="targets" data-c="${i}" data-k="target" value="${esc(c.target)}"></div>`:""}
+      </div></div>`;
+  }).join("");
+  return `<div><label for="c-align">Alignment</label>${sel("c-align",["start","center","end","justify"],b.alignment)}</div>
+    <div><label>Chips</label><div class="list">${items}</div></div>
+    <div><button class="ghost" id="c-add">+ Chip</button></div>`;
+}
+function inspectorHTML(a,b,isPlaced){
+  const t=TYPES[b.type], P=[];
+  if(!t.floating && !isPlaced)
+    P.push(`<div class="place">Not on the grid yet. Tap cells in the grid to place it.<button class="ghost mobile-only" data-goto="layout">Open grid</button></div>`);
+  P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
+  const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS.</p>`);
+  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the grid edge it sits on empty, the templates use a 90px column for that.</p>`);
+  if(t.provided) P.push(`<p class="note">Content and style come from View Assist's <span class="mono">body_template</span>. Only its place in the grid is set here.</p>`);
+
+  if(b.type==="title")   P.push(`<div><label for="i-text">Text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
+  if(b.type==="webpage") P.push(`<div><label for="i-url">Fallback URL</label><input type="text" id="i-url" class="mono" value="${esc(b.url)}"></div>`);
+  if(b.type==="image")   P.push(`<div><label for="i-width">Image width</label><input type="text" id="i-width" class="mono" value="${esc(b.width||"75%")}"></div>`);
+  if(b.type==="shader")  P.push(`<div><label for="i-shade">Opacity (0 to 1)</label><input type="text" id="i-shade" class="mono" value="${esc(b.shade||"0.15")}"></div>`);
+  if(b.type==="custom")  P.push(`<div><label for="i-yaml">Card YAML</label><textarea id="i-yaml">${esc(b.yaml)}</textarea></div>`);
+  if(b.type==="message") P.push(`<label class="checkrow"><input type="checkbox" id="i-fontvar" ${b.fontVar?"checked":""}> Font size from <span class="mono">var_font_size</span></label>`);
+  if(b.type==="navbar")  P.push(navbarHTML(b));
+  if(b.type==="chips")   P.push(chipsHTML(b));
+  if(SCHEMAS[b.type])    P.push(SCHEMAS[b.type].map(f=>fieldHTML(f,b)).join(""));
+  if(!t.provided && !t.floating) P.push(styleHTML(b));
+  P.push(`<div><button class="ghost danger" id="i-del">Remove block</button></div>`);
+  return P.join("");
+}
+function moveItem(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; [arr[i],arr[j]]=[arr[j],arr[i]]; }
+function bindInspector(a,b){
+  const on=(id,fn,ev="onchange")=>{ const e=document.getElementById(id); if(e) e[ev]=()=>{ fn(e); renderAll(); }; };
+  on("i-name",e=>{
+    const nn=safeIdent(e.value); if(nn===a || state.blocks[nn]) return;
+    const nb={}; Object.entries(state.blocks).forEach(([k,v])=>{ nb[k===a?nn:k]=v; }); state.blocks=nb;
+    state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]=nn; }));
+    state.selected=nn;
+  });
+  on("i-text",e=>b.text=e.value); on("i-url",e=>b.url=e.value); on("i-width",e=>b.width=e.value);
+  on("i-shade",e=>b.shade=e.value); on("i-yaml",e=>b.yaml=e.value); on("i-fontvar",e=>b.fontVar=e.checked);
+  const m={"s-font":"fontSize","s-pad":"padding","s-align":"alignSelf","s-just":"justifySelf","s-text":"textAlign","s-ovf":"overflow","s-bg":"background","s-rad":"radius"};
+  Object.entries(m).forEach(([id,k])=>on(id,e=>b.style[k]=e.value));
+  if(SCHEMAS[b.type]) SCHEMAS[b.type].forEach(f=>on("f-"+f.k, e=>{ b[f.k] = f.kind==="check" ? e.checked : e.value; }));
+  if(b.type==="navbar"){
+    document.querySelectorAll("[data-look]").forEach(x=>x.onclick=()=>{ b.look=x.dataset.look; renderAll(); });
+    on("n-pos",e=>b.position=e.value); on("n-rad",e=>b.radius=e.value); on("n-bg",e=>b.bg=e.value);
+    on("n-prim",e=>b.primary=e.value); on("n-primc",e=>b.primary=e.value);
+    on("n-lab",e=>b.showLabels=e.checked); on("n-pad",e=>b.autoPadding=e.checked);
+    document.querySelectorAll("[data-r]").forEach(e=>e.onchange=()=>{ b.routes[+e.dataset.r][e.dataset.k]=e.value; renderAll(); });
+    document.querySelectorAll("[data-rmv]").forEach(e=>e.onclick=()=>{ moveItem(b.routes,+e.dataset.rmv,+e.dataset.d); renderAll(); });
+    document.querySelectorAll("[data-rdel]").forEach(e=>e.onclick=()=>{ b.routes.splice(+e.dataset.rdel,1); renderAll(); });
+    const add=$("#n-add"); if(add) add.onclick=()=>{ b.routes.push({icon:"mdi:star-outline",iconSel:"",label:"New",target:""}); renderAll(); };
   }
+  if(b.type==="chips"){
+    on("c-align",e=>b.alignment=e.value);
+    document.querySelectorAll("[data-c]").forEach(e=>e.onchange=()=>{ b.chips[+e.dataset.c][e.dataset.k]=e.value; renderAll(); });
+    document.querySelectorAll("[data-cmv]").forEach(e=>e.onclick=()=>{ moveItem(b.chips,+e.dataset.cmv,+e.dataset.d); renderAll(); });
+    document.querySelectorAll("[data-cdel]").forEach(e=>e.onclick=()=>{ b.chips.splice(+e.dataset.cdel,1); renderAll(); });
+    const add=$("#c-add"); if(add) add.onclick=()=>{ b.chips.push({kind:"template",entity:"",icon:"mdi:star-outline",content:"New",target:""}); renderAll(); };
+  }
+  const del=$("#i-del"); if(del) del.onclick=()=>removeBlock(a);
+  document.querySelectorAll("[data-goto]").forEach(x=>x.onclick=()=>switchTab(x.dataset.goto));
 }
 
 function renderPainter(){
@@ -679,7 +1069,7 @@ function renderPainter(){
     colhead.appendChild(inp);
   });
   const rowhead=document.createElement("div"); rowhead.className="rowhead";
-  rowhead.style.gridTemplateRows=`repeat(${state.rows.length},minmax(52px,auto))`;
+  rowhead.style.gridTemplateRows=`repeat(${state.rows.length},minmax(46px,auto))`;
   state.rows.forEach((r,i)=>{
     const w=document.createElement("div"); w.style.display="flex"; w.style.alignItems="center";
     const inp=document.createElement("input"); inp.className="sizein"; inp.value=r.size; inp.setAttribute("aria-label",`Height of row ${i+1}`);
@@ -692,22 +1082,30 @@ function renderPainter(){
     for(let ci=0; ci<state.cols; ci++){
       const a=r.cells[ci]||".";
       const c=document.createElement("button");
-      c.className="cell"+(a==="."?" empty":""); c.textContent=a==="."?"·":a;
+      c.className="cell"+(a==="."?" empty":"");
+      c.textContent = a==="." ? "" : a;
+      c.setAttribute("aria-label", a==="." ? "Empty cell" : `Cell of ${a}`);
       if(a!=="."){ const h=hueOf(a); c.style.background=tint(h,.22); c.style.borderColor=h; }
-      c.onclick=()=>{
-        const selB = state.selected && state.blocks[state.selected];
-        if(!state.paintEmpty && selB && TYPES[selB.type].floating){
-          $("#painthint").textContent = `“${state.selected}” floats above the view and is not placed in the grid.`;
-          return;
-        }
-        r.cells[ci] = state.paintEmpty ? "." : (state.selected || ".");
-        state.paintEmpty=false; $("#painthint").textContent=""; renderAll();
-      };
+      c.onclick=()=>paintCell(r,ci);
       cells.appendChild(c);
     }
   });
   p.innerHTML=""; p.style.gridTemplateColumns="62px minmax(0,1fr)";
   p.append(corner, colhead, rowhead, cells);
+
+  const pt=$("#painting"); const s=state.selected && state.blocks[state.selected];
+  if(state.paintEmpty) pt.innerHTML='Eraser on';
+  else if(s && !TYPES[s.type].floating) pt.innerHTML=`<span class="swatch" style="--hue:${TYPES[s.type].hue}"></span>Placing <strong class="mono">${esc(state.selected)}</strong>`;
+  else pt.innerHTML='Select a block to place it';
+  document.querySelector('[data-g="clear"]').setAttribute("aria-pressed", String(!!state.paintEmpty));
+}
+function paintCell(r,ci){
+  const s = state.selected && state.blocks[state.selected];
+  if(state.paintEmpty){ r.cells[ci]="."; renderAll(); return; }
+  if(!s){ $("#painthint").textContent="Select a block on the left first."; return; }
+  if(TYPES[s.type].floating){ $("#painthint").textContent=`“${state.selected}” floats above the view and is not placed in the grid.`; return; }
+  r.cells[ci] = r.cells[ci]===state.selected ? "." : state.selected;
+  $("#painthint").textContent=""; renderAll();
 }
 
 function areasString(){
@@ -717,47 +1115,52 @@ function usedAreas(){
   const s=new Set(); state.rows.forEach(r=>r.cells.slice(0,state.cols).forEach(c=>{ if(c&&c!==".") s.add(c); })); return [...s];
 }
 function isCurrent(target){
-  const n=navTarget(target); if(!n) return false;
+  const n=navTarget(target); if(!n || n.kind!=="path") return false;
   return n.v.replace(/\/$/,"").endsWith("/"+state.name);
 }
 function mockHTML(a,b){
   switch(b.type){
     case "title":   return ["pv-title", esc(b.text||"Title")];
-    case "status":  return ["pv-status","🔇  🔋  📶"];
-    case "assist":  return ["pv-assist","🎙  Assist"];
+    case "status":  return ["pv-status","🔇 🔋 📶"];
+    case "assist":  return ["pv-assist","🎙 Assist"];
     case "message": return ["pv-generic",'<span>Message from <span class="pv-label">var_message</span></span>'];
     case "image":   return ["pv-generic",'<span class="pv-label">Image</span>'];
     case "timers":  return ["pv-generic",'<span class="pv-label">Timer cards</span>'];
     case "intent":  return ["pv-generic",'<span class="pv-label">Intent cards</span>'];
-    case "webpage": return ["pv-generic",'<span class="pv-label">iframe</span>'];
+    case "webpage": return ["pv-generic",'<span class="pv-label">Web page</span>'];
     case "chips":   return ["pv-chips", (b.chips||[]).map(c=>`<span class="pv-chip">${
-        c.kind==="weather"?"⛅ 21 °C":c.kind==="back"?"←":emo(c.icon)+(c.kind==="template"&&c.content?" "+esc(c.content):c.kind==="entity"?" 21,5":"")}</span>`).join("")];
-    case "mtemplate": return ["pv-mt", `<span class="ic">${emo(b.icon)}</span><span>${esc(b.primary||"Title")}<small>${esc((b.secondary||"").replace(/\{\{.*?\}\}/g,"on"))}</small></span>`];
-    case "media":   return ["pv-media", `<span class="art"></span><span>Song title – Artist</span><span>⏮ ⏯ ⏭${b.hideVolume?"":"  🔊"}</span>`];
-    case "clockweather": return ["pv-cw", `<span class="t">${b.time_format==="12"?"2:32":"14:32"}</span><span>☀️ 21 °${b.showHumidity?" · 💧 48 %":""}</span>${b.hideForecast?"":`<small style="opacity:.7">Mon 22° · Tue 19° · Wed 17°</small>`}`];
+        c.kind==="weather"?"⛅ 21 °C":c.kind==="back"?"←":emo(c.icon)+(c.kind==="template"&&c.content?" "+esc(/\{\{/.test(c.content)?"Dentist 09:00":c.content):c.kind==="entity"?" 21.5":"")}</span>`).join("")];
+    case "mtemplate": return ["pv-mt", `<span class="ic">${emo(b.icon)}</span><span>${esc(b.primary||"Title")}${b.secondary?`<small>${esc(b.secondary.replace(/\{\{.*?\}\}/g,"on"))}</small>`:""}</span>`];
+    case "mlight":  return ["pv-ml", `<span class="ic">${emo(b.icon||"light")}</span><span>${esc(b.name||b.entity||"Light")}</span>${b.brightness?'<span class="bar"><i></i></span>':""}`];
+    case "media":   return ["pv-media"+(b.artwork==="full-cover"||b.artwork==="full-cover-fit"?" full":""), `${b.artwork==="full-cover"||b.artwork==="full-cover-fit"?"":'<span class="art"></span>'}<span>Song title, Artist</span><span>⏮ ⏯ ⏭${b.hideVolume?"":"   🔊"}</span>`];
+    case "clockweather": return ["pv-cw", `<span class="t">${b.time_format==="12"?"2:32":"14:32"}</span><span class="r"><span>☀️ 21°</span>${b.showHumidity?"<span>💧 48 %</span>":""}</span>${b.hideForecast?"":`<small class="r" style="opacity:.7"><span>Mon 22°</span><span>Tue 19°</span><span>Wed 17°</span></small>`}`];
     case "tile":    return ["pv-tile", `<span>${emo(b.icon||b.entity)}</span><span>${esc(b.name||b.entity||"Tile")}</span>`];
+    case "camera":  return ["pv-cam", `<span class="live">${b.engine==="advanced"||b.live?"Live":"Snapshot"}</span><span class="pv-label">${esc(b.entity||"camera")}</span>`];
+    case "calendar":
+      if(b.view==="dayGridMonth") return ["pv-generic",'<span class="pv-label">Month grid</span>'];
+      return ["pv-cal", `<div><b>Today</b>Dentist 09:00</div><div><b>Tue</b>Football 18:30</div><div><b>Sat</b>🎂 Birthday</div>`];
     default:        return ["pv-generic", `<span class="pv-label">${esc(a)}</span>`];
   }
 }
 function renderNavPreview(s, b){
   const nav=document.createElement("div");
-  const vert = b.position==="left" || b.position==="right";
+  const vert=b.position==="left"||b.position==="right";
   nav.className="pv-nav"+(vert?" v":"");
-  const rad = b.look==="pill" ? "999px" : (b.radius || "14px");
+  const rad=b.look==="pill"?"999px":(b.radius||"14px");
   nav.style.borderRadius = vert && b.look==="pill" ? "2em" : rad;
-  if(b.look==="glass"){ nav.style.background="rgba(20,24,30,.45)"; nav.style.backdropFilter="blur(10px)"; }
+  if(b.look==="glass"){ nav.style.background="rgba(20,24,30,.45)"; nav.style.backdropFilter="blur(10px)"; nav.style.border="1px solid rgba(255,255,255,.12)"; }
   if(b.look==="transparent"){ nav.style.background="transparent"; nav.style.boxShadow="none"; }
   if(b.bg && b.look!=="transparent") nav.style.background=b.bg;
   const m="2.5%";
   if(b.position==="bottom"){ nav.style.bottom=m; nav.style.left="50%"; nav.style.transform="translateX(-50%)"; }
   if(b.position==="top"){ nav.style.top=m; nav.style.left="50%"; nav.style.transform="translateX(-50%)"; }
-  if(b.position==="left"){ nav.style.left="1.5%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
-  if(b.position==="right"){ nav.style.right="1.5%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
-  const prim = b.primary || "#4fc3f7";
+  if(b.position==="left"){ nav.style.left="1.2%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
+  if(b.position==="right"){ nav.style.right="1.2%"; nav.style.top="50%"; nav.style.transform="translateY(-50%)"; }
+  const prim=/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:ACCENT;
   (b.routes||[]).forEach(r=>{
     const cur=isCurrent(r.target);
     const d=document.createElement("div"); d.className="r";
-    if(cur){ d.style.color=prim; d.style.background=tint(prim.startsWith("#")&&prim.length===7?prim:"#4fc3f7",.18); }
+    if(cur){ d.style.color=prim; d.style.background=tint(prim,.2); }
     d.innerHTML=`<span class="e">${emo(cur&&r.iconSel?r.iconSel:r.icon)}</span>${b.showLabels&&r.label?`<span>${esc(r.label)}</span>`:""}`;
     nav.appendChild(d);
   });
@@ -765,180 +1168,37 @@ function renderNavPreview(s, b){
 }
 function renderPreview(){
   const s=$("#screen");
-  const [w,h]=state.device.split("x").map(Number);
+  const [w,h]=deviceSize();
+  const d=DEVICES.find(x=>x.id===state.device);
+  $("#devlabel").textContent = `${d&&d.id!=="custom"?d.label+", ":""}${w} × ${h}`;
   s.style.aspectRatio=`${w} / ${h}`;
   s.style.gridTemplateAreas=areasString();
   s.style.gridTemplateRows=state.rows.map(r=>r.size).join(" ");
-  s.style.gridTemplateColumns=state.colSizes.slice(0,state.cols).join(" ");
-  s.style.fontSize=Math.max(9, Math.round((s.clientWidth||640)/64))+"px";
-  s.style.backgroundColor=state.bgcolor||"#24292c";
+  s.style.gridTemplateColumns=state.colSizes.slice(0,state.cols).map(c=>/px$/.test(c)?`calc(${c} * var(--scale,1))`:c).join(" ");
+  const cw=s.clientWidth||640;
+  s.style.setProperty("--scale", (cw/w).toFixed(4));
+  s.style.fontSize=Math.max(8, Math.round(cw/ (w/15)))+"px";
+  s.style.backgroundColor=state.bgcolor||"#1b1f24";
   s.style.backgroundImage=(state.bgmode==="fixed"&&state.bgpath)?`url("${state.bgpath}")`:"none";
   s.innerHTML="";
   usedAreas().forEach(a=>{
-    const b=state.blocks[a]; const d=document.createElement("div"); d.style.gridArea=a;
-    if(!b){ d.className="pv-generic"; d.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(d); return; }
+    const b=state.blocks[a]; const el=document.createElement("div"); el.style.gridArea=a;
+    if(!b){ el.className="pv-generic"; el.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(el); return; }
     const st=b.style||{};
-    if(st.alignSelf)   d.style.alignItems = st.alignSelf==="middle"?"center":st.alignSelf;
-    if(st.justifySelf) d.style.justifyContent = st.justifySelf;
-    if(st.textAlign)   d.style.textAlign = st.textAlign;
-    if(st.padding)     d.style.padding = st.padding;
-    if(st.background)  d.style.background = st.background;
-    if(st.radius)      d.style.borderRadius = st.radius;
-    const [cls,html]=mockHTML(a,b); d.className=cls; d.innerHTML=html;
-    s.appendChild(d);
+    const [cls,html]=mockHTML(a,b); el.className=cls; el.innerHTML=html;
+    if(st.alignSelf && st.alignSelf!=="stretch") el.style.alignSelf=st.alignSelf;
+    if(st.justifySelf && st.justifySelf!=="stretch") el.style.justifySelf=st.justifySelf;
+    if(st.textAlign) el.style.textAlign=st.textAlign;
+    if(st.padding) el.style.margin=st.padding;
+    if(st.background) el.style.background=st.background;
+    if(st.radius) el.style.borderRadius=st.radius;
+    if(state.selected===a) el.style.outline="2px solid "+TYPES[b.type].hue;
+    s.appendChild(el);
   });
   Object.values(state.blocks).forEach(b=>{
-    if(b.type==="shader"){ const d=document.createElement("div"); d.style.position="absolute"; d.style.inset="0"; d.style.background=`rgba(0,0,0,${b.shade||.15})`; d.style.pointerEvents="none"; s.appendChild(d); }
+    if(b.type==="shader"){ const el=document.createElement("div"); el.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,${b.shade||.15});pointer-events:none`; s.appendChild(el); }
   });
   Object.values(state.blocks).forEach(b=>{ if(b.type==="navbar") renderNavPreview(s,b); });
-}
-
-function sel(id, opts, val, labels){
-  return `<select id="${id}">`+opts.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(labels&&labels[o]||o||"—")}</option>`).join("")+`</select>`;
-}
-function fieldHTML(f, b, idp){
-  const id=idp+f.k, v=b[f.k];
-  if(f.kind==="check") return `<label class="checkrow"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
-  if(f.kind==="select") return `<div><label for="${id}">${esc(f.l)}</label>${sel(id,f.opts,v??"")}</div>`;
-  const list = f.kind==="target" ? ` list="vaviews" placeholder="clock, /lovelace/0 oder https://…"` : (f.ph?` placeholder="${esc(f.ph)}"`:"");
-  return `<div><label for="${id}">${esc(f.l)}</label><input type="text" id="${id}" class="mono" value="${esc(v??"")}"${list}></div>`;
-}
-function bindField(f, obj, idp){
-  const e=document.getElementById(idp+f.k); if(!e) return;
-  e.onchange=()=>{ obj[f.k] = f.kind==="check" ? e.checked : e.value; renderAll(); };
-}
-function styleHTML(b){
-  return `<details ${b.type==="message"||b.type==="title"?"open":""}><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);margin-bottom:6px">Area style</summary><div class="rowgrid">
-    <div><label for="s-font">font-size</label><input type="text" id="s-font" class="mono" value="${esc(b.style.fontSize)}" placeholder="4vh"></div>
-    <div><label for="s-pad">padding</label><input type="text" id="s-pad" class="mono" value="${esc(b.style.padding)}" placeholder="2%"></div>
-    <div><label for="s-align">align-self</label>${sel("s-align",["","start","center","end","stretch"],b.style.alignSelf)}</div>
-    <div><label for="s-just">justify-self</label>${sel("s-just",["","start","center","end","stretch"],b.style.justifySelf)}</div>
-    <div><label for="s-text">text-align</label>${sel("s-text",["","start","center","end"],b.style.textAlign)}</div>
-    <div><label for="s-ovf">overflow-y</label>${sel("s-ovf",["","auto","scroll","hidden"],b.style.overflow)}</div>
-    <div><label for="s-bg">background</label><input type="text" id="s-bg" class="mono" value="${esc(b.style.background)}" placeholder="rgba(0,0,0,.4)"></div>
-    <div><label for="s-rad">border-radius</label><input type="text" id="s-rad" class="mono" value="${esc(b.style.radius)}" placeholder="12px"></div>
-  </div></details>`;
-}
-function bindStyle(b){
-  const m={"s-font":"fontSize","s-pad":"padding","s-align":"alignSelf","s-just":"justifySelf","s-text":"textAlign","s-ovf":"overflow","s-bg":"background","s-rad":"radius"};
-  Object.entries(m).forEach(([id,k])=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ b.style[k]=e.value; renderAll(); }; });
-}
-function moveItem(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; [arr[i],arr[j]]=[arr[j],arr[i]]; }
-
-function navbarHTML(b){
-  const looks = Object.entries(NAV_LOOKS).map(([k,v])=>`<button class="look" data-look="${k}" aria-pressed="${b.look===k}"><i style="${v.sw}"></i>${esc(v.l)}</button>`).join("");
-  const routes = (b.routes||[]).map((r,i)=>`
-    <div class="item">
-      <div class="ihead"><strong>${emo(r.icon)} ${esc(r.label||"Route "+(i+1))}</strong>
-        <button class="mini" data-rmv="${i}" data-d="-1" aria-label="Move up">↑</button>
-        <button class="mini" data-rmv="${i}" data-d="1" aria-label="Move down">↓</button>
-        <button class="mini" data-rdel="${i}" aria-label="Remove route">✕</button></div>
-      <div class="rowgrid">
-        <div><label>Label</label><input type="text" data-r="${i}" data-k="label" value="${esc(r.label)}"></div>
-        <div><label>Target</label><input type="text" class="mono" list="vaviews" data-r="${i}" data-k="target" value="${esc(r.target)}" placeholder="music"></div>
-        <div><label>Icon</label><input type="text" class="mono" data-r="${i}" data-k="icon" value="${esc(r.icon)}" placeholder="mdi:music"></div>
-        <div><label>Active icon</label><input type="text" class="mono" data-r="${i}" data-k="iconSel" value="${esc(r.iconSel)}" placeholder="optional"></div>
-      </div>
-    </div>`).join("");
-  return `
-    <div><label>Style</label><div class="looks">${looks}</div></div>
-    <div class="rowgrid">
-      <div><label for="n-pos">Position (tablet)</label>${sel("n-pos",["left","right","bottom","top"],b.position,{left:"left",right:"right",bottom:"bottom",top:"top"})}</div>
-      <div><label for="n-rad">Corner radius</label><input type="text" id="n-rad" class="mono" value="${esc(b.radius)}" placeholder="${b.look==="pill"?"999px (pill)":"16px"}" ${b.look==="pill"?"disabled":""}></div>
-      <div><label for="n-prim">Accent color</label><div class="colorrow"><input type="color" id="n-primc" value="${/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:"#4fc3f7"}"><input type="text" id="n-prim" class="mono" value="${esc(b.primary)}"></div></div>
-      <div><label for="n-bg">Background</label><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div>
-    </div>
-    <label class="checkrow"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
-    <label class="checkrow"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding (keeps content clear of the navbar)</label>
-    <div><label>Routes</label><div class="list">${routes}</div></div>
-    <div><button class="ghost" id="n-add">+ Route</button></div>`;
-}
-function bindNavbar(b){
-  document.querySelectorAll("[data-look]").forEach(x=>x.onclick=()=>{ b.look=x.dataset.look; renderAll(); });
-  const on=(id,fn)=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ fn(e); renderAll(); }; };
-  on("n-pos",e=>b.position=e.value); on("n-rad",e=>b.radius=e.value); on("n-bg",e=>b.bg=e.value);
-  on("n-prim",e=>b.primary=e.value); on("n-primc",e=>b.primary=e.value);
-  on("n-lab",e=>b.showLabels=e.checked); on("n-pad",e=>b.autoPadding=e.checked);
-  document.querySelectorAll("[data-r]").forEach(e=>e.onchange=()=>{ b.routes[+e.dataset.r][e.dataset.k]=e.value; renderAll(); });
-  document.querySelectorAll("[data-rmv]").forEach(e=>e.onclick=()=>{ moveItem(b.routes,+e.dataset.rmv,+e.dataset.d); renderAll(); });
-  document.querySelectorAll("[data-rdel]").forEach(e=>e.onclick=()=>{ b.routes.splice(+e.dataset.rdel,1); renderAll(); });
-  const add=$("#n-add"); if(add) add.onclick=()=>{ b.routes.push({icon:"mdi:star-outline",iconSel:"",label:"New",target:""}); renderAll(); };
-}
-
-function chipsHTML(b){
-  const items=(b.chips||[]).map((c,i)=>{
-    const needEntity = c.kind==="weather"||c.kind==="entity";
-    const needIcon = c.kind==="entity"||c.kind==="template"||c.kind==="action";
-    const needTarget = c.kind==="entity"||c.kind==="template"||c.kind==="action";
-    return `<div class="item">
-      <div class="ihead"><strong>${emo(c.icon||c.kind)} ${esc(CHIP_KINDS[c.kind])}</strong>
-        <button class="mini" data-cmv="${i}" data-d="-1" aria-label="Move up">↑</button>
-        <button class="mini" data-cmv="${i}" data-d="1" aria-label="Move down">↓</button>
-        <button class="mini" data-cdel="${i}" aria-label="Remove chip">✕</button></div>
-      <div class="rowgrid">
-        <div><label>Kind</label>${sel("ck"+i,Object.keys(CHIP_KINDS),c.kind,CHIP_KINDS).replace("<select",`<select data-c="${i}" data-k="kind"`)}</div>
-        ${needEntity?`<div><label>Entity</label><input type="text" class="mono" data-c="${i}" data-k="entity" value="${esc(c.entity)}"></div>`:""}
-        ${needIcon?`<div><label>Icon</label><input type="text" class="mono" data-c="${i}" data-k="icon" value="${esc(c.icon)}" placeholder="mdi:…"></div>`:""}
-        ${c.kind==="template"?`<div><label>Text</label><input type="text" data-c="${i}" data-k="content" value="${esc(c.content)}"></div>`:""}
-        ${needTarget?`<div><label>Tap opens</label><input type="text" class="mono" list="vaviews" data-c="${i}" data-k="target" value="${esc(c.target)}"></div>`:""}
-      </div></div>`;
-  }).join("");
-  return `<div><label for="c-align">Alignment</label>${sel("c-align",["start","center","end","justify"],b.alignment,{start:"left",center:"center",end:"right",justify:"justify"})}</div>
-    <div><label>Chips</label><div class="list">${items}</div></div>
-    <div><button class="ghost" id="c-add">+ Chip</button></div>`;
-}
-function bindChips(b){
-  const a=$("#c-align"); if(a) a.onchange=()=>{ b.alignment=a.value; renderAll(); };
-  document.querySelectorAll("[data-c]").forEach(e=>e.onchange=()=>{ b.chips[+e.dataset.c][e.dataset.k]=e.value; renderAll(); });
-  document.querySelectorAll("[data-cmv]").forEach(e=>e.onclick=()=>{ moveItem(b.chips,+e.dataset.cmv,+e.dataset.d); renderAll(); });
-  document.querySelectorAll("[data-cdel]").forEach(e=>e.onclick=()=>{ b.chips.splice(+e.dataset.cdel,1); renderAll(); });
-  const add=$("#c-add"); if(add) add.onclick=()=>{ b.chips.push({kind:"template",entity:"",icon:"mdi:star-outline",content:"New",target:""}); renderAll(); };
-}
-
-function renderInspector(){
-  const body=$("#inspbody"), none=$("#nosel");
-  const a=state.selected, b=a&&state.blocks[a];
-  if(!b){ body.hidden=true; none.hidden=false; return; }
-  body.hidden=false; none.hidden=true;
-  const t=TYPES[b.type];
-  const P=[];
-  P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
-  if(t.hacs) P.push(`<p class="hint" style="margin:0">Requires HACS: <strong>${esc(t.hacs)}</strong></p>`);
-
-  if(b.type==="title")   P.push(`<div><label for="i-text">Title text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
-  if(b.type==="webpage") P.push(`<div><label for="i-url">Fallback-URL</label><input type="text" id="i-url" class="mono" value="${esc(b.url)}"></div>`);
-  if(b.type==="image")   P.push(`<div><label for="i-width">Image width</label><input type="text" id="i-width" class="mono" value="${esc(b.width||"75%")}"></div>`);
-  if(b.type==="shader")  P.push(`<div><label for="i-shade">Opacity (0–1)</label><input type="text" id="i-shade" class="mono" value="${esc(b.shade||"0.15")}"></div>`);
-  if(b.type==="custom")  P.push(`<div><label for="i-yaml">Card YAML</label><textarea id="i-yaml">${esc(b.yaml)}</textarea></div>`);
-  if(b.type==="message") P.push(`<label class="checkrow"><input type="checkbox" id="i-fontvar" ${b.fontVar?"checked":""}> Font size from <span class="mono">var_font_size</span></label>`);
-  if(b.type==="navbar")  P.push(navbarHTML(b));
-  if(b.type==="chips")   P.push(chipsHTML(b));
-  if(SCHEMAS[b.type])    P.push(SCHEMAS[b.type].map(f=>fieldHTML(f,b,"f-")).join(""));
-
-  if(t.provided) P.push(`<p class="hint">Content and style come from <span class="mono">body_template</span>. Only its position in the grid is set here.</p>`);
-  else if(!t.floating) P.push(styleHTML(b));
-  P.push(`<div><button class="ghost danger" id="i-del">Remove block</button></div>`);
-  body.innerHTML=P.join("");
-
-  const bind=(id,fn)=>{ const e=document.getElementById(id); if(e) e.onchange=()=>{ fn(e); renderAll(); }; };
-  bind("i-name",e=>{
-    const nn=safeIdent(e.value); if(nn===a||state.blocks[nn]) return;
-    state.blocks[nn]=state.blocks[a]; delete state.blocks[a];
-    state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]=nn; }));
-    state.selected=nn;
-  });
-  bind("i-text",e=>b.text=e.value); bind("i-url",e=>b.url=e.value); bind("i-width",e=>b.width=e.value);
-  bind("i-shade",e=>b.shade=e.value); bind("i-yaml",e=>b.yaml=e.value); bind("i-fontvar",e=>b.fontVar=e.checked);
-  if(b.type==="navbar") bindNavbar(b);
-  if(b.type==="chips") bindChips(b);
-  if(SCHEMAS[b.type]) SCHEMAS[b.type].forEach(f=>bindField(f,b,"f-"));
-  bindStyle(b);
-  const del=$("#i-del");
-  if(del) del.onclick=()=>{
-    delete state.blocks[a];
-    state.rows.forEach(r=>r.cells.forEach((c,i)=>{ if(c===a) r.cells[i]="."; }));
-    state.selected=Object.keys(state.blocks)[0]||null; renderAll();
-  };
 }
 
 function indent(text,pad){ return text.split("\n").map(l=>l.length?pad+l:l).join("\n"); }
@@ -948,7 +1208,7 @@ function buildYaml(){
   const vars=[];
   if(state.bgmode==="fixed"&&state.bgpath) vars.push(`  background: ${yq(state.bgpath)}`);
   Object.values(state.blocks).forEach(b=>{
-    if(b.type==="webpage") vars.push(`  var_url: >-\n    [[[ try {return hass.states[variables.var_assistsat_entity].attributes.data["url"]} catch { return "${b.url||""}"}]]]`);
+    if(b.type==="webpage") vars.push(`  var_url: >-\n    [[[ try {return hass.states[variables.var_assistsat_entity].attributes.data["url"]} catch { return ${JSON.stringify(b.url||"")}}]]]`);
   });
   vars.push(`  ${vname}cardversion: 1.0.0`);
   L.push("variables:",...vars);
@@ -964,7 +1224,7 @@ function buildYaml(){
   } else if(state.bgmode==="satellite"){
     L.push("    - background: >-","        [[[ try {return `center / cover no-repeat","        url(${hass.states[variables.var_assistsat_entity].attributes.background})`} catch","        {return \"\"} ]]]","    - background-size: cover");
   }
-  L.push(`    - background-color: ${JSON.stringify(state.bgcolor||"#24292c")}`,"    - border-width: 0px","    - border-radius: 0px");
+  L.push(`    - background-color: ${JSON.stringify(state.bgcolor||"#1b1f24")}`,"    - border-width: 0px","    - border-radius: 0px");
 
   const fieldStyles=[];
   Object.entries(state.blocks).forEach(([a,b])=>{
@@ -978,13 +1238,13 @@ function buildYaml(){
       if(s.alignSelf) S.push(`align-self: ${s.alignSelf}`);
       if(s.justifySelf) S.push(`justify-self: ${s.justifySelf}`);
       if(s.textAlign) S.push(`text-align: ${s.textAlign}`);
-      if(s.overflow) S.push(`overflow-y: ${s.overflow}`);
+      if(s.overflow) S.push(`overflow: ${s.overflow}`);
       if(s.padding) S.push(`padding: ${s.padding}`);
       if(s.background) S.push(`background: ${s.background}`);
       if(s.radius) S.push(`border-radius: ${s.radius}`);
       if(b.type==="image"&&b.width) S.push("object-fit: contain",`width: ${b.width}`);
       if(b.type==="message") S.push("position: relative","text-wrap: wrap");
-      if(cardCfg(b)) S.push("width: 100%");
+      if(cardCfg(b)) S.push("min-width: 0","min-height: 0");
     }
     if(S.length) fieldStyles.push([a,S]);
   });
@@ -1019,68 +1279,78 @@ function checks(){
   areas.forEach(a=>{
     let r0=99,r1=-1,c0=99,c1=-1,n=0;
     state.rows.forEach((r,ri)=>{ for(let ci=0;ci<state.cols;ci++) if(r.cells[ci]===a){n++;r0=Math.min(r0,ri);r1=Math.max(r1,ri);c0=Math.min(c0,ci);c1=Math.max(c1,ci);} });
-    if(n!==(r1-r0+1)*(c1-c0+1)) m.push(`“${a}” is not a rectangle. CSS grid requires contiguous, rectangular areas.`);
+    if(n!==(r1-r0+1)*(c1-c0+1)) m.push(`“${a}” is not a rectangle. CSS grid needs every area to be one solid rectangle.`);
   });
   Object.entries(state.blocks).forEach(([a,b])=>{
-    if(!TYPES[b.type].floating && !areas.includes(a)) m.push(`“${a}” is not assigned to any grid cell and will not appear.`);
+    if(!TYPES[b.type].floating && !areas.includes(a)) m.push(`“${a}” is not on the grid yet and will not show up.`);
   });
   areas.forEach(a=>{
-    if(!state.blocks[a]) m.push(`Grid cell “${a}” has no block.`);
-    else if(TYPES[state.blocks[a].type].floating) m.push(`“${a}” floats and should not be placed in the grid.`);
+    if(!state.blocks[a]) m.push(`Grid area “${a}” has no block.`);
+    else if(TYPES[state.blocks[a].type].floating) m.push(`“${a}” floats and should not be on the grid.`);
   });
   if(!areas.includes("assist")) m.push("Without an “assist” area the view shows no voice feedback.");
   const nb=Object.values(state.blocks).filter(b=>b.type==="navbar");
-  if(nb.length>1) m.push("More than one navbar: navbar-card would overlap itself.");
+  if(nb.length>1) m.push("There is more than one navbar. navbar-card would draw on top of itself.");
   nb.forEach(b=>{
-    if(b.position==="bottom" && areas.includes("assist") && state.rows[state.rows.length-1].cells.includes("assist"))
-      m.push("A navbar at the bottom sits on top of the assist bar. Left or right usually works better on tablets.");
-    (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (“${r.label||"no label"}”) has no target.`); });
+    const pos=b.position||"right";
+    let edge=[];
+    if(pos==="right") edge=state.rows.map(r=>r.cells[state.cols-1]);
+    if(pos==="left") edge=state.rows.map(r=>r.cells[0]);
+    if(pos==="bottom") edge=(state.rows[state.rows.length-1]||{cells:[]}).cells.slice(0,state.cols);
+    if(pos==="top") edge=(state.rows[0]||{cells:[]}).cells.slice(0,state.cols);
+    const hit=[...new Set(edge.filter(c=>c&&c!=="."))];
+    if(hit.length) m.push(`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}. Leave that edge of the grid empty.`);
+    (b.routes||[]).forEach((r,i)=>{ if(!r.target) m.push(`Navbar route ${i+1} (${r.label||"no label"}) has no target.`); });
   });
   return m;
 }
 function deps(){
   const d=new Set(["button-card"]);
-  Object.values(state.blocks).forEach(b=>{ const h=TYPES[b.type].hacs; if(h) d.add(h); });
+  Object.values(state.blocks).forEach(b=>{ const h=hacsOf(b); if(h) d.add(h); });
   return [...d];
 }
 
+function renderChecks(){
+  const m=checks();
+  $("#warnings").innerHTML = m.length ? m.map(x=>`<div class="alert">${esc(x)}</div>`).join("") : '<p class="ok">No problems found.</p>';
+}
 function renderYaml(){
   $("#yaml").textContent=buildYaml();
-  const m=checks(); $("#warnings").innerHTML=m.map(x=>`<div class="alert">${esc(x)}</div>`).join("");
-  $("#deps").innerHTML='<span style="border:none;background:none;padding-left:0">HACS:</span>'+deps().map(x=>`<span>${esc(x)}</span>`).join("");
+  $("#deps").innerHTML='Needs from HACS:'+deps().map(x=>`<span>${esc(x)}</span>`).join("");
 }
-function renderAll(){ renderPalette(); renderPainter(); renderPreview(); renderInspector(); renderYaml(); save(); }
+function renderAll(){ renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderYaml(); save(); }
 
-$("#addblock").onclick=()=>{
-  const t=$("#newtype").value;
-  const nameMap={custom:"card",mtemplate:"template"};
-  const a=uniqueName(nameMap[t]||t);
-  state.blocks[a]=blockDefaults(t); state.selected=a;
-  if(!TYPES[t].floating && !TYPES[t].provided){
-    $("#painthint").textContent=""; 
-  }
-  renderAll();
-};
+function switchTab(name){
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
+  document.getElementById("pane-"+name).classList.add("active");
+  renderPreview();
+}
+
+$("#addtoggle").onclick=()=>togglePicker();
+$("#snackundo").onclick=undoRemove;
 document.querySelectorAll("[data-g]").forEach(btn=>{
   btn.onclick=()=>{
     const g=btn.dataset.g;
     if(g==="addrow") state.rows.push({size:"1fr",cells:Array(state.cols).fill(".")});
     if(g==="delrow"&&state.rows.length>1) state.rows.pop();
-    if(g==="addcol"&&state.cols<6){ state.cols++; state.colSizes.push("1fr"); state.rows.forEach(r=>r.cells.push(".")); }
+    if(g==="addcol"&&state.cols<8){ state.cols++; state.colSizes.push("1fr"); state.rows.forEach(r=>r.cells.push(".")); }
     if(g==="delcol"&&state.cols>1){ state.cols--; state.colSizes.pop(); state.rows.forEach(r=>r.cells.pop()); }
-    if(g==="clear"){ state.paintEmpty=true; $("#painthint").textContent="The next cell you tap will be cleared."; renderPalette(); renderPreview(); renderYaml(); return; }
+    if(g==="clear"){ state.paintEmpty=!state.paintEmpty; $("#painthint").textContent = state.paintEmpty ? "Tap cells to empty them. Tap Eraser again to stop." : ""; }
     renderAll();
   };
 });
-$("#viewname").onchange=e=>{ state.name=e.target.value; renderAll(); };
+$("#viewname").onchange=e=>{ state.name=safeIdent(e.target.value); e.target.value=state.name; renderAll(); };
 $("#device").onchange=e=>{ state.device=e.target.value; renderAll(); };
-$("#bgmode").onchange=e=>{ state.bgmode=e.target.value; $("#bgpathwrap").hidden=e.target.value!=="fixed"; renderAll(); };
+$("#cw").onchange=e=>{ state.customW=+e.target.value||1280; renderAll(); };
+$("#ch").onchange=e=>{ state.customH=+e.target.value||800; renderAll(); };
+$("#bgmode").onchange=e=>{ state.bgmode=e.target.value; syncInputs(); renderAll(); };
 $("#bgpath").onchange=e=>{ state.bgpath=e.target.value; renderAll(); };
 $("#bgcolor").onchange=e=>{ state.bgcolor=e.target.value; renderAll(); };
 $("#vabase").onchange=e=>{ state.vaBase=e.target.value||"/view-assist/"; renderAll(); };
 $("#preset").onchange=e=>{
   const f=PRESETS[e.target.value];
-  if(f){ const keep=state.vaBase; state=f(); state.vaBase=keep||state.vaBase; syncInputs(); renderAll(); }
+  if(f){ const keep={vaBase:state.vaBase, device:state.device, customW:state.customW, customH:state.customH}; state=Object.assign(f(), keep); syncInputs(); renderAll(); }
   e.target.value="";
 };
 $("#copy").onclick=async()=>{
@@ -1099,26 +1369,18 @@ $("#themebtn").onclick=()=>{
   document.documentElement.setAttribute("data-theme",cur);
   try{ localStorage.setItem("panelkit.theme",cur); }catch(e){}
 };
-document.querySelectorAll(".tabs button").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected","false"));
-    b.setAttribute("aria-selected","true");
-    document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
-    document.getElementById("pane-"+b.dataset.pane).classList.add("active");
-    renderPreview();
-  };
-});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>switchTab(b.dataset.pane));
 window.addEventListener("resize",()=>renderPreview());
 
 function syncInputs(){
-  $("#viewname").value=state.name; $("#device").value=state.device;
+  $("#viewname").value=state.name;
   $("#bgmode").value=state.bgmode; $("#bgpath").value=state.bgpath; $("#bgcolor").value=state.bgcolor;
   $("#vabase").value=state.vaBase; $("#bgpathwrap").hidden=state.bgmode!=="fixed";
 }
 
 try{ const t=localStorage.getItem("panelkit.theme"); if(t) document.documentElement.setAttribute("data-theme",t); }catch(e){}
 state=load(); state.paintEmpty=false;
-syncInputs(); renderAll();
+renderPicker(); syncInputs(); renderAll();
 </script>
 </body>
 </html>
