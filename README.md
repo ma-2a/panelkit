@@ -30,12 +30,17 @@ grid, fills in the fields and hands back YAML you paste into a manual card.
 provide the status icons, the assist bar and the satellite variables the generated views rely on.
 Everything else depends on the blocks you pick, and the builder tells you which.
 
-## Using the output
+## Getting it into Home Assistant
 
-1. Install the listed cards from HACS under *Frontend*, then reload the browser
-2. Add a view to your View Assist dashboard, named exactly like the view in the builder, type *Panel (1 card)*
-3. Add a card, choose *Manual*, clear it, paste the YAML, save
-4. Open it with `view_assist.navigate` or from a navbar route
+Click **Add to Home Assistant** in the builder. It walks you through every step for the view you are working on, or for all views at once:
+
+1. Install the cards the view uses from HACS. The builder lists exactly which ones, with links.
+2. Open the View Assist dashboard and switch to edit mode.
+3. Create an empty panel view. The builder shows the title and URL name to enter, with copy buttons.
+4. Paste the card code into a manual card.
+5. Open the view on your device, from a navbar or with the `view_assist.navigate` action the builder prepares for you.
+
+For several views at once it uses the raw configuration editor instead of steps 3 and 4.
 
 ## Running it locally
 

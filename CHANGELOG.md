@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 — 2026-10-01
+
+- Rewritten install guide: step by step, with the exact cards to install and links to them, where to click in Home Assistant, the title and URL name to enter with copy buttons, and how to open the view on the device
+- “All views” mode in the guide for adding every view at once through the raw configuration editor
+- Prepared `view_assist.navigate` action with the right path to test a view
+- Calmer, denser interface: icon set instead of emoji, clearer block list, segmented controls, YAML syntax highlighting
+- “Add to Home Assistant” button always visible in the top bar
+- Follows the system light or dark setting, the toggle still overrides it
+
 ## 0.3.0 — 2026-10-01
 
 - Several views in one project: a view bar to switch, add, delete (with undo), reorder, duplicate and rename

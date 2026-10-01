@@ -30,7 +30,7 @@ const activeName = () => $("#viewname").value;
 
 step("starts with the tab set", () => {
   const names = $$("#vtabs .go").map(t => t.textContent.trim());
-  if (names.join() !== "🏠Home,📹Camera,🎵Music,💡Lights,📅Calendar") throw new Error(names.join());
+  if (names.join() !== "Home,Camera,Music,Lights,Calendar") throw new Error(names.join());
 });
 
 step("switch views and edit every block", () => {
@@ -45,8 +45,9 @@ step("switch views and edit every block", () => {
         open.querySelectorAll("input[type=checkbox]").forEach(x => { x.click(); x.click(); });
       }
     });
-    if (!$("#yaml").textContent.startsWith("type: custom:button-card")) throw new Error("no yaml");
-    if ($("#yamlname").textContent !== activeName()) throw new Error("yaml label out of sync");
+    if (!$("#g-view").textContent.startsWith("type: custom:button-card")) throw new Error("no yaml");
+    if (!$("#guide").textContent.includes(activeName() + ".yaml")) throw new Error("guide out of sync");
+    if (d.querySelector('[data-copy="g-url"]').closest(".kvr").querySelector(".v").textContent !== activeName()) throw new Error("url name out of sync");
   });
 });
 
@@ -98,7 +99,7 @@ step("navbar follows views and can go manual", () => {
   const nav = $$(".bitem").find(x => x.dataset.block === "navbar");
   if (!nav.classList.contains("open")) nav.querySelector(".bsel").click();
   if (!$(".syncnote")) throw new Error("no sync note");
-  const routes = (($("#yaml").textContent.match(/- url: /g)) || []).length;
+  const routes = (($("#g-view").textContent.match(/- url: /g)) || []).length;
   if (routes !== tabs().length) throw new Error(`routes ${routes} vs views ${tabs().length}`);
   $("#n-sync").click();
   if ($(".syncnote") || !$("#n-add")) throw new Error("manual editor missing");
@@ -113,7 +114,7 @@ step("navbar copied to every view", () => {
   $$("#vtabs .go").forEach((b, i) => {
     $$("#vtabs .go")[i].click();
     if (!$$(".bitem").some(x => x.querySelector(".btype").textContent === "Navbar")) missing.push(activeName());
-    if ([...$("#warnings").querySelectorAll(".alert")].some(a => a.textContent.includes("covers"))) missing.push(activeName() + " covered");
+    if ([...$("#warnings").querySelectorAll(".chk:not(.ok)")].some(a => a.textContent.includes("covers"))) missing.push(activeName() + " covered");
   });
   if (missing.length) throw new Error(missing.join(", "));
 });
@@ -121,20 +122,52 @@ step("navbar copied to every view", () => {
 step("color pickers", () => {
   $("#bgcolorc").value = "#ff7a3d"; fire($("#bgcolorc"), "input"); fire($("#bgcolorc"));
   if ($("#bgcolor").value !== "#ff7a3d") throw new Error("base color text not synced");
-  if (!$("#yaml").textContent.includes('background-color: "#ff7a3d"')) throw new Error("base color not in yaml");
+  if (!$("#g-view").textContent.includes('background-color: "#ff7a3d"')) throw new Error("base color not in yaml");
   $$("#vtabs .go")[0].click();
   const nav = $$(".bitem").find(x => x.dataset.block === "navbar");
   if (!nav.classList.contains("open")) nav.querySelector(".bsel").click();
   $("#n-bgc").value = "#112233"; fire($("#n-bgc"));
-  if (!$("#yaml").textContent.includes("background: #112233")) throw new Error("navbar bg not in yaml");
+  if (!$("#g-view").textContent.includes("background: #112233")) throw new Error("navbar bg not in yaml");
   const other = $$(".bitem").find(x => x.dataset.block === "clockweather");
   other.querySelector(".bsel").click();
   d.querySelector("details.sty").open = true;
   $("#s-bgc").value = "#334455"; fire($("#s-bgc"));
-  if (!$("#yaml").textContent.includes("background: #334455")) throw new Error("area bg not in yaml");
+  if (!$("#g-view").textContent.includes("background: #334455")) throw new Error("area bg not in yaml");
 });
 
-step("copy all views button", () => { $("#copyall").click(); });
+step("install guide: this view", () => {
+  w.navigator.clipboard = { writeText: t => { w.__copied = t; return Promise.resolve(); } };
+  const steps = $$("#guide .step");
+  if (steps.length !== 5) throw new Error("steps " + steps.length);
+  const h = steps.map(s => s.querySelector("h3").textContent);
+  if (!/Install the cards/.test(h[0]) || !/edit mode/.test(h[1]) || !/empty view/.test(h[2]) || !/Paste the card/.test(h[3]) || !/on your device/.test(h[4])) throw new Error(h.join(" | "));
+  const deps = $$("#guide .deplist .n").map(n => n.textContent);
+  if (!deps.includes("button-card")) throw new Error("button-card missing");
+  if (!$$("#guide .deplist a").every(a => a.href.startsWith("https://github.com/"))) throw new Error("dep links");
+  d.querySelector('[data-copy="g-url"]').click();
+  if (w.__copied !== activeName()) throw new Error("url copy " + w.__copied);
+  d.querySelector('[data-copy="g-view"]').click();
+  if (!String(w.__copied).startsWith("type: custom:button-card")) throw new Error("yaml copy");
+  if (!$("#g-nav").textContent.includes("path: /view-assist/" + activeName())) throw new Error("navigate path");
+  if (!$("#guide").textContent.includes("Panel (single card)")) throw new Error("view type");
+});
+
+step("install guide: all views", () => {
+  d.querySelector('#guide [data-mode="all"]').click();
+  const steps = $$("#guide .step");
+  if (steps.length !== 4) throw new Error("steps " + steps.length);
+  if (!/Raw configuration editor/.test(steps[1].textContent)) throw new Error("raw editor step");
+  const all = $("#g-all").textContent;
+  if ((all.match(/^  - title: /gm) || []).length !== tabs().length) throw new Error("views in export");
+  d.querySelector('[data-copy="g-all"]').click();
+  if (w.__copied !== all) throw new Error("copy all");
+  const deps = $$("#guide .deplist .n").map(n => n.textContent);
+  ["Navbar Card", "Mushroom", "Mini Media Player", "Clock Weather Card"].forEach(x => { if (!deps.includes(x)) throw new Error("missing " + x); });
+  d.querySelector('#guide [data-mode="view"]').click();
+  if ($$("#guide .step").length !== 5) throw new Error("back to single");
+});
+
+step("header export jumps to guide", () => { $("#exportbtn").click(); if (!$("#pane-yaml").classList.contains("active")) throw new Error("pane"); });
 
 step("blocks: add, remove, undo", () => {
   $("#addtoggle").click(); d.querySelector('[data-add="tile"]').click();
@@ -161,7 +194,7 @@ step("devices", () => {
 });
 
 step("pane tabs and theme", () => {
-  $$(".tabs button").forEach(b => b.click());
+  $$(".panes button").forEach(b => b.click());
   $("#themebtn").click(); $("#themebtn").click();
 });
 
@@ -183,7 +216,10 @@ step("old single view migrates", () => {
   if (w3.document.querySelector("#vabase").value !== "/va/") throw new Error("base path");
 });
 
-step("no middle dots in the UI", () => { if (/\u00b7/.test(d.body.textContent)) throw new Error("found one"); });
+step("no middle dots or emoji in the UI", () => {
+  if (/\u00b7/.test(d.body.textContent)) throw new Error("middle dot");
+  if (/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(d.body.textContent)) throw new Error("emoji");
+});
 
 console.log(`${steps} steps ok, ${errors.length} errors`);
 errors.forEach(e => console.log("  x " + e));

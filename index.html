@@ -16,7 +16,7 @@
   color-scheme: light dark;
   --bg:#eceff3; --panel:#ffffff; --panel-2:#f5f7fa; --line:#d5dbe3;
   --ink:#131820; --ink-2:#4d5866; --ink-3:#7c8797;
-  --accent:#0277bd; --accent-ink:#ffffff;
+  --accent:#1f6feb; --accent-ink:#ffffff;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   box-sizing:border-box;
@@ -27,13 +27,13 @@
   :root:not([data-theme="light"]){
     --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
     --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
-    --accent:#4fc3f7; --accent-ink:#0b1017;
+    --accent:#4aa3ff; --accent-ink:#0b1017;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
   --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
-  --accent:#4fc3f7; --accent-ink:#0b1017;
+  --accent:#4aa3ff; --accent-ink:#0b1017;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
@@ -79,6 +79,11 @@ header.site nav a:hover{color:var(--ink)}
 .v-nav b{display:flex;flex-direction:column;align-items:center;font-weight:400;font-size:.8em;padding:.35em .6em;border-radius:1.6em;min-width:3em}
 .v-nav b.on{background:rgba(255,122,61,.22);color:#ff7a3d}
 .viewwrap{position:relative}
+.pi{width:1.2em;height:1.2em;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.view .r{display:flex;gap:1em;align-items:center}
+.view .r span{display:inline-flex;gap:.35em;align-items:center}
+.v-status,.v-assist{display:flex;gap:.6em}
+.v-chips span{display:inline-flex;align-items:center;gap:.35em}
 
 section{padding:0 0 clamp(36px,6vw,64px)}
 .grid3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
@@ -103,6 +108,68 @@ footer.site a{color:var(--ink-2)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m15 4 5 5-9.5 9.5H6L3.5 16 15 4ZM9 10l5 5M7 20h13"/></symbol>
+  <symbol id="i-dup" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 24 24"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h1.5a2.5 2.5 0 0 1 0 5H16"/></symbol>
+  <symbol id="i-rows" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 12h18"/></symbol>
+  <symbol id="i-cols" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="7" width="12.5" height="10" rx="2"/><path d="m15.5 11 5-3v8l-5-3"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 17.5h6M10 21h4M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.3.9 2.1V16h6v-.3c0-.8.3-1.5.9-2.1A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-weather" viewBox="0 0 24 24"><path d="M7.5 19h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.5 1.3A2.9 2.9 0 0 0 7.5 19Z"/><path d="M8 3.5v1.5M3.5 8H5M4.8 4.8l1 1M11.3 7.4A3.5 3.5 0 0 0 5 9"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.6V5a2 2 0 0 0-4 0v9.6a4 4 0 1 0 4 0Z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 11v2M5.5 10v4M8.5 10v4M11.5 10v4"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M4.5 10a11 11 0 0 1 15 0M7.5 13.5a6.5 6.5 0 0 1 9 0"/><circle cx="12" cy="17.5" r="1.2"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8.5M6.5 6.5a8 8 0 1 0 11 0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.4-7.5-10.2A4.2 4.2 0 0 1 12 7.1a4.2 4.2 0 0 1 7.5 2.7C19.5 15.6 12 20 12 20Z"/></symbol>
+  <symbol id="i-radio" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="m7 8 10-4.5M6.5 12.5h4M6.5 16h4"/><circle cx="15.5" cy="14" r="2.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12L9 12l9-6Z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 6v12M6 6v12l9-6-9-6Z"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4ZM16 9a4.5 4.5 0 0 1 0 6"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M9.5 2.5h5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m21 15.5-4.5-4.5L7 19.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8L12 3.5Z"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6h14M12 6v13M9 19h6"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M4.5 5.5h15v10h-9l-4.5 3.5v-3.5h-1.5v-10Z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 18v-3M10 18v-6M15 18V9M20 18V5"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><rect x="15" y="3.5" width="5.5" height="17" rx="2.75"/><path d="M3.5 7h8M3.5 12h8M3.5 17h8"/></symbol>
+  <symbol id="i-pills" viewBox="0 0 24 24"><rect x="2.5" y="8.5" width="8.5" height="7" rx="3.5"/><rect x="13" y="8.5" width="8.5" height="7" rx="3.5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><circle cx="8.5" cy="12" r="2"/><path d="M13 10.5h4.5M13 13.5h3"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3.5 9 5-9 5-9-5 9-5Z"/><path d="m3 13.5 9 5 9-5"/></symbol>
+  <symbol id="i-tile" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="10" rx="2.5"/><circle cx="8.5" cy="12" r="1.8"/></symbol>
+  <symbol id="i-dim" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17A8.5 8.5 0 0 0 12 3.5Z"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3.5 17v-4.5a1.5 1.5 0 0 1 3 0V14h11v-1.5a1.5 1.5 0 0 1 3 0V17H3.5ZM6 17v2M18 17v2"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Zm0 0 7-7"/></symbol>
+  <symbol id="i-desk" viewBox="0 0 24 24"><path d="M3.5 9.5h17M5.5 9.5V19M18.5 9.5V19M12 9.5v4h6.5"/></symbol>
+  <symbol id="i-flood" viewBox="0 0 24 24"><path d="M8 4h8l1.5 4h-11L8 4ZM6 12l-2 6M12 12v7M18 12l2 6"/></symbol>
+</svg>
 
 <header class="site">
   <div class="wrap">
@@ -134,13 +201,13 @@ footer.site a{color:var(--ink-2)}
     <div class="tablet viewwrap">
       <div class="view">
         <div class="v-title">Home</div>
-        <div class="v-status">🔇 🔋 📶</div>
-        <div class="v-chips"><span>⛅ 21&nbsp;°C</span><span>🌡️ 21,5</span><span>🎵 Music</span></div>
-        <div class="v-clock"><b>14:32</b><span>☀️ 21°&nbsp;&nbsp;&nbsp;💧 48 %</span></div>
-        <div class="v-media"><i></i><span>Song title – Artist</span><span>⏮ ⏯ ⏭</span></div>
-        <div class="v-assist">🎙 Assist</div>
+        <div class="v-status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div>
+        <div class="v-chips"><span><svg class="pi"><use href="#i-weather"/></svg>21&nbsp;°C</span><span><svg class="pi"><use href="#i-calendar"/></svg>Dentist 09:00</span><span><svg class="pi"><use href="#i-music"/></svg>Music</span></div>
+        <div class="v-clock"><b>14:32</b><span class="r"><span><svg class="pi"><use href="#i-weather"/></svg>21°</span><span><svg class="pi"><use href="#i-drop"/></svg>48 %</span></span></div>
+        <div class="v-media"><i></i><span>Song title, Artist</span><span class="r"><svg class="pi"><use href="#i-prev"/></svg><svg class="pi"><use href="#i-play"/></svg><svg class="pi"><use href="#i-next"/></svg></span></div>
+        <div class="v-assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div>
       </div>
-      <div class="v-nav"><b class="on">🏠</b><b>📹</b><b>🎵</b><b>💡</b><b>📅</b></div>
+      <div class="v-nav"><b class="on"><svg class="pi"><use href="#i-home"/></svg></b><b><svg class="pi"><use href="#i-camera"/></svg></b><b><svg class="pi"><use href="#i-music"/></svg></b><b><svg class="pi"><use href="#i-bulb"/></svg></b><b><svg class="pi"><use href="#i-calendar"/></svg></b></div>
     </div>
   </div>
 </div>
@@ -153,7 +220,7 @@ footer.site a{color:var(--ink-2)}
       <li><strong>Lay out the grid.</strong> Set rows and columns in any CSS grid unit, then tap cells to give them to a block. PanelKit writes the <code>grid-template-areas</code> for you and warns when an area is not a valid rectangle.</li>
       <li><strong>Add blocks.</strong> View Assist elements like the assist bar, status icons, messages and timers, plus popular HACS cards. Each one has a small form instead of a YAML snippet.</li>
       <li><strong>Add more views.</strong> Switch between views in the bar at the top, add one from a template or the whole tab set, reorder them. A navbar set to follow your views gets one route per view, and one click puts it on every view.</li>
-      <li><strong>Copy the YAML.</strong> Create a panel view in your View Assist dashboard, add a manual card, paste. The generated view is a single <code>custom:button-card</code> using the standard <code>variable_template</code> and <code>body_template</code>, so it behaves like the views that ship with View Assist.</li>
+      <li><strong>Add it to Home Assistant.</strong> The builder walks you through it: which cards to install from HACS, where to click, what to name the view, and how to open it on your device. The generated view is a single <code>custom:button-card</code> using the standard <code>variable_template</code> and <code>body_template</code>, so it behaves like the views that ship with View Assist.</li>
     </ol>
   </div>
 </section>

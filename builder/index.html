@@ -1,274 +1,447 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PanelKit, View Assist dashboard builder</title>
+<meta name="description" content="Build View Assist dashboards for Home Assistant visually and copy the YAML.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23161c24'/%3E%3Crect x='12' y='13' width='24' height='18' rx='4' fill='%234aa3ff'/%3E%3Crect x='40' y='13' width='12' height='18' rx='4' fill='%234aa3ff' opacity='.5'/%3E%3Crect x='12' y='35' width='12' height='16' rx='4' fill='%234aa3ff' opacity='.5'/%3E%3Crect x='28' y='35' width='24' height='16' rx='4' fill='%23ff7a3d'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: light dark;
-  --bg:#eceff3; --panel:#ffffff; --panel-2:#f5f7fa; --line:#d5dbe3;
-  --ink:#131820; --ink-2:#4d5866; --ink-3:#7c8797;
-  --accent:#0277bd; --accent-ink:#ffffff;
-  --warn:#b45309;
-  --grid-line:rgba(19,24,32,.10);
-  --radius:10px;
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#f7f8fa; --surface-3:#eef1f4;
+  --line:#e2e6eb; --line-2:#d3d9e0;
+  --ink:#121820; --ink-2:#4a5562; --ink-3:#7a8592;
+  --accent:#1f6feb; --accent-ink:#ffffff; --accent-soft:rgba(31,111,235,.10);
+  --warn:#b45309; --warn-soft:rgba(180,83,9,.08);
+  --ok:#15803d;
+  --focus:0 0 0 3px rgba(31,111,235,.28);
+  --shadow-pop:0 12px 32px rgba(15,23,34,.14),0 2px 6px rgba(15,23,34,.06);
+  --code-bg:#f3f5f8;
+  --syn-key:#0550ae; --syn-str:#116329; --syn-num:#953800; --syn-tpl:#8250df; --syn-com:#6e7781;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   box-sizing:border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
-    --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
-    --accent:#4fc3f7; --accent-ink:#0b1017;
-    --warn:#fbbf24;
-    --grid-line:rgba(231,236,243,.08);
+    --bg:#0d1117; --surface:#141920; --surface-2:#191f27; --surface-3:#1f2630;
+    --line:#252d38; --line-2:#323c49;
+    --ink:#e6ebf1; --ink-2:#a1abb8; --ink-3:#6f7a88;
+    --accent:#4aa3ff; --accent-ink:#06121f; --accent-soft:rgba(74,163,255,.12);
+    --warn:#f0b44c; --warn-soft:rgba(240,180,76,.08);
+    --ok:#4ade80;
+    --focus:0 0 0 3px rgba(74,163,255,.32);
+    --shadow-pop:0 16px 40px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);
+    --code-bg:#10151c;
+    --syn-key:#79c0ff; --syn-str:#a5d6a7; --syn-num:#ffa657; --syn-tpl:#d2a8ff; --syn-com:#7d8590;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0f1319; --panel:#171d25; --panel-2:#1e252f; --line:#2b3440;
-  --ink:#e7ecf3; --ink-2:#a3aebd; --ink-3:#6d7a8a;
-  --accent:#4fc3f7; --accent-ink:#0b1017;
-  --warn:#fbbf24;
-  --grid-line:rgba(231,236,243,.08);
+  --bg:#0d1117; --surface:#141920; --surface-2:#191f27; --surface-3:#1f2630;
+  --line:#252d38; --line-2:#323c49;
+  --ink:#e6ebf1; --ink-2:#a1abb8; --ink-3:#6f7a88;
+  --accent:#4aa3ff; --accent-ink:#06121f; --accent-soft:rgba(74,163,255,.12);
+  --warn:#f0b44c; --warn-soft:rgba(240,180,76,.08);
+  --ok:#4ade80;
+  --focus:0 0 0 3px rgba(74,163,255,.32);
+  --shadow-pop:0 16px 40px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.3);
+  --code-bg:#10151c;
+  --syn-key:#79c0ff; --syn-str:#a5d6a7; --syn-num:#ffa657; --syn-tpl:#d2a8ff; --syn-com:#7d8590;
 }
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:110px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
-h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
-input[type=text],input[type=number],select,textarea{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.mono{font-family:var(--mono);font-size:13px}
-.hint{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
-code.inl{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+h1,h2,h3,p{margin:0}
+a{color:var(--accent)}
+.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.i.sm{width:14px;height:14px}
+.mono{font-family:var(--mono)}
+:focus-visible{outline:none;box-shadow:var(--focus)}
 
-.top{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
-.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
-.brand h1{font-size:17px}
-.brand span{font-size:12px;color:var(--ink-3)}
-.field{display:flex;align-items:center;gap:6px}
-.field label{font-size:12.5px;color:var(--ink-2)}
-.custom-size{display:flex;align-items:center;gap:4px}
-.custom-size input{width:72px}
-.custom-size[hidden]{display:none}
+input[type=text],input[type=number],select,textarea{
+  width:100%;background:var(--surface);border:1px solid var(--line-2);border-radius:7px;padding:6px 9px;min-height:32px;
+  transition:border-color .12s;
+}
+input[type=text]:hover,input[type=number]:hover,select:hover,textarea:hover{border-color:var(--ink-3)}
+input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:var(--accent)}
+input.mono,textarea{font-family:var(--mono);font-size:12.5px}
+textarea{min-height:110px;resize:vertical}
+input[type=color]{width:32px;height:32px;padding:2px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);flex:none}
+input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);margin:0}
 
-button.act{background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13.5px}
-button.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px}
-button.ghost:hover,button.act:hover{filter:brightness(1.08)}
-button.danger{color:var(--warn)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:32px;padding:0 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);font-weight:500;font-size:13px;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--surface-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover:not(:disabled){background:var(--accent);filter:brightness(1.07)}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--ink-2)}
+.btn.quiet:hover:not(:disabled){background:var(--surface-3);color:var(--ink)}
+.btn.icon{padding:0;width:32px}
+.btn.danger{color:var(--warn)}
+.btn.sm{min-height:28px;padding:0 9px;font-size:12.5px}
+.btn.sm.icon{width:28px}
 
-.tabs{display:flex;gap:2px;padding:8px 12px 0;background:var(--panel);border-bottom:1px solid var(--line)}
-.tabs button{flex:1;background:none;border:1px solid transparent;border-bottom:none;padding:9px 6px;border-radius:9px 9px 0 0;color:var(--ink-2);cursor:pointer;font-size:13.5px;font-weight:500}
-.tabs button[aria-selected=true]{background:var(--bg);border-color:var(--line);color:var(--ink);margin-bottom:-1px}
+.topbar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar .in{max-width:1560px;margin:0 auto;height:52px;padding:0 16px;display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none;font-weight:600;font-size:15px;margin-right:auto}
+.logo svg{width:22px;height:22px}
+.logo .ver{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+.devpick{display:flex;align-items:center;gap:8px}
+.devpick label{font-size:12px;color:var(--ink-3)}
+.devpick select{width:auto;min-width:220px}
+.devpick .custom{display:flex;align-items:center;gap:4px;color:var(--ink-3)}
+.devpick .custom input{width:74px}
+.topbar .sep{width:1px;height:20px;background:var(--line)}
 
-.layout{display:grid;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+.viewbar{position:sticky;top:52px;z-index:25;background:var(--surface);border-bottom:1px solid var(--line)}
+.viewbar .in{max-width:1560px;margin:0 auto;padding:0 16px;display:flex;align-items:stretch;gap:4px;height:44px}
+.vtabs{display:flex;align-items:stretch;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.vtabs::-webkit-scrollbar{display:none}
+.vtab{display:flex;align-items:center;position:relative;flex:none}
+.vtab .go{height:100%;display:flex;align-items:center;gap:7px;padding:0 10px 0 12px;background:none;border:none;color:var(--ink-2);font-weight:500;font-size:13px}
+.vtab .go:hover{color:var(--ink)}
+.vtab .path{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.vtab.on .go{color:var(--ink)}
+.vtab.on::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+.vtab .x{width:22px;height:22px;display:grid;place-items:center;border:none;background:none;border-radius:5px;color:var(--ink-3);margin-right:4px;opacity:0}
+.vtab:hover .x,.vtab.on .x,.vtab .x:focus-visible{opacity:1}
+.vtab .x:hover{background:var(--surface-3);color:var(--ink)}
+@media (hover:none){.vtab .x{opacity:1}}
+.addview{position:relative;display:flex;align-items:center;margin-left:4px}
+.menu{position:absolute;top:calc(100% + 6px);left:0;z-index:40;width:300px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-pop);padding:6px;max-height:70vh;overflow:auto}
+.menu h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:8px 8px 4px}
+.menu button{display:flex;width:100%;gap:10px;align-items:flex-start;text-align:left;background:none;border:none;border-radius:7px;padding:7px 8px;color:var(--ink)}
+.menu button:hover,.menu button:focus-visible{background:var(--surface-3)}
+.menu button .i{margin-top:2px;color:var(--ink-2)}
+.menu strong{display:block;font-weight:500;font-size:13px}
+.menu small{display:block;color:var(--ink-3);font-size:12px}
+
+.panes{display:flex;gap:2px;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.panes button{flex:1;border:1px solid transparent;background:none;border-radius:7px;padding:6px;font-weight:500;color:var(--ink-2)}
+.panes button[aria-selected=true]{background:var(--surface-3);border-color:var(--line);color:var(--ink)}
+
+.workspace{max-width:1560px;margin:0 auto;padding:16px;display:grid;gap:16px}
 .pane{display:none;min-width:0}
 .pane.active{display:block}
-.yamlwrap{max-width:1500px;margin:0 auto;padding:0 14px 14px}
-.yamlwrap.pane.active{display:block}
-@media (min-width:960px){
-  .tabs{display:none}
-  .layout{grid-template-columns:minmax(340px,410px) minmax(0,1fr);align-items:start}
-  .pane,.yamlwrap.pane{display:block}
-  .yamlgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
+@media (min-width:1024px){
+  .panes{display:none}
+  .workspace{grid-template-columns:360px minmax(0,1fr);align-items:start}
+  .pane{display:block}
+  .side{position:sticky;top:112px;max-height:calc(100vh - 128px);overflow:auto;scrollbar-width:thin}
   .mobile-only{display:none !important}
 }
 
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
-.cardhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.cardhead h2{font-size:14px;margin-right:auto}
-.count{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:6px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.panel + .panel{margin-top:12px}
+.panel-head{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px;border-bottom:1px solid var(--line);min-height:48px}
+.panel-head h2{font-size:13px;font-weight:600;margin-right:auto;display:flex;align-items:center;gap:8px}
+.panel-head .sub{font-weight:400;color:var(--ink-3);font-size:12px}
+.panel-body{padding:14px}
+.count{font-family:var(--mono);font-size:11px;color:var(--ink-3);background:var(--surface-3);border-radius:5px;padding:0 6px;font-weight:400}
 
-.picker{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:12px;margin-bottom:12px}
-.picker[hidden]{display:none}
-.pgroup + .pgroup{margin-top:12px}
-.pgroup h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:7px;font-weight:600}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.ptile{display:flex;gap:8px;align-items:flex-start;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 9px;cursor:pointer}
-.ptile:hover{border-color:var(--hue)}
-.ptile strong{display:block;font-size:13px;font-weight:600}
-.ptile small{display:block;font-size:11.5px;color:var(--ink-3);line-height:1.3;margin-top:1px}
-.swatch{width:10px;height:10px;border-radius:3px;flex:none;background:var(--hue);margin-top:4px}
-
-.blist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.blist .empty{font-size:13px;color:var(--ink-3);padding:10px 4px}
-.bitem{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);overflow:hidden}
-.bitem.sel{border-color:var(--hue);box-shadow:inset 3px 0 0 var(--hue)}
-.brow{display:flex;align-items:stretch}
-.bsel{flex:1;display:flex;align-items:center;gap:9px;min-width:0;background:none;border:none;padding:9px 6px 9px 12px;cursor:pointer;text-align:left}
-.bsel .swatch{margin-top:0}
-.bname{font-family:var(--mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.btype{font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bflag{font-size:11px;color:var(--warn);border:1px solid currentColor;border-radius:999px;padding:0 6px;white-space:nowrap}
-.bflag.float{color:var(--ink-3)}
-.chev{margin-left:auto;color:var(--ink-3);transition:transform .15s}
-.bitem.open .chev{transform:rotate(180deg)}
-.bdel{background:none;border:none;border-left:1px solid var(--line);color:var(--ink-3);padding:0 13px;cursor:pointer;font-size:13px}
-.bdel:hover{color:var(--warn);background:var(--panel)}
-.bbody{border-top:1px solid var(--line);background:var(--panel);padding:12px;display:flex;flex-direction:column;gap:10px}
-
-.rowgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bbody label,.vs label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
-.bbody input[type=text],.bbody select,.bbody textarea,.vs input,.vs select{width:100%}
-textarea{font-family:var(--mono);font-size:12.5px;min-height:100px;resize:vertical}
-.checkrow{display:flex !important;align-items:center;gap:7px;font-size:13px !important;color:var(--ink) !important;margin:0 !important}
-.checkrow input{width:auto}
-.note{font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;margin:0}
-.place{font-size:12.5px;border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-details.sty summary{cursor:pointer;font-size:12.5px;color:var(--ink-2)}
-details.sty[open] summary{margin-bottom:8px}
-.item{border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--panel-2);display:flex;flex-direction:column;gap:7px}
-.ihead{display:flex;align-items:center;gap:6px}
-.ihead strong{font-size:12.5px;font-family:var(--mono);margin-right:auto}
-.mini{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:12px;line-height:1.6}
-.list{display:flex;flex-direction:column;gap:8px}
+details.vs > summary{list-style:none;display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+details.vs > summary::-webkit-details-marker{display:none}
+details.vs > summary h2{font-size:13px;font-weight:600;margin-right:auto;display:flex;gap:8px;align-items:center}
+details.vs > summary .chev{color:var(--ink-3);transition:transform .15s}
+details.vs[open] > summary{border-bottom:1px solid var(--line)}
+details.vs[open] > summary .chev{transform:rotate(180deg)}
+.form{display:flex;flex-direction:column;gap:12px}
+.form label,.lbl{display:block;font-size:12px;color:var(--ink-2);margin-bottom:4px;font-weight:500}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .colorrow{display:flex;gap:6px;align-items:center}
-.colorrow input[type=color]{width:38px;height:32px;padding:0;border:1px solid var(--line);border-radius:7px;background:none;flex:none}
-.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.look{border:1px solid var(--line);border-radius:9px;padding:7px;background:var(--panel-2);cursor:pointer;text-align:left;font-size:12px}
-.look[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.look i{display:block;height:12px;margin-bottom:5px;border-radius:4px}
+.check{display:flex !important;align-items:center;gap:8px;font-size:13px !important;color:var(--ink) !important;font-weight:400 !important;margin:0 !important}
+.help{font-size:12px;color:var(--ink-3);line-height:1.45}
+.help code,.code-inline{font-family:var(--mono);font-size:11.5px;background:var(--surface-3);border-radius:4px;padding:1px 5px;color:var(--ink)}
+.divider{border:0;border-top:1px solid var(--line);margin:4px 0}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
+.actions{display:flex;flex-wrap:wrap;gap:6px}
 
-details.vs summary{cursor:pointer;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center}
-details.vs summary::-webkit-details-marker{display:none}
-details.vs summary::after{content:"▾";margin-left:auto;color:var(--ink-3);transition:transform .15s}
-details.vs[open] summary::after{transform:rotate(180deg)}
-details.vs[open] summary{margin-bottom:12px}
-.vs .stack{display:flex;flex-direction:column;gap:9px}
+.picker{border-bottom:1px solid var(--line);background:var(--surface-2);padding:6px}
+.picker h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:8px 8px 4px}
+.ptile{display:flex;width:100%;gap:10px;align-items:flex-start;text-align:left;background:none;border:none;border-radius:7px;padding:7px 8px;color:var(--ink)}
+.ptile:hover,.ptile:focus-visible{background:var(--surface-3)}
+.ptile .i{margin-top:2px;color:var(--ink-2)}
+.ptile strong{display:block;font-weight:500;font-size:13px}
+.ptile small{display:block;color:var(--ink-3);font-size:12px}
+.ptile .req{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border:1px solid var(--line-2);border-radius:4px;padding:0 4px;margin-left:6px;font-weight:400}
 
-.stage{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;justify-content:center}
-.bezel{background:#05070a;border-radius:14px;padding:10px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.screen{width:100%;display:grid;overflow:hidden;border-radius:6px;position:relative;background:#1b2026 center/cover no-repeat;color:#fff;font-family:var(--sans)}
-.screen > div{overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px;min-width:0;min-height:0}
-.devlabel{font-size:12.5px;color:var(--ink-3)}
-.pv-title{font-weight:600;justify-content:flex-start !important}
-.pv-status{gap:8px;color:#cfd8e3}
-.pv-assist{background:rgba(0,0,0,.35);gap:10px;color:#cfd8e3;font-size:.9em}
-.pv-generic{border:1px dashed rgba(255,255,255,.28);border-radius:6px;color:#e6edf5}
-.pv-label{font-family:var(--mono);opacity:.8}
-.pv-chips{gap:.5em;flex-wrap:wrap}
-.pv-chip{background:rgba(255,255,255,.14);border-radius:999px;padding:.25em .8em;font-size:.85em;white-space:nowrap}
-.pv-mt{justify-content:flex-start !important;gap:.7em;background:rgba(255,255,255,.08);border-radius:12px}
-.pv-mt .ic{width:2.2em;height:2.2em;border-radius:50%;display:grid;place-items:center;background:rgba(255,122,61,.25);flex:none}
-.pv-mt small{display:block;opacity:.7}
-.pv-ml{flex-direction:column;gap:.35em;background:rgba(255,255,255,.08);border-radius:12px}
-.pv-ml .ic{width:2.4em;height:2.4em;border-radius:50%;display:grid;place-items:center;background:rgba(255,193,7,.28)}
-.pv-ml .bar{width:70%;height:.45em;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden}
-.pv-ml .bar i{display:block;height:100%;width:62%;background:#ffc107}
-.pv-media{flex-direction:column;gap:.4em;background:rgba(255,255,255,.07);border-radius:12px}
-.pv-media .art{width:42%;aspect-ratio:1;max-height:55%;border-radius:8px;background:linear-gradient(135deg,#6366f1,#ec4899)}
-.pv-media.full{background:linear-gradient(135deg,rgba(99,102,241,.55),rgba(236,72,153,.55))}
-.pv-cw{flex-direction:column;gap:.25em}
-.pv-cw .t{font-size:2.6em;font-weight:600;line-height:1}
-.pv-cw .r{display:flex;gap:1.2em;opacity:.85}
-.pv-tile{justify-content:flex-start !important;gap:.6em;background:rgba(255,255,255,.1);border-radius:12px;padding:.6em .9em !important}
-.pv-cal{flex-direction:column;align-items:stretch !important;justify-content:flex-start !important;gap:.35em;background:rgba(255,255,255,.06);border-radius:12px;padding:.7em !important}
-.pv-cal div{display:flex;gap:.8em;padding:.35em .5em;border-radius:7px;background:rgba(255,255,255,.07);font-size:.9em}
-.pv-cal b{min-width:4.2em;font-weight:500;opacity:.75}
-.pv-cam{background:linear-gradient(160deg,#2b3542,#11161c);border-radius:10px;position:relative}
-.pv-cam .live{position:absolute;top:.6em;left:.6em;font-size:.75em;background:rgba(0,0,0,.5);padding:.15em .55em;border-radius:5px}
-.pv-cam .live::before{content:"";display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#ef4444;margin-right:.35em}
-.pv-nav{position:absolute;display:flex;gap:.35em;padding:.4em;z-index:5;background:#262b33;box-shadow:0 4px 16px rgba(0,0,0,.4)}
-.pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.1em;padding:.4em .6em;border-radius:inherit;font-size:.8em;color:#cfd8e3;min-width:2.4em}
-.pv-nav .r .e{font-size:1.3em;line-height:1}
+.blist{list-style:none;margin:0;padding:6px}
+.blist .empty{font-size:13px;color:var(--ink-3);padding:16px 10px;text-align:center}
+.bitem{border-radius:8px;border:1px solid transparent}
+.bitem + .bitem{margin-top:2px}
+.bitem.sel{border-color:var(--line);background:var(--surface-2)}
+.brow{display:flex;align-items:center;gap:2px;padding-right:4px}
+.bsel{flex:1;display:flex;align-items:center;gap:10px;min-width:0;background:none;border:none;padding:8px 6px 8px 8px;text-align:left;border-radius:7px}
+.bsel:hover .bname{color:var(--ink)}
+.bico{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;flex:none;color:var(--hue);background:color-mix(in srgb,var(--hue) 14%,transparent)}
+.btxt{display:flex;flex-direction:column;min-width:0;line-height:1.3;flex:1}
+.bname{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btype{font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bflag{font-size:11px;font-weight:500;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:1px 6px;white-space:nowrap}
+.bflag.muted{color:var(--ink-3);background:var(--surface-3)}
+.bsel .chev{color:var(--ink-3);transition:transform .15s;margin-left:2px}
+
+.bitem.open .bsel .chev{transform:rotate(180deg)}
+.bdel{width:28px;height:28px;display:grid;place-items:center;border:none;background:none;border-radius:6px;color:var(--ink-3);opacity:0}
+.bitem:hover .bdel,.bitem.sel .bdel,.bdel:focus-visible{opacity:1}
+.bdel:hover{background:var(--surface-3);color:var(--warn)}
+@media (hover:none){.bdel{opacity:1}}
+.bbody{padding:4px 12px 14px 12px;display:flex;flex-direction:column;gap:12px}
+.place{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink);background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:7px;padding:8px 10px}
+.place .i{color:var(--warn);margin-top:1px}
+.note{font-size:12.5px;color:var(--ink-2);background:var(--surface-3);border-radius:7px;padding:8px 10px}
+details.sty{border-top:1px solid var(--line);padding-top:10px}
+details.sty summary{cursor:pointer;font-size:12px;font-weight:500;color:var(--ink-2);list-style:none;display:flex;align-items:center;gap:6px}
+details.sty summary::-webkit-details-marker{display:none}
+details.sty summary .i{transition:transform .15s}
+details.sty[open] summary .i{transform:rotate(90deg)}
+details.sty[open] summary{margin-bottom:10px}
+.item{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.ihead{display:flex;align-items:center;gap:4px}
+.ihead strong{font-size:12.5px;font-weight:500;margin-right:auto;display:flex;align-items:center;gap:7px}
+.ihead .i{color:var(--ink-2)}
+.list{display:flex;flex-direction:column;gap:6px}
+.seg{display:inline-flex;background:var(--surface-3);border-radius:8px;padding:2px;gap:2px;width:100%}
+.seg button{flex:1;white-space:nowrap;border:none;background:none;border-radius:6px;padding:5px 6px;font-size:12.5px;font-weight:500;color:var(--ink-2)}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.syncnote{font-size:12.5px;color:var(--ink-2);border:1px dashed var(--line-2);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:8px}
+.routes-preview{display:flex;flex-wrap:wrap;gap:6px}
+.routes-preview span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink);background:var(--surface-3);border-radius:5px;padding:2px 7px}
+
+.canvas-head{display:flex;align-items:center;gap:10px}
+.devlabel{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.stage{padding:28px 20px;display:flex;justify-content:center;background:
+  radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/16px 16px, var(--surface-2);border-radius:0 0 10px 10px}
+.bezel{background:#06080b;border-radius:16px;padding:10px;width:100%;max-width:1000px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px rgba(0,0,0,.35)}
+.screen{width:100%;display:grid;overflow:hidden;border-radius:7px;position:relative;background:#1b1f24 center/cover no-repeat;color:#eef2f6;font-family:var(--sans)}
+.screen > div{overflow:hidden;display:flex;align-items:center;justify-content:center;padding:.4em;min-width:0;min-height:0}
+.screen .pi{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.pv-title{font-weight:600;justify-content:flex-start !important;font-size:1.15em;padding-left:.8em !important}
+.pv-status{gap:.6em;color:#b9c3cf;justify-content:flex-end !important;padding-right:.9em !important}
+.pv-assist{background:rgba(0,0,0,.32);gap:.5em;color:#b9c3cf;font-size:.9em}
+.pv-generic{border:1px dashed rgba(255,255,255,.22);border-radius:8px;color:#d6dde6;margin:.3em}
+.pv-label{font-family:var(--mono);font-size:.85em;opacity:.75}
+.pv-chips{gap:.45em;flex-wrap:wrap}
+.pv-chip{display:inline-flex;align-items:center;gap:.35em;background:rgba(255,255,255,.12);border-radius:999px;padding:.25em .75em;font-size:.82em;white-space:nowrap}
+.pv-chip .pi{width:1.05em;height:1.05em}
+.pv-mt{justify-content:flex-start !important;gap:.7em;background:rgba(255,255,255,.07);border-radius:12px;margin:.3em;padding:.6em .8em !important}
+.pv-mt.v{flex-direction:column;justify-content:center !important;gap:.4em;text-align:center}
+.pv-mt .ic,.pv-ml .ic{width:2.3em;height:2.3em;border-radius:50%;display:grid;place-items:center;flex:none}
+.pv-mt .ic{background:rgba(255,122,61,.22);color:#ffb38a}
+.pv-mt small{display:block;opacity:.65;font-size:.85em}
+.pv-ml{flex-direction:column;gap:.4em;background:rgba(255,255,255,.07);border-radius:12px;margin:.3em}
+.pv-ml .ic{background:rgba(255,193,7,.22);color:#ffd76a}
+.pv-ml .bar{width:68%;height:.4em;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+.pv-ml .bar i{display:block;height:100%;width:62%;background:#ffc94d}
+.pv-media{flex-direction:column;gap:.5em;background:rgba(255,255,255,.06);border-radius:12px;margin:.3em}
+.pv-media .art{width:38%;aspect-ratio:1;max-height:52%;border-radius:8px;background:linear-gradient(135deg,#4f46e5,#db2777)}
+.pv-media.full{background:linear-gradient(135deg,rgba(79,70,229,.55),rgba(219,39,119,.5))}
+.pv-media .ctl{display:flex;gap:1em;align-items:center}
+.pv-cw{flex-direction:column;gap:.3em}
+.pv-cw .t{font-size:2.8em;font-weight:600;line-height:1;letter-spacing:-.02em}
+.pv-cw .r{display:flex;gap:1.2em;align-items:center;opacity:.85}
+.pv-cw .r span{display:inline-flex;gap:.35em;align-items:center}
+.pv-tile{justify-content:flex-start !important;gap:.6em;background:rgba(255,255,255,.08);border-radius:12px;padding:.6em .9em !important;margin:.3em}
+.pv-cal{flex-direction:column;align-items:stretch !important;justify-content:flex-start !important;gap:.35em;background:rgba(255,255,255,.05);border-radius:12px;padding:.7em !important;margin:.3em}
+.pv-cal div{display:flex;gap:.8em;padding:.4em .6em;border-radius:7px;background:rgba(255,255,255,.06);font-size:.9em}
+.pv-cal b{min-width:4em;font-weight:500;opacity:.65}
+.pv-cam{background:linear-gradient(160deg,#28323e,#0e1318);border-radius:10px;position:relative;margin:.3em;flex-direction:column;gap:.4em;color:#8b97a5}
+.pv-cam .live{position:absolute;top:.6em;left:.6em;font-size:.72em;background:rgba(0,0,0,.55);color:#eef2f6;padding:.15em .55em;border-radius:5px;display:inline-flex;align-items:center;gap:.35em}
+.pv-cam .live::before{content:"";width:.5em;height:.5em;border-radius:50%;background:#ef4444}
+.pv-nav{position:absolute;display:flex;gap:.3em;padding:.35em;z-index:5;background:#232932;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pv-nav .r{display:flex;flex-direction:column;align-items:center;gap:.15em;padding:.45em .55em;border-radius:inherit;font-size:.78em;color:#c3ccd7}
+.pv-nav .r .pi{width:1.4em;height:1.4em}
 .pv-nav.v{flex-direction:column}
 
-.gridhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.gridhead h2{font-size:14px;margin-right:auto}
-.painting{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.painting .swatch{margin-top:0}
-.painter{display:grid;gap:5px}
-.colhead,.rowhead,.cells{display:grid;gap:5px}
-.sizein{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:4px 5px;font-family:var(--mono);font-size:11px;text-align:center}
-.cell{border:1px solid var(--line);border-radius:7px;min-height:46px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:8px 8px;padding:2px;word-break:break-all;text-align:center}
-.cell.empty{color:var(--ink-3)}
-.gridtools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.gridtools button[aria-pressed=true]{border-color:var(--warn);color:var(--warn)}
-.painthint{font-size:12.5px;color:var(--warn);min-height:1.2em;margin:8px 0 0}
+.checks{border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink)}
+.chk .i{color:var(--warn);margin-top:1px}
+.chk.ok{color:var(--ink-3)}
+.chk.ok .i{color:var(--ok)}
 
-.alert{border-left:3px solid var(--warn);background:var(--panel-2);padding:8px 10px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink);margin-bottom:8px}
-.ok{font-size:12.5px;color:var(--ink-3)}
-pre.out{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:12px;overflow:auto;max-height:70vh;font-family:var(--mono);font-size:12.5px;white-space:pre;margin:0}
-.outbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.deps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:12.5px;color:var(--ink-2)}
-.deps span{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink)}
-ol.steps{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)}
-ol.steps li{margin-bottom:6px}
+.gridtools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gridtools .spacer{flex:1}
+.gridtools .btn[aria-pressed=true]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.painting{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2)}
+.painting .bico{width:22px;height:22px}
+.painter{display:grid;gap:4px;margin-top:12px}
+.colhead,.rowhead,.cells{display:grid;gap:4px}
+.sizein{width:100%;min-height:28px;padding:3px 4px;font-family:var(--mono);font-size:11px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-2)}
+.sizein:hover{border-color:var(--ink-3)}
+.sizein:focus-visible{border-color:var(--accent);color:var(--ink)}
+.cell{border:1px solid var(--line-2);border-radius:6px;min-height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink);background:var(--surface-2);padding:2px;word-break:break-all;text-align:center;transition:border-color .1s}
+.cell:hover{border-color:var(--accent)}
+.cell.empty{background:repeating-linear-gradient(-45deg,transparent 0 6px,var(--surface-3) 6px 7px),var(--surface-2)}
+.painthint{font-size:12.5px;color:var(--warn);min-height:0;margin-top:8px}
+.painthint:empty{display:none}
 
-.snack{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:10px;padding:9px 10px 9px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.snack[hidden]{display:none}
-.snack button{background:none;border:1px solid currentColor;color:inherit;border-radius:7px;padding:3px 10px;cursor:pointer;font-weight:600}
+.guide{max-width:1560px;margin:0 auto;padding:0 16px 24px}
+.guide .panel-head{flex-wrap:wrap}
+.guide .seg{width:auto}
+.steps{list-style:none;margin:0;padding:6px 0;counter-reset:s}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;padding:16px 18px;border-top:1px solid var(--line)}
+.step:first-child{border-top:none}
+.step::before{counter-increment:s;content:counter(s);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;background:var(--accent-soft);color:var(--accent)}
+.step h3{font-size:14px;font-weight:600;margin:3px 0 6px}
+.step p{color:var(--ink-2);max-width:72ch}
+.step p + p,.step p + .kv,.step .kv + p,.step p + .code,.step .code + p,.step p + .deplist,.step .deplist + p,.step p + ul,.step ul + p{margin-top:10px}
+.step ul{margin:0;padding-left:18px;color:var(--ink-2)}
+.step ul li + li{margin-top:4px}
+.path-ui{font-weight:500;color:var(--ink)}
+.kbd{font-family:var(--sans);font-size:12px;font-weight:500;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--surface-2);color:var(--ink);white-space:nowrap}
+.kv{border:1px solid var(--line);border-radius:8px;padding:2px 12px;background:var(--surface-2);max-width:620px}
+.kvr{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:9px 0}
+.kvr + .kvr{border-top:1px solid var(--line)}
+.kvr .k{font-size:12.5px;color:var(--ink-3)}
+.kvr .v{font-weight:500;min-width:0;overflow-wrap:anywhere}
+.kvr .v.m{font-family:var(--mono);font-size:13px}
+.kvr .n{grid-column:2/-1;font-size:12px;color:var(--ink-3)}
+.deplist{list-style:none;padding:0 !important;margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;max-width:620px}
+.deplist li{display:flex;gap:12px;align-items:center;padding:9px 12px;background:var(--surface-2)}
+.deplist li + li{border-top:1px solid var(--line);margin-top:0 !important}
+.deplist .n{font-weight:600;color:var(--ink);min-width:150px}
+.deplist .u{font-size:12px;color:var(--ink-3);flex:1}
+.deplist a{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;text-decoration:none;white-space:nowrap}
+.code{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--code-bg)}
+.code-bar{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 12px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.code-bar span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-right:auto}
+.code pre{margin:0;padding:12px 14px;overflow:auto;max-height:440px;font-family:var(--mono);font-size:12.5px;line-height:1.6;white-space:pre;color:var(--ink)}
+.code pre.short{max-height:none}
+.y-k{color:var(--syn-key)} .y-s{color:var(--syn-str)} .y-n{color:var(--syn-num)} .y-t{color:var(--syn-tpl)} .y-c{color:var(--syn-com)}
+.callout{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--ink-2);max-width:620px}
+.callout .i{color:var(--ink-3);margin-top:1px}
 
-footer{max-width:1500px;margin:0 auto;padding:4px 16px 28px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-3)}
-footer a{color:var(--ink-2)}
-footer .ver{font-family:var(--mono);font-size:11.5px}
-.viewbar{background:var(--panel);border-bottom:1px solid var(--line)}
-.viewbar .in{max-width:1500px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:8px}
-.viewbar .lbl{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;flex:none}
-.vtabs{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding:2px;scrollbar-width:thin}
-.vtab{display:flex;align-items:center;flex:none;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);overflow:hidden}
-.vtab button{background:none;border:none;cursor:pointer;color:var(--ink-2);font-size:13.5px}
-.vtab .go{display:flex;align-items:center;gap:6px;padding:7px 11px}
-.vtab .x{padding:7px 9px 7px 2px;color:var(--ink-3);font-size:12px}
-.vtab .x:hover{color:var(--warn)}
-.vtab.on{border-color:var(--accent);background:var(--panel);box-shadow:inset 0 -2px 0 var(--accent)}
-.vtab.on .go{color:var(--ink);font-weight:600}
-.addview{position:relative;flex:none}
-.addmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(320px,86vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.35);padding:8px;max-height:70vh;overflow:auto}
-.addmenu[hidden]{display:none}
-.addmenu h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:6px 6px 4px;font-weight:600}
-.addmenu button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;background:none;border:none;border-radius:8px;padding:7px 8px;cursor:pointer}
-.addmenu button:hover{background:var(--panel-2)}
-.addmenu small{display:block;color:var(--ink-3);font-size:12px}
-.addmenu .e{width:22px;text-align:center;flex:none}
-.vs h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;margin:4px 0 0}
-.vactions{display:flex;flex-wrap:wrap;gap:6px}
-.syncnote{font-size:12.5px;color:var(--ink-2);background:var(--panel-2);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
-.syncnote span.r{font-family:var(--mono);font-size:12px;color:var(--ink)}
-@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+.snack{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:9px;padding:6px 6px 6px 14px;display:flex;gap:12px;align-items:center;font-size:13px;z-index:60;box-shadow:var(--shadow-pop)}
+.snack button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);color:inherit;border-radius:6px;padding:4px 10px;font-weight:600;font-size:12.5px}
+
+footer{max-width:1560px;margin:0 auto;padding:8px 16px 32px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:12.5px;color:var(--ink-3)}
+footer a{color:var(--ink-2);text-decoration:none}
+footer a:hover{color:var(--ink)}
+footer .grow{flex:1}
+@media (max-width:640px){
+  .topbar .in{gap:8px}
+  .devpick label,.topbar .sep,.hide-sm,.logo .ver,#exportbtn span{display:none}
+  .devpick select{min-width:0;max-width:44vw}
+  #exportbtn{padding:0;width:32px}
+  .deplist li{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n a" "u u";gap:2px 12px}
+  .deplist .n{grid-area:n;min-width:0}
+  .deplist .u{grid-area:u}
+  .deplist a{grid-area:a}
+  .step{padding:14px 12px;gap:10px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="brand">
-    <h1>PanelKit</h1>
-    <span>View Assist dashboard builder</span>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-eraser" viewBox="0 0 24 24"><path d="m15 4 5 5-9.5 9.5H6L3.5 16 15 4ZM9 10l5 5M7 20h13"/></symbol>
+  <symbol id="i-dup" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 24 24"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h1.5a2.5 2.5 0 0 1 0 5H16"/></symbol>
+  <symbol id="i-rows" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 12h18"/></symbol>
+  <symbol id="i-cols" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="7" width="12.5" height="10" rx="2"/><path d="m15.5 11 5-3v8l-5-3"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 17.5h6M10 21h4M12 3a6 6 0 0 0-3.9 10.6c.6.6.9 1.3.9 2.1V16h6v-.3c0-.8.3-1.5.9-2.1A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-weather" viewBox="0 0 24 24"><path d="M7.5 19h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.5 1.3A2.9 2.9 0 0 0 7.5 19Z"/><path d="M8 3.5v1.5M3.5 8H5M4.8 4.8l1 1M11.3 7.4A3.5 3.5 0 0 0 5 9"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.6V5a2 2 0 0 0-4 0v9.6a4 4 0 1 0 4 0Z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 11v2M5.5 10v4M8.5 10v4M11.5 10v4"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M4.5 10a11 11 0 0 1 15 0M7.5 13.5a6.5 6.5 0 0 1 9 0"/><circle cx="12" cy="17.5" r="1.2"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8.5M6.5 6.5a8 8 0 1 0 11 0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.4-7.5-10.2A4.2 4.2 0 0 1 12 7.1a4.2 4.2 0 0 1 7.5 2.7C19.5 15.6 12 20 12 20Z"/></symbol>
+  <symbol id="i-radio" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="m7 8 10-4.5M6.5 12.5h4M6.5 16h4"/><circle cx="15.5" cy="14" r="2.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12L9 12l9-6Z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 6v12M6 6v12l9-6-9-6Z"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4ZM16 9a4.5 4.5 0 0 1 0 6"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M9.5 2.5h5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m21 15.5-4.5-4.5L7 19.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8L12 3.5Z"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6h14M12 6v13M9 19h6"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M4.5 5.5h15v10h-9l-4.5 3.5v-3.5h-1.5v-10Z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 18v-3M10 18v-6M15 18V9M20 18V5"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><rect x="15" y="3.5" width="5.5" height="17" rx="2.75"/><path d="M3.5 7h8M3.5 12h8M3.5 17h8"/></symbol>
+  <symbol id="i-pills" viewBox="0 0 24 24"><rect x="2.5" y="8.5" width="8.5" height="7" rx="3.5"/><rect x="13" y="8.5" width="8.5" height="7" rx="3.5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><circle cx="8.5" cy="12" r="2"/><path d="M13 10.5h4.5M13 13.5h3"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3.5 9 5-9 5-9-5 9-5Z"/><path d="m3 13.5 9 5 9-5"/></symbol>
+  <symbol id="i-tile" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="10" rx="2.5"/><circle cx="8.5" cy="12" r="1.8"/></symbol>
+  <symbol id="i-dim" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17A8.5 8.5 0 0 0 12 3.5Z"/></symbol>
+  <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3.5 17v-4.5a1.5 1.5 0 0 1 3 0V14h11v-1.5a1.5 1.5 0 0 1 3 0V17H3.5ZM6 17v2M18 17v2"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Zm0 0 7-7"/></symbol>
+  <symbol id="i-desk" viewBox="0 0 24 24"><path d="M3.5 9.5h17M5.5 9.5V19M18.5 9.5V19M12 9.5v4h6.5"/></symbol>
+  <symbol id="i-flood" viewBox="0 0 24 24"><path d="M8 4h8l1.5 4h-11L8 4ZM6 12l-2 6M12 12v7M18 12l2 6"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="in">
+    <a class="logo" href="../" aria-label="PanelKit home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#161c24"/><rect x="12" y="13" width="24" height="18" rx="4" fill="#4aa3ff"/><rect x="40" y="13" width="12" height="18" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="12" y="35" width="12" height="16" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="28" y="35" width="24" height="16" rx="4" fill="#ff7a3d"/></svg>
+      PanelKit <span class="ver">0.4</span>
+    </a>
+    <div class="devpick">
+      <label for="device">Device</label>
+      <select id="device"></select>
+      <span class="custom" id="customsize" hidden>
+        <input type="number" id="cw" min="200" max="4000" aria-label="Width in pixels">
+        <span>by</span>
+        <input type="number" id="ch" min="200" max="4000" aria-label="Height in pixels">
+      </span>
+    </div>
+    <span class="sep"></span>
+    <button class="btn quiet icon" id="themebtn" title="Switch light or dark" aria-label="Switch light or dark theme"><svg class="i"><use href="#i-moon"/></svg></button>
+    <a class="btn quiet icon hide-sm" href="https://github.com/ma-2a/panelkit" title="Source on GitHub" aria-label="Source on GitHub"><svg class="i"><use href="#i-github"/></svg></a>
+    <button class="btn primary" id="exportbtn"><svg class="i"><use href="#i-download"/></svg><span>Add to Home Assistant</span></button>
   </div>
-  <div class="field">
-    <label for="device">Device</label>
-    <select id="device"></select>
-    <span class="custom-size" id="customsize" hidden>
-      <input type="number" id="cw" min="200" max="4000" aria-label="Width in pixels">
-      <span>×</span>
-      <input type="number" id="ch" min="200" max="4000" aria-label="Height in pixels">
-    </span>
-  </div>
-  <button class="ghost" id="themebtn" title="Light or dark" aria-label="Toggle light or dark theme">◐</button>
 </header>
 
-<div class="viewbar">
+<nav class="viewbar" aria-label="Views">
   <div class="in">
-    <span class="lbl">Views</span>
-    <div class="vtabs" id="vtabs" role="tablist" aria-label="Views"></div>
+    <div class="vtabs" id="vtabs" role="tablist"></div>
     <div class="addview">
-      <button class="act" id="addview" aria-expanded="false" aria-controls="addmenu">+ Add view</button>
-      <div class="addmenu" id="addmenu" hidden></div>
+      <button class="btn quiet sm" id="addview" aria-expanded="false" aria-controls="addmenu"><svg class="i sm"><use href="#i-plus"/></svg>Add view</button>
+      <div class="menu" id="addmenu" hidden></div>
     </div>
   </div>
-</div>
+</nav>
 
-<nav class="tabs" role="tablist">
+<nav class="panes" role="tablist" aria-label="Sections">
   <button role="tab" aria-selected="true" data-pane="build">Blocks</button>
-  <button role="tab" aria-selected="false" data-pane="layout">Preview</button>
-  <button role="tab" aria-selected="false" data-pane="yaml">YAML</button>
+  <button role="tab" aria-selected="false" data-pane="layout">Canvas</button>
+  <button role="tab" aria-selected="false" data-pane="yaml">Install</button>
 </nav>
 
 <datalist id="targets">
@@ -277,31 +450,40 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
   <option value="/lovelace/0"><option value="script."><option value="scene.">
 </datalist>
 
-<div class="layout">
-  <aside class="pane active" id="pane-build">
-    <details class="card vs" id="viewsettings">
-      <summary>View settings <span class="count mono" id="vsname"></span></summary>
-      <div class="stack">
-        <div class="rowgrid">
+<div class="workspace">
+  <aside class="pane active side" id="pane-build">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Blocks <span class="count" id="blockcount">0</span></h2>
+        <button class="btn sm" id="addtoggle" aria-expanded="false" aria-controls="picker"><svg class="i sm"><use href="#i-plus"/></svg>Add block</button>
+      </div>
+      <div class="picker" id="picker" hidden></div>
+      <ol class="blist" id="blocklist"></ol>
+    </section>
+
+    <details class="panel vs" id="viewsettings">
+      <summary><h2>View settings <span class="count" id="vsname"></span></h2><svg class="i chev"><use href="#i-chev"/></svg></summary>
+      <div class="panel-body form">
+        <div class="row2">
           <div>
-            <label for="viewname">Name in the URL</label>
+            <label for="viewname">URL name</label>
             <input type="text" id="viewname" class="mono">
           </div>
           <div>
-            <label for="viewlabel">Navbar label</label>
+            <label for="viewlabel">Title</label>
             <input type="text" id="viewlabel">
           </div>
         </div>
         <div>
-          <label for="viewicon">Navbar icon</label>
+          <label for="viewicon">Icon in the navbar</label>
           <input type="text" id="viewicon" class="mono" placeholder="mdi:home-outline">
         </div>
         <div>
           <label for="bgmode">Background</label>
           <select id="bgmode">
             <option value="fixed">Image file</option>
-            <option value="satellite">From the satellite entity</option>
-            <option value="color">Color only</option>
+            <option value="satellite">From the View Assist device</option>
+            <option value="color">Plain color</option>
           </select>
         </div>
         <div id="bgpathwrap">
@@ -312,94 +494,65 @@ footer .ver{font-family:var(--mono);font-size:11.5px}
           <label for="bgcolor">Base color</label>
           <div class="colorrow"><input type="color" id="bgcolorc" aria-label="Pick base color"><input type="text" id="bgcolor" class="mono"></div>
         </div>
-        <div class="vactions">
-          <button class="ghost" id="vleft" aria-label="Move view left">← Move</button>
-          <button class="ghost" id="vright" aria-label="Move view right">Move →</button>
-          <button class="ghost" id="vdup">Duplicate</button>
-          <button class="ghost danger" id="vdel">Delete view</button>
+        <div class="actions">
+          <button class="btn sm" id="vleft"><svg class="i sm"><use href="#i-left"/></svg>Move left</button>
+          <button class="btn sm" id="vright">Move right<svg class="i sm"><use href="#i-right"/></svg></button>
+          <button class="btn sm" id="vdup"><svg class="i sm"><use href="#i-dup"/></svg>Duplicate</button>
+          <button class="btn sm danger" id="vdel"><svg class="i sm"><use href="#i-trash"/></svg>Delete view</button>
         </div>
-        <h3>All views</h3>
+        <hr class="divider">
+        <p class="section-label">All views</p>
         <div>
-          <label for="vabase">View Assist dashboard path</label>
+          <label for="vabase">View Assist dashboard address</label>
           <input type="text" id="vabase" class="mono">
+          <p class="help" style="margin-top:6px">Link targets: a view name like <code>music</code> opens that view, a path like <code>/lovelace/0</code> opens another dashboard, <code>script.x</code> or <code>scene.x</code> runs it, and <code>https://</code> opens a website.</p>
         </div>
-        <p class="hint" style="margin:0">Link targets work the same everywhere. A plain name like <code class="inl">music</code> opens that view on this dashboard. A path like <code class="inl">/lovelace/0</code> opens any dashboard. <code class="inl">script.x</code> or <code class="inl">scene.x</code> runs it. <code class="inl">https://</code> opens a website.</p>
       </div>
     </details>
-    <section class="card">
-      <div class="cardhead">
-        <h2>Blocks<span class="count" id="blockcount">0</span></h2>
-        <button class="act" id="addtoggle" aria-expanded="false" aria-controls="picker">+ Add block</button>
-      </div>
-      <div class="picker" id="picker" hidden></div>
-      <ol class="blist" id="blocklist"></ol>
-      <p class="hint">Open a block to edit it. The selected block is what you place when tapping grid cells.</p>
-    </section>
-
   </aside>
 
   <section class="pane" id="pane-layout">
-    <div class="card">
-      <div class="cardhead">
-        <h2>Preview</h2>
+    <div class="panel">
+      <div class="panel-head canvas-head">
+        <h2>Preview <span class="sub" id="vstitle"></span></h2>
         <span class="devlabel" id="devlabel"></span>
       </div>
       <div class="stage"><div class="bezel"><div class="screen" id="screen"></div></div></div>
-      <div id="warnings" style="margin-top:12px"></div>
+      <div class="checks" id="warnings"></div>
     </div>
 
-    <div class="card">
-      <div class="gridhead">
-        <h2>Grid</h2>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Layout grid</h2>
         <span class="painting" id="painting"></span>
       </div>
-      <div class="painter" id="painter"></div>
-      <p class="painthint" id="painthint"></p>
-      <div class="gridtools">
-        <button class="ghost" data-g="addrow">+ Row</button>
-        <button class="ghost" data-g="delrow">− Row</button>
-        <button class="ghost" data-g="addcol">+ Column</button>
-        <button class="ghost" data-g="delcol">− Column</button>
-        <button class="ghost" data-g="clear" aria-pressed="false">Eraser</button>
+      <div class="panel-body">
+        <div class="gridtools">
+          <button class="btn sm" data-g="addrow"><svg class="i sm"><use href="#i-plus"/></svg>Row</button>
+          <button class="btn sm" data-g="delrow"><svg class="i sm"><use href="#i-minus"/></svg>Row</button>
+          <button class="btn sm" data-g="addcol"><svg class="i sm"><use href="#i-plus"/></svg>Column</button>
+          <button class="btn sm" data-g="delcol"><svg class="i sm"><use href="#i-minus"/></svg>Column</button>
+          <span class="spacer"></span>
+          <button class="btn sm" data-g="clear" aria-pressed="false"><svg class="i sm"><use href="#i-eraser"/></svg>Eraser</button>
+        </div>
+        <div class="painter" id="painter"></div>
+        <p class="painthint" id="painthint"></p>
+        <p class="help" style="margin-top:10px">Select a block on the left, then click cells to give them to it. Click a cell again to free it. Row and column sizes take any CSS grid value, for example <code>1fr</code>, <code>min-content</code> or <code>90px</code>.</p>
       </div>
-      <p class="hint">Tap cells to give them to the selected block. Sizes take any CSS grid value, for example <code class="inl">1fr</code>, <code class="inl">min-content</code>, <code class="inl">15vh</code> or <code class="inl">90px</code>.</p>
     </div>
   </section>
 </div>
 
-<section class="yamlwrap pane" id="pane-yaml">
-  <div class="yamlgrid">
-    <div class="card">
-      <div class="cardhead"><h2>View YAML</h2></div>
-      <div class="deps" id="deps"></div>
-      <div class="outbar">
-        <button class="act" id="copy">Copy</button>
-        <button class="ghost" id="download">Download .yaml</button>
-        <button class="ghost" id="copyall">Copy all views</button>
-      </div>
-      <p class="hint" id="copyallhint" style="margin:0 0 10px">The YAML below is the view <strong class="mono" id="yamlname"></strong>. “Copy all views” gives you every view as dashboard entries for the raw configuration editor, to paste under <code class="inl">views:</code>.</p>
-      <pre class="out" id="yaml"></pre>
-    </div>
-    <div class="card">
-      <div class="cardhead"><h2>How to install</h2></div>
-      <ol class="steps">
-        <li>Install the cards listed above from HACS under <em>Frontend</em>, then reload the browser.</li>
-        <li>In the View Assist dashboard, add a view with exactly the name above and the <em>Panel (1 card)</em> type.</li>
-        <li>Add a card, choose <em>Manual</em>, clear it, paste the YAML, save.</li>
-        <li>Open it with <code class="inl">view_assist.navigate</code> or from the navbar of another view.</li>
-      </ol>
-      <p class="hint">Building a tab set? Create one view per template with the same navbar, and the active tab lights up on each.</p>
-    </div>
-  </div>
+<section class="guide pane" id="pane-yaml">
+  <div class="panel" id="guide"></div>
 </section>
 
 <footer>
-  <a href="../">PanelKit</a>
-  <a href="https://github.com/ma-2a/panelkit">GitHub</a>
-  <a href="https://ko-fi.com/ma2a">Support on Ko-fi</a>
+  <a href="../">About PanelKit</a>
   <a href="https://github.com/ma-2a/panelkit/issues">Report an issue</a>
-  <span class="ver">v0.3.0</span>
-  <span>Not affiliated with the View Assist project or Home Assistant.</span>
+  <a href="https://ko-fi.com/ma2a">Support on Ko-fi</a>
+  <span class="grow"></span>
+  <span>Independent project, not affiliated with View Assist or Home Assistant.</span>
 </footer>
 
 <div class="snack" id="snack" role="status" hidden><span id="snacktext"></span><button id="snackundo">Undo</button></div>
@@ -706,20 +859,20 @@ const PRESETS = {home:presetHome, camera:presetCamera, music:presetMusic, lights
 
 const VIEW_MENU = [
   {group:"Start fresh", items:[
-    {id:"tabset", label:"Full tab set", desc:"Home, camera, music, lights and calendar", e:"🗂️"},
-    {id:"blank", label:"Blank view", desc:"Title, status and assist bar", e:"⬜"}]},
+    {id:"tabset", label:"Full tab set", desc:"Home, camera, music, lights and calendar", e:"layers"},
+    {id:"blank", label:"Blank view", desc:"Title, status and assist bar", e:"card"}]},
   {group:"Tab set views", items:[
-    {id:"home", label:"Home", desc:"Clock, weather, chips", e:"🏠"},
-    {id:"camera", label:"Camera", desc:"Live feed and floodlight", e:"📹"},
-    {id:"music", label:"Music", desc:"Player and favorites", e:"🎵"},
-    {id:"lights", label:"Lights", desc:"Room tiles and all off", e:"💡"},
-    {id:"calendar", label:"Calendar", desc:"Agenda", e:"📅"}]},
+    {id:"home", label:"Home", desc:"Clock, weather, chips", e:"home"},
+    {id:"camera", label:"Camera", desc:"Live feed and floodlight", e:"camera"},
+    {id:"music", label:"Music", desc:"Player and favorites", e:"music"},
+    {id:"lights", label:"Lights", desc:"Room tiles and all off", e:"bulb"},
+    {id:"calendar", label:"Calendar", desc:"Agenda", e:"calendar"}]},
   {group:"Single views", items:[
-    {id:"info", label:"Info", desc:"Title and message", e:"ℹ️"},
-    {id:"infonav", label:"Info with navbar", desc:"Message plus tabs", e:"ℹ️"},
-    {id:"infopic", label:"Info with image", desc:"Image next to the message", e:"🖼️"},
-    {id:"timers", label:"Timers and alarms", desc:"Running timers", e:"⏲️"},
-    {id:"split", label:"Two columns", desc:"Message and a custom card", e:"◫"}]}
+    {id:"info", label:"Info", desc:"Title and message", e:"info"},
+    {id:"infonav", label:"Info with navbar", desc:"Message plus tabs", e:"nav"},
+    {id:"infopic", label:"Info with image", desc:"Image next to the message", e:"image"},
+    {id:"timers", label:"Timers and alarms", desc:"Running timers", e:"timer"},
+    {id:"split", label:"Two columns", desc:"Message and a custom card", e:"cols"}]}
 ];
 const TABSET = ["home","camera","music","lights","calendar"];
 
@@ -786,11 +939,17 @@ function actionFor(n){
 }
 function tapFor(t){ const n=navTarget(t); return n ? actionFor(n) : undefined; }
 
-const EMOJI = [["home","🏠"],["clock","🕒"],["alarm","⏰"],["timer","⏲️"],["weather","⛅"],["sun","☀️"],["music","🎵"],["radio","📻"],["play","▶️"],
-  ["speaker","🔊"],["flood","🔦"],["floor-lamp","🪔"],["desk","💡"],["light","💡"],["lamp","💡"],["thermo","🌡️"],["calendar","📅"],["cctv","📹"],["camera","📷"],
-  ["cog","⚙️"],["info","ℹ️"],["web","🌐"],["cart","🛒"],["list","📝"],["check","✅"],["micro","🎙️"],["sofa","🛋️"],["bed","🛏️"],
-  ["fire","🔥"],["lock","🔒"],["dots","⋯"],["arrow-left","←"],["star","⭐"],["heart","❤️"],["robot","🤖"],["power","⏻"],["water","💧"],["flower","🌷"]];
-function emo(icon){ const i=(icon||"").toLowerCase(); for(const [k,e] of EMOJI) if(i.includes(k)) return e; return "●"; }
+const ICONS = [["home","home"],["cctv","camera"],["camera","camera"],["video","camera"],["music","music"],["radio","radio"],["play","play"],
+  ["speaker","volume"],["flood","flood"],["floor-lamp","bulb"],["desk-lamp","bulb"],["desk","desk"],["light","bulb"],["lamp","bulb"],
+  ["thermo","thermo"],["calendar","calendar"],["weather","weather"],["sun","weather"],["heart","heart"],["power","power"],["sofa","sofa"],
+  ["flower","leaf"],["leaf","leaf"],["timer","timer"],["alarm","timer"],["clock","timer"],["image","image"],["web","globe"],["info","info"],
+  ["star","star"],["water","drop"],["micro","mic"],["door","home"]];
+const TYPE_ICON = {title:"text",status:"signal",assist:"mic",message:"message",image:"image",timers:"timer",intent:"layers",webpage:"globe",
+  navbar:"nav",chips:"pills",mtemplate:"card",mlight:"bulb",media:"music",clockweather:"weather",camera:"camera",calendar:"calendar",
+  tile:"tile",shader:"dim",custom:"code"};
+function icoId(name){ const n=(name||"").toLowerCase(); for(const [k,v] of ICONS) if(n.includes(k)) return v; return "dot"; }
+function ico(name, cls="pi"){ return `<svg class="${cls}" aria-hidden="true"><use href="#i-${icoId(name)}"/></svg>`; }
+function sym(id, cls="i"){ return `<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`; }
 
 const isObj = v => v && typeof v==="object" && !Array.isArray(v);
 const RESERVED = /^(true|false|yes|no|on|off|null|~|y|n)$/i;
@@ -925,23 +1084,23 @@ function renderDevices(){
 
 function renderPicker(){
   const p=$("#picker");
-  p.innerHTML = Object.entries(GROUPS).map(([g,gl])=>`<div class="pgroup"><h3>${esc(gl)}</h3><div class="pgrid">${
+  p.innerHTML = Object.entries(GROUPS).map(([g,gl])=>`<h3>${esc(gl)}</h3>`+
     Object.entries(TYPES).filter(([,v])=>v.group===g).map(([k,v])=>
-      `<button class="ptile" data-add="${k}" style="--hue:${v.hue}"><span class="swatch"></span><span><strong>${esc(v.label)}</strong><small>${esc(v.desc)}${v.hacs&&g==="hacs"?`, ${esc(v.hacs)}`:""}</small></span></button>`
-    ).join("")}</div></div>`).join("");
+      `<button class="ptile" data-add="${k}">${sym(TYPE_ICON[k])}<span><strong>${esc(v.label)}${v.hacs?'<span class="req">HACS</span>':""}</strong><small>${esc(v.desc)}</small></span></button>`
+    ).join("")).join("");
   p.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addBlock(b.dataset.add));
 }
 function togglePicker(open){
   const p=$("#picker"), b=$("#addtoggle");
   const show = open ?? p.hidden;
-  p.hidden = !show; b.setAttribute("aria-expanded", String(show)); b.textContent = show ? "Close" : "+ Add block";
+  p.hidden = !show; b.setAttribute("aria-expanded", String(show)); b.innerHTML = show ? sym("x","i sm")+"Close" : sym("plus","i sm")+"Add block";
 }
 function addBlock(t){
   const nameMap={custom:"card",mtemplate:"button",mlight:"light",clockweather:"clockweather"};
   const a=uniqueName(nameMap[t]||t);
   state.blocks[a]=blockDefaults(t); state.selected=a; state.expanded=true; state.paintEmpty=false;
   togglePicker(false);
-  $("#painthint").textContent = TYPES[t].floating ? "" : `Tap grid cells to place “${a}”.`;
+  $("#painthint").textContent = TYPES[t].floating ? "" : `Click cells in the layout grid to place “${a}”.`;
   renderAll();
   const el=document.querySelector(`[data-block="${a}"]`); if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
 }
@@ -1026,19 +1185,19 @@ function toggleAddMenu(open){
 function renderAddMenu(){
   const m=$("#addmenu");
   m.innerHTML = VIEW_MENU.map(g=>`<h3>${esc(g.group)}</h3>`+g.items.map(it=>
-    `<button data-view="${it.id}"><span class="e">${it.e}</span><span><strong>${esc(it.label)}</strong><small>${esc(it.desc)}</small></span></button>`).join("")).join("");
+    `<button data-view="${it.id}">${sym(it.e)}<span><strong>${esc(it.label)}</strong><small>${esc(it.desc)}</small></span></button>`).join("")).join("");
   m.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>addView(b.dataset.view));
 }
 function renderViews(){
   const el=$("#vtabs");
   el.innerHTML = project.views.map((v,i)=>`<div class="vtab${i===project.active?" on":""}">
-    <button class="go" role="tab" aria-selected="${i===project.active}" data-vi="${i}"><span aria-hidden="true">${emo(v.icon||v.name)}</span>${esc(viewLabel(v))}</button>
-    ${project.views.length>1?`<button class="x" data-vx="${i}" aria-label="Delete view ${esc(v.name)}" title="Delete view">✕</button>`:""}
+    <button class="go" role="tab" aria-selected="${i===project.active}" data-vi="${i}">${esc(viewLabel(v))}</button>
+    ${project.views.length>1?`<button class="x" data-vx="${i}" aria-label="Delete view ${esc(v.name)}" title="Delete view">${sym("x","i sm")}</button>`:""}
   </div>`).join("");
   el.querySelectorAll("[data-vi]").forEach(b=>b.onclick=()=>switchView(+b.dataset.vi));
   el.querySelectorAll("[data-vx]").forEach(b=>b.onclick=()=>deleteView(+b.dataset.vx));
   $("#vsname").textContent = state.name;
-  $("#yamlname").textContent = state.name;
+  $("#vstitle").textContent = viewLabel(state);
   $("#vleft").disabled = project.active===0;
   $("#vright").disabled = project.active===project.views.length-1;
   $("#vdel").disabled = project.views.length<2;
@@ -1048,7 +1207,7 @@ function renderBlocks(){
   const list=$("#blocklist"); list.innerHTML="";
   const names=Object.keys(state.blocks);
   $("#blockcount").textContent=names.length;
-  if(!names.length){ list.innerHTML='<li class="empty">No blocks yet. Use “+ Add block” or pick a template at the top.</li>'; return; }
+  if(!names.length){ list.innerHTML='<li class="empty">This view is empty. Add a block to start.</li>'; return; }
   const placed=new Set(usedAreas());
   names.forEach(a=>{
     const b=state.blocks[a], t=TYPES[b.type];
@@ -1058,18 +1217,18 @@ function renderBlocks(){
     li.dataset.block=a;
     li.style.setProperty("--hue", t.hue);
     let flag="";
-    if(t.floating) flag='<span class="bflag float">floats</span>';
-    else if(!placed.has(a)) flag='<span class="bflag">not placed</span>';
+    if(t.floating) flag='<span class="bflag muted">Floating</span>';
+    else if(!placed.has(a)) flag='<span class="bflag">Not placed</span>';
     li.innerHTML=`<div class="brow">
-      <button class="bsel" aria-expanded="${open}"><span class="swatch"></span><span class="bname">${esc(a)}</span><span class="btype">${esc(t.label)}</span>${flag}<span class="chev" aria-hidden="true">▾</span></button>
-      <button class="bdel" aria-label="Remove ${esc(a)}" title="Remove">✕</button></div>`;
+      <button class="bsel" aria-expanded="${open}"><span class="bico">${sym(TYPE_ICON[b.type])}</span><span class="btxt"><span class="bname">${esc(a)}</span><span class="btype">${esc(t.label)}</span></span>${flag}${sym("chev","i sm chev")}</button>
+      <button class="bdel" aria-label="Remove ${esc(a)}" title="Remove block">${sym("trash","i sm")}</button></div>`;
     li.querySelector(".bsel").onclick=()=>{
       if(state.selected===a) state.expanded=!state.expanded; else { state.selected=a; state.expanded=true; }
       state.paintEmpty=false; $("#painthint").textContent=""; renderAll();
     };
     li.querySelector(".bdel").onclick=()=>removeBlock(a);
     if(open){
-      const body=document.createElement("div"); body.className="bbody";
+      const body=document.createElement("div"); body.className="bbody form";
       body.innerHTML=inspectorHTML(a,b,placed.has(a));
       li.appendChild(body);
     }
@@ -1084,13 +1243,13 @@ function sel(id, opts, val, labels, extra=""){
 function fieldHTML(f, b){
   if(f.only && !f.only(b)) return "";
   const id="f-"+f.k, v=b[f.k];
-  if(f.kind==="check") return `<label class="checkrow"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
+  if(f.kind==="check") return `<label class="check"><input type="checkbox" id="${id}" ${v?"checked":""}> ${esc(f.l)}</label>`;
   if(f.kind==="select") return `<div><label for="${id}">${esc(f.l)}</label>${sel(id,f.opts,v??"",f.labels)}</div>`;
   const extra = f.kind==="target" ? ` list="targets" placeholder="music, /lovelace/0, script.x"` : (f.ph?` placeholder="${esc(f.ph)}"`:"");
   return `<div><label for="${id}">${esc(f.l)}</label><input type="text" id="${id}" class="mono" value="${esc(v??"")}"${extra}></div>`;
 }
 function styleHTML(b){
-  return `<details class="sty"><summary>Area style</summary><div class="rowgrid">
+  return `<details class="sty"><summary>${sym("right","i sm")}Area style</summary><div class="row2">
     <div><label for="s-font">font-size</label><input type="text" id="s-font" class="mono" value="${esc(b.style.fontSize)}" placeholder="4vh"></div>
     <div><label for="s-pad">padding</label><input type="text" id="s-pad" class="mono" value="${esc(b.style.padding)}" placeholder="2%"></div>
     <div><label for="s-align">align-self</label>${sel("s-align",["","start","center","end","stretch"],b.style.alignSelf)}</div>
@@ -1102,14 +1261,14 @@ function styleHTML(b){
   </div></details>`;
 }
 function navbarHTML(b){
-  const looks=Object.entries(NAV_LOOKS).map(([k,v])=>`<button class="look" data-look="${k}" aria-pressed="${b.look===k}"><i style="${v.sw}"></i>${esc(v.l)}</button>`).join("");
+  const looks=Object.entries(NAV_LOOKS).map(([k,v])=>`<button data-look="${k}" aria-pressed="${b.look===k}">${esc(v.l)}</button>`).join("");
   const routes=(b.routes||[]).map((r,i)=>`
     <div class="item">
-      <div class="ihead"><strong>${emo(r.icon)} ${esc(r.label||"Route "+(i+1))}</strong>
-        <button class="mini" data-rmv="${i}" data-d="-1" aria-label="Move up">↑</button>
-        <button class="mini" data-rmv="${i}" data-d="1" aria-label="Move down">↓</button>
-        <button class="mini" data-rdel="${i}" aria-label="Remove route">✕</button></div>
-      <div class="rowgrid">
+      <div class="ihead"><strong>${ico(r.icon,"i sm")}${esc(r.label||"Route "+(i+1))}</strong>
+        <button class="btn quiet sm icon" data-rmv="${i}" data-d="-1" aria-label="Move up">${sym("up","i sm")}</button>
+        <button class="btn quiet sm icon" data-rmv="${i}" data-d="1" aria-label="Move down">${sym("down","i sm")}</button>
+        <button class="btn quiet sm icon" data-rdel="${i}" aria-label="Remove route">${sym("x","i sm")}</button></div>
+      <div class="row2">
         <div><label>Label</label><input type="text" data-r="${i}" data-k="label" value="${esc(r.label)}"></div>
         <div><label>Target</label><input type="text" class="mono" list="targets" data-r="${i}" data-k="target" value="${esc(r.target)}" placeholder="music"></div>
         <div><label>Icon</label><input type="text" class="mono" data-r="${i}" data-k="icon" value="${esc(r.icon)}" placeholder="mdi:music"></div>
@@ -1117,32 +1276,32 @@ function navbarHTML(b){
       </div>
     </div>`).join("");
   return `
-    <div><label>Style</label><div class="looks">${looks}</div></div>
-    <div class="rowgrid">
+    <div><span class="lbl">Style</span><div class="seg" role="group" aria-label="Navbar style">${looks}</div></div>
+    <div class="row2">
       <div><label for="n-pos">Position</label>${sel("n-pos",["right","left","bottom","top"],b.position)}</div>
       <div><label for="n-rad">Corner radius</label><input type="text" id="n-rad" class="mono" value="${esc(b.radius)}" placeholder="${b.look==="pill"?"999px (pill)":"16px"}" ${b.look==="pill"?"disabled":""}></div>
       <div><label for="n-prim">Accent color</label><div class="colorrow"><input type="color" id="n-primc" value="${/^#[0-9a-f]{6}$/i.test(b.primary)?b.primary:ACCENT}" aria-label="Pick accent color"><input type="text" id="n-prim" class="mono" value="${esc(b.primary)}"></div></div>
       <div><label for="n-bg">Background</label><div class="colorrow"><input type="color" id="n-bgc" value="${hexOr(b.bg,"#262b33")}" aria-label="Pick background color" ${b.look==="transparent"?"disabled":""}><input type="text" id="n-bg" class="mono" value="${esc(b.bg)}" placeholder="theme default" ${b.look==="transparent"?"disabled":""}></div></div>
     </div>
-    <label class="checkrow"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
-    <label class="checkrow"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding</label>
-    <label class="checkrow"><input type="checkbox" id="n-sync" ${b.sync?"checked":""}> Routes follow the views</label>
-    ${b.sync ? `<div class="syncnote">One route per view, in the order of the view bar. Label and icon come from each view's settings.
-        <span class="r">${effectiveRoutes(b).map(r=>`${emo(r.icon)} ${esc(r.label)}`).join("&nbsp;&nbsp;&nbsp;")}</span></div>`
-      : `<div><label>Routes</label><div class="list">${routes}</div></div>
-    <div><button class="ghost" id="n-add">+ Route</button></div>`}
-    <div><button class="ghost" id="n-all">Use this navbar in every view</button></div>`;
+    <label class="check"><input type="checkbox" id="n-lab" ${b.showLabels?"checked":""}> Show labels</label>
+    <label class="check"><input type="checkbox" id="n-pad" ${b.autoPadding?"checked":""}> Auto padding</label>
+    <label class="check"><input type="checkbox" id="n-sync" ${b.sync?"checked":""}> One route per view, kept in sync</label>
+    ${b.sync ? `<div class="syncnote">Routes follow the view bar. Title and icon come from each view's settings.
+        <span class="routes-preview">${effectiveRoutes(b).map(r=>`<span>${ico(r.icon,"i sm")}${esc(r.label)}</span>`).join("")}</span></div>`
+      : `<div><span class="lbl">Routes</span><div class="list">${routes}</div></div>
+    <div><button class="btn sm" id="n-add">${sym("plus","i sm")}Add route</button></div>`}
+    <div><button class="btn sm" id="n-all">${sym("dup","i sm")}Use this navbar in every view</button></div>`;
 }
 function chipsHTML(b){
   const items=(b.chips||[]).map((c,i)=>{
     const needEntity=c.kind==="weather"||c.kind==="entity";
     const needIcon=c.kind==="entity"||c.kind==="template"||c.kind==="action";
     return `<div class="item">
-      <div class="ihead"><strong>${emo(c.icon||c.kind)} ${esc(CHIP_KINDS[c.kind])}</strong>
-        <button class="mini" data-cmv="${i}" data-d="-1" aria-label="Move up">↑</button>
-        <button class="mini" data-cmv="${i}" data-d="1" aria-label="Move down">↓</button>
-        <button class="mini" data-cdel="${i}" aria-label="Remove chip">✕</button></div>
-      <div class="rowgrid">
+      <div class="ihead"><strong>${ico(c.icon||c.kind,"i sm")}${esc(CHIP_KINDS[c.kind])}</strong>
+        <button class="btn quiet sm icon" data-cmv="${i}" data-d="-1" aria-label="Move up">${sym("up","i sm")}</button>
+        <button class="btn quiet sm icon" data-cmv="${i}" data-d="1" aria-label="Move down">${sym("down","i sm")}</button>
+        <button class="btn quiet sm icon" data-cdel="${i}" aria-label="Remove chip">${sym("x","i sm")}</button></div>
+      <div class="row2">
         <div><label>Kind</label>${sel("ck"+i,Object.keys(CHIP_KINDS),c.kind,CHIP_KINDS,` data-c="${i}" data-k="kind"`)}</div>
         ${needEntity?`<div><label>Entity</label><input type="text" class="mono" data-c="${i}" data-k="entity" value="${esc(c.entity)}"></div>`:""}
         ${needIcon?`<div><label>Icon</label><input type="text" class="mono" data-c="${i}" data-k="icon" value="${esc(c.icon)}" placeholder="mdi:…"></div>`:""}
@@ -1151,16 +1310,16 @@ function chipsHTML(b){
       </div></div>`;
   }).join("");
   return `<div><label for="c-align">Alignment</label>${sel("c-align",["start","center","end","justify"],b.alignment)}</div>
-    <div><label>Chips</label><div class="list">${items}</div></div>
-    <div><button class="ghost" id="c-add">+ Chip</button></div>`;
+    <div><span class="lbl">Chips</span><div class="list">${items}</div></div>
+    <div><button class="btn sm" id="c-add">${sym("plus","i sm")}Add chip</button></div>`;
 }
 function inspectorHTML(a,b,isPlaced){
   const t=TYPES[b.type], P=[];
   if(!t.floating && !isPlaced)
-    P.push(`<div class="place">Not on the grid yet. Tap cells in the grid to place it.<button class="ghost mobile-only" data-goto="layout">Open grid</button></div>`);
+    P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the grid yet. Click cells in the layout grid to place it. <button class="btn sm mobile-only" data-goto="layout">Open grid</button></span></div>`);
   P.push(`<div><label for="i-name">${t.floating?"Name":"Grid area name"}</label><input type="text" id="i-name" class="mono" value="${esc(a)}"></div>`);
-  const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS.</p>`);
-  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the grid edge it sits on empty, the templates use a 90px column for that.</p>`);
+  const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS. The install steps list it for you.</p>`);
+  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the grid edge it sits on empty. The templates reserve a 90px column for it.</p>`);
   if(t.provided) P.push(`<p class="note">Content and style come from View Assist's <span class="mono">body_template</span>. Only its place in the grid is set here.</p>`);
 
   if(b.type==="title")   P.push(`<div><label for="i-text">Text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
@@ -1168,12 +1327,12 @@ function inspectorHTML(a,b,isPlaced){
   if(b.type==="image")   P.push(`<div><label for="i-width">Image width</label><input type="text" id="i-width" class="mono" value="${esc(b.width||"75%")}"></div>`);
   if(b.type==="shader")  P.push(`<div><label for="i-shade">Opacity (0 to 1)</label><input type="text" id="i-shade" class="mono" value="${esc(b.shade||"0.15")}"></div>`);
   if(b.type==="custom")  P.push(`<div><label for="i-yaml">Card YAML</label><textarea id="i-yaml">${esc(b.yaml)}</textarea></div>`);
-  if(b.type==="message") P.push(`<label class="checkrow"><input type="checkbox" id="i-fontvar" ${b.fontVar?"checked":""}> Font size from <span class="mono">var_font_size</span></label>`);
+  if(b.type==="message") P.push(`<label class="check"><input type="checkbox" id="i-fontvar" ${b.fontVar?"checked":""}> Font size from <span class="mono">var_font_size</span></label>`);
   if(b.type==="navbar")  P.push(navbarHTML(b));
   if(b.type==="chips")   P.push(chipsHTML(b));
   if(SCHEMAS[b.type])    P.push(SCHEMAS[b.type].map(f=>fieldHTML(f,b)).join(""));
   if(!t.provided && !t.floating) P.push(styleHTML(b));
-  P.push(`<div><button class="ghost danger" id="i-del">Remove block</button></div>`);
+  P.push(`<div><button class="btn sm danger" id="i-del">${sym("trash","i sm")}Remove block</button></div>`);
   return P.join("");
 }
 function applyNavbarEverywhere(a){
@@ -1276,13 +1435,13 @@ function renderPainter(){
       cells.appendChild(c);
     }
   });
-  p.innerHTML=""; p.style.gridTemplateColumns="62px minmax(0,1fr)";
+  p.innerHTML=""; p.style.gridTemplateColumns="84px minmax(0,1fr)";
   p.append(corner, colhead, rowhead, cells);
 
   const pt=$("#painting"); const s=state.selected && state.blocks[state.selected];
-  if(state.paintEmpty) pt.innerHTML='Eraser on';
-  else if(s && !TYPES[s.type].floating) pt.innerHTML=`<span class="swatch" style="--hue:${TYPES[s.type].hue}"></span>Placing <strong class="mono">${esc(state.selected)}</strong>`;
-  else pt.innerHTML='Select a block to place it';
+  if(state.paintEmpty) pt.innerHTML=sym("eraser","i sm")+"Eraser is on";
+  else if(s && !TYPES[s.type].floating) pt.innerHTML=`<span class="bico" style="--hue:${TYPES[s.type].hue}">${sym(TYPE_ICON[s.type],"i sm")}</span><span>Placing <strong class="mono">${esc(state.selected)}</strong></span>`;
+  else pt.textContent="Select a block to place it";
   document.querySelector('[data-g="clear"]').setAttribute("aria-pressed", String(!!state.paintEmpty));
 }
 function paintCell(r,ci){
@@ -1305,26 +1464,34 @@ function isCurrent(target){
   return n.v.replace(/\/$/,"").endsWith("/"+state.name);
 }
 function mockHTML(a,b){
+  const I=(n)=>`<svg class="pi" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   switch(b.type){
     case "title":   return ["pv-title", esc(b.text||"Title")];
-    case "status":  return ["pv-status","🔇 🔋 📶"];
-    case "assist":  return ["pv-assist","🎙 Assist"];
+    case "status":  return ["pv-status", I("mic")+I("wifi")+I("battery")];
+    case "assist":  return ["pv-assist", I("mic")+"<span>Assist</span>"];
     case "message": return ["pv-generic",'<span>Message from <span class="pv-label">var_message</span></span>'];
-    case "image":   return ["pv-generic",'<span class="pv-label">Image</span>'];
-    case "timers":  return ["pv-generic",'<span class="pv-label">Timer cards</span>'];
-    case "intent":  return ["pv-generic",'<span class="pv-label">Intent cards</span>'];
-    case "webpage": return ["pv-generic",'<span class="pv-label">Web page</span>'];
-    case "chips":   return ["pv-chips", (b.chips||[]).map(c=>`<span class="pv-chip">${
-        c.kind==="weather"?"⛅ 21 °C":c.kind==="back"?"←":emo(c.icon)+(c.kind==="template"&&c.content?" "+esc(/\{\{/.test(c.content)?"Dentist 09:00":c.content):c.kind==="entity"?" 21.5":"")}</span>`).join("")];
-    case "mtemplate": return ["pv-mt", `<span class="ic">${emo(b.icon)}</span><span>${esc(b.primary||"Title")}${b.secondary?`<small>${esc(b.secondary.replace(/\{\{.*?\}\}/g,"on"))}</small>`:""}</span>`];
-    case "mlight":  return ["pv-ml", `<span class="ic">${emo(b.icon||"light")}</span><span>${esc(b.name||b.entity||"Light")}</span>${b.brightness?'<span class="bar"><i></i></span>':""}`];
-    case "media":   return ["pv-media"+(b.artwork==="full-cover"||b.artwork==="full-cover-fit"?" full":""), `${b.artwork==="full-cover"||b.artwork==="full-cover-fit"?"":'<span class="art"></span>'}<span>Song title, Artist</span><span>⏮ ⏯ ⏭${b.hideVolume?"":"   🔊"}</span>`];
-    case "clockweather": return ["pv-cw", `<span class="t">${b.time_format==="12"?"2:32":"14:32"}</span><span class="r"><span>☀️ 21°</span>${b.showHumidity?"<span>💧 48 %</span>":""}</span>${b.hideForecast?"":`<small class="r" style="opacity:.7"><span>Mon 22°</span><span>Tue 19°</span><span>Wed 17°</span></small>`}`];
-    case "tile":    return ["pv-tile", `<span>${emo(b.icon||b.entity)}</span><span>${esc(b.name||b.entity||"Tile")}</span>`];
-    case "camera":  return ["pv-cam", `<span class="live">${b.engine==="advanced"||b.live?"Live":"Snapshot"}</span><span class="pv-label">${esc(b.entity||"camera")}</span>`];
+    case "image":   return ["pv-generic", I("image")];
+    case "timers":  return ["pv-generic", I("timer")+'<span class="pv-label">&nbsp;Timers</span>'];
+    case "intent":  return ["pv-generic", I("layers")+'<span class="pv-label">&nbsp;Intent cards</span>'];
+    case "webpage": return ["pv-generic", I("globe")+'<span class="pv-label">&nbsp;Web page</span>'];
+    case "chips":   return ["pv-chips", (b.chips||[]).map(c=>{
+        if(c.kind==="weather") return `<span class="pv-chip">${I("weather")}21 °C</span>`;
+        if(c.kind==="back") return `<span class="pv-chip">${I("left")}</span>`;
+        const txt = c.kind==="template" && c.content ? esc(/\{\{/.test(c.content)?"Dentist 09:00":c.content) : c.kind==="entity" ? "21.5" : "";
+        return `<span class="pv-chip">${ico(c.icon)}${txt}</span>`;
+      }).join("")];
+    case "mtemplate": return ["pv-mt"+(b.layout==="vertical"?" v":""), `<span class="ic">${ico(b.icon)}</span><span>${esc(b.primary||"Title")}${b.secondary?`<small>${esc(b.secondary.replace(/\{\{.*?\}\}/g,"on"))}</small>`:""}</span>`];
+    case "mlight":  return ["pv-ml", `<span class="ic">${ico(b.icon||"light")}</span><span>${esc(b.name||b.entity||"Light")}</span>${b.brightness?'<span class="bar"><i></i></span>':""}`];
+    case "media": {
+      const full = b.artwork==="full-cover"||b.artwork==="full-cover-fit";
+      return ["pv-media"+(full?" full":""), `${full?"":'<span class="art"></span>'}<span>Song title, Artist</span><span class="ctl">${I("prev")}${I("play")}${I("next")}${b.hideVolume?"":I("volume")}</span>`];
+    }
+    case "clockweather": return ["pv-cw", `<span class="t">${b.time_format==="12"?"2:32":"14:32"}</span><span class="r"><span>${I("weather")}21°</span>${b.showHumidity?`<span>${I("drop")}48 %</span>`:""}</span>${b.hideForecast?"":`<small class="r" style="opacity:.65"><span>Mon 22°</span><span>Tue 19°</span><span>Wed 17°</span></small>`}`];
+    case "tile":    return ["pv-tile", `${ico(b.icon||b.entity)}<span>${esc(b.name||b.entity||"Tile")}</span>`];
+    case "camera":  return ["pv-cam", `<span class="live">${b.engine==="advanced"||b.live?"Live":"Snapshot"}</span>${I("camera")}<span class="pv-label">${esc(b.entity||"camera")}</span>`];
     case "calendar":
-      if(b.view==="dayGridMonth") return ["pv-generic",'<span class="pv-label">Month grid</span>'];
-      return ["pv-cal", `<div><b>Today</b>Dentist 09:00</div><div><b>Tue</b>Football 18:30</div><div><b>Sat</b>🎂 Birthday</div>`];
+      if(b.view==="dayGridMonth") return ["pv-generic", I("calendar")+'<span class="pv-label">&nbsp;Month grid</span>'];
+      return ["pv-cal", `<div><b>Today</b>Dentist 09:00</div><div><b>Tue</b>Football 18:30</div><div><b>Sat</b>Birthday</div>`];
     default:        return ["pv-generic", `<span class="pv-label">${esc(a)}</span>`];
   }
 }
@@ -1334,7 +1501,7 @@ function renderNavPreview(s, b){
   nav.className="pv-nav"+(vert?" v":"");
   const rad=b.look==="pill"?"999px":(b.radius||"14px");
   nav.style.borderRadius = vert && b.look==="pill" ? "2em" : rad;
-  if(b.look==="glass"){ nav.style.background="rgba(20,24,30,.45)"; nav.style.backdropFilter="blur(10px)"; nav.style.border="1px solid rgba(255,255,255,.12)"; }
+  if(b.look==="glass"){ nav.style.background="rgba(20,24,30,.5)"; nav.style.backdropFilter="blur(10px)"; nav.style.border="1px solid rgba(255,255,255,.12)"; }
   if(b.look==="transparent"){ nav.style.background="transparent"; nav.style.boxShadow="none"; }
   if(b.bg && b.look!=="transparent") nav.style.background=b.bg;
   const m="2.5%";
@@ -1347,7 +1514,7 @@ function renderNavPreview(s, b){
     const cur=isCurrent(r.target);
     const d=document.createElement("div"); d.className="r";
     if(cur){ d.style.color=prim; d.style.background=tint(prim,.2); }
-    d.innerHTML=`<span class="e">${emo(cur&&r.iconSel?r.iconSel:r.icon)}</span>${b.showLabels&&r.label?`<span>${esc(r.label)}</span>`:""}`;
+    d.innerHTML=`${ico(cur&&r.iconSel?r.iconSel:r.icon)}${b.showLabels&&r.label?`<span>${esc(r.label)}</span>`:""}`;
     nav.appendChild(d);
   });
   s.appendChild(nav);
@@ -1378,7 +1545,7 @@ function renderPreview(){
     if(st.padding) el.style.margin=st.padding;
     if(st.background) el.style.background=st.background;
     if(st.radius) el.style.borderRadius=st.radius;
-    if(state.selected===a) el.style.outline="2px solid "+TYPES[b.type].hue;
+    if(state.selected===a){ el.style.outline="2px solid "+TYPES[b.type].hue; el.style.outlineOffset="-2px"; }
     s.appendChild(el);
   });
   Object.values(state.blocks).forEach(b=>{
@@ -1465,8 +1632,8 @@ function buildAllViews(){
   project.views.forEach(v=>{
     state=v;
     const lines=buildYaml().trimEnd().split("\n");
-    out.push(`- title: ${yq(viewLabel(v))}`, `  path: ${v.name}`, "  type: panel", "  cards:");
-    out.push("    - "+lines[0], ...lines.slice(1).map(l=>l.length?"      "+l:l));
+    out.push(`  - title: ${yq(viewLabel(v))}`, `    path: ${v.name}`, "    type: panel", "    cards:");
+    out.push("      - "+lines[0], ...lines.slice(1).map(l=>l.length?"        "+l:l));
   });
   state=keep;
   return out.join("\n")+"\n";
@@ -1510,16 +1677,127 @@ function deps(){
 
 function renderChecks(){
   const m=checks();
-  $("#warnings").innerHTML = m.length ? m.map(x=>`<div class="alert">${esc(x)}</div>`).join("") : '<p class="ok">No problems found.</p>';
+  $("#warnings").innerHTML = m.length
+    ? m.map(x=>`<div class="chk">${sym("alert","i sm")}<span>${esc(x)}</span></div>`).join("")
+    : `<div class="chk ok">${sym("check","i sm")}<span>No problems found in this view.</span></div>`;
 }
-function renderYaml(){
-  $("#yaml").textContent=buildYaml();
-  $("#deps").innerHTML='Needs from HACS:'+deps().map(x=>`<span>${esc(x)}</span>`).join("");
+const DEP_INFO = {
+  "button-card":{repo:"https://github.com/custom-cards/button-card", core:true},
+  "Navbar Card":{repo:"https://github.com/joseluis9595/lovelace-navbar-card"},
+  "Mushroom":{repo:"https://github.com/piitaya/lovelace-mushroom"},
+  "Mini Media Player":{repo:"https://github.com/kalkih/mini-media-player"},
+  "Clock Weather Card":{repo:"https://github.com/pkissling/clock-weather-card"},
+  "layout-card":{repo:"https://github.com/thomasloven/lovelace-layout-card"},
+  "Advanced Camera Card":{repo:"https://github.com/dermotduffy/advanced-camera-card"}
+};
+let guideMode="view";
+const guideTexts={};
+function depsFor(views){
+  const map=new Map([["button-card",new Set()]]);
+  views.forEach(v=>Object.entries(v.blocks).forEach(([a,b])=>{
+    const h=hacsOf(b); if(!h) return;
+    if(!map.has(h)) map.set(h,new Set());
+    map.get(h).add(views.length>1 ? viewLabel(v) : TYPES[b.type].label);
+  }));
+  return map;
 }
-function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderYaml(); save(); }
+function hlYaml(text){
+  const val = v => {
+    if(/\[\[\[/.test(v)) return v.replace(/(\[\[\[.*?(\]\]\]|$))/g, s=>`<span class="y-t">${s}</span>`);
+    const t=v.trim(); if(!t) return v;
+    if(/^(&quot;.*&quot;|&#39;.*&#39;)$/.test(t)) return v.replace(t, ()=>`<span class="y-s">${t}</span>`);
+    if(/^(true|false|null|-?\d+(\.\d+)?)$/.test(t)) return v.replace(t, ()=>`<span class="y-n">${t}</span>`);
+    return v;
+  };
+  return text.split("\n").map(line=>{
+    const e=esc(line);
+    const kv=/^(\s*(?:-\s+)?)([A-Za-z0-9_][A-Za-z0-9_.\-]*)(:)(\s.*|)$/.exec(e);
+    if(kv) return kv[1]+`<span class="y-k">${kv[2]}</span>${kv[3]}`+val(kv[4]);
+    const li=/^(\s*-\s)(.*)$/.exec(e);
+    if(li) return li[1]+val(li[2]);
+    return val(e);
+  }).join("\n");
+}
+function codeBlock(id, label, text, extra=""){
+  guideTexts[id]=text;
+  return `<div class="code"><div class="code-bar"><span>${esc(label)}</span>${extra}<button class="btn sm" data-copy="${id}">${sym("copy","i sm")}<span>Copy</span></button></div><pre id="${id}">${hlYaml(text)}</pre></div>`;
+}
+function copyBtn(id, text, label="Copy"){
+  guideTexts[id]=text;
+  return `<button class="btn sm quiet cp" data-copy="${id}" aria-label="${esc(label)}">${sym("copy","i sm")}<span>Copy</span></button>`;
+}
+function renderGuide(){
+  const all = guideMode==="all" && project.views.length>1;
+  const views = all ? project.views : [state];
+  const deps = depsFor(views);
+  const first = views[0];
+  const navPath = navTarget(first.name).v;
+  const hasNav = views.some(v=>Object.values(v.blocks).some(b=>b.type==="navbar"));
+  const depRows = [...deps.entries()].map(([name,used])=>{
+    const info=DEP_INFO[name]||{};
+    const usedBy = info.core ? "Every View Assist view is built on it. Usually installed together with View Assist."
+      : `Used by: ${[...used].join(", ")}`;
+    return `<li><span class="n">${esc(name)}</span><span class="u">${esc(usedBy)}</span>${info.repo?`<a href="${info.repo}" target="_blank" rel="noopener">GitHub${sym("external","i sm")}</a>`:""}</li>`;
+  }).join("");
+  const S=[];
+  S.push(`<li class="step"><div>
+    <h3>Install the cards ${all?"these views use":"this view uses"}</h3>
+    <p>Open <span class="path-ui">HACS</span> in the Home Assistant sidebar. For each card below: type the name into the search field, open the result and click <span class="kbd">Download</span>. When HACS asks you to reload the page, do it. Cards that already show as installed can be skipped.</p>
+    <ul class="deplist">${depRows}</ul>
+  </div></li>`);
+  S.push(`<li class="step"><div>
+    <h3>Open the View Assist dashboard and switch to edit mode</h3>
+    <p>Click <span class="path-ui">View Assist</span> in the Home Assistant sidebar. Then click the pencil icon in the top right corner. The tab row along the top now shows a <span class="kbd">+</span> at its end.</p>
+    ${all?`<p>Click the three dots menu next to <span class="kbd">Done</span> and choose <span class="path-ui">Raw configuration editor</span>.</p>`:""}
+  </div></li>`);
+  if(!all){
+    S.push(`<li class="step"><div>
+      <h3>Create an empty view for this layout</h3>
+      <p>Click the <span class="kbd">+</span> at the end of the tab row. A form opens. Fill in these three fields, leave everything else as it is, and click <span class="kbd">Save</span>.</p>
+      <div class="kv">
+        <div class="kvr"><span class="k">View type</span><span class="v">Panel (single card)</span></div>
+        <div class="kvr"><span class="k">Title</span><span class="v">${esc(viewLabel(first))}</span>${copyBtn("g-title", viewLabel(first))}<span class="n">Shown in the tab row. Any text works.</span></div>
+        <div class="kvr"><span class="k">URL</span><span class="v m">${esc(first.name)}</span>${copyBtn("g-url", first.name)}<span class="n">Must be exactly this. The navbar and View Assist find the view by this name.</span></div>
+      </div>
+    </div></li>`);
+    S.push(`<li class="step"><div>
+      <h3>Paste the card into the view</h3>
+      <p>You are now on the new, empty view. Click <span class="kbd">+ Add card</span>, scroll to the end of the card list and choose <span class="path-ui">Manual</span>. Select the example text in the editor, delete it and paste the code below. Click <span class="kbd">Save</span>, then <span class="kbd">Done</span> in the top right.</p>
+      ${codeBlock("g-view", `${first.name}.yaml`, buildYaml(), `<button class="btn sm quiet" data-dl="1">${sym("download","i sm")}<span>Download</span></button>`)}
+    </div></li>`);
+  } else {
+    S.push(`<li class="step"><div>
+      <h3>Add all ${views.length} views at the end of the file</h3>
+      <p>The editor shows the whole dashboard as text. Scroll to the very end. Click after the last character, press <span class="kbd">Enter</span>, and paste the code below. Each view starts with <code class="code-inline">- title:</code>, and those lines must line up with the <code class="code-inline">- title:</code> lines of the views already in the file. Click <span class="kbd">Save</span> and close the editor.</p>
+      <div class="callout">${sym("info","i sm")}<span>Copy the current content of the editor into a text file before you paste, so you can go back if something looks wrong. If a view with one of these URL names already exists, delete the old one first.</span></div>
+      ${codeBlock("g-all", `${views.length} views`, buildAllViews())}
+    </div></li>`);
+  }
+  const navYaml = `action: view_assist.navigate\ndata:\n  device: sensor.your_device\n  path: ${navPath}\n`;
+  S.push(`<li class="step"><div>
+    <h3>Open ${all?"the views":"the view"} on your device</h3>
+    <p>View Assist decides what your device shows, so a new view does not appear by itself. ${hasNav?`Because ${all?"these views have":"this view has"} a navbar, the quickest way is to tap its icon on the device once it is in place in another view too. `:""}You can also send the device there from a script or an automation. To try it right now: open <span class="path-ui">Developer tools</span> in the sidebar, go to the <span class="path-ui">Actions</span> tab, switch to YAML mode, paste the code below and click <span class="kbd">Perform action</span>.</p>
+    ${codeBlock("g-nav", "Action", navYaml)}
+    <p class="help">Replace <code>sensor.your_device</code> with your View Assist device. You find it under Settings, Devices and services, View Assist. After a while without touch, View Assist goes back to its home view. That is expected.</p>
+  </div></li>`);
+
+  $("#guide").innerHTML = `<div class="panel-head">
+      <h2>Add to Home Assistant</h2>
+      ${project.views.length>1?`<div class="seg" role="group" aria-label="What to install">
+        <button data-mode="view" aria-pressed="${!all}">This view</button>
+        <button data-mode="all" aria-pressed="${all}">All ${project.views.length} views</button></div>`:""}
+    </div>
+    <ol class="steps">${S.join("")}</ol>`;
+}
+function copyText(text, btn){
+  const label = btn.querySelector("span");
+  const done = ok => { if(label){ const old=label.textContent; label.textContent = ok?"Copied":"Copy failed"; setTimeout(()=>label.textContent=old,1500); } };
+  try{ navigator.clipboard.writeText(text).then(()=>done(true), ()=>done(false)); }catch(e){ done(false); }
+}
+function renderAll(){ renderViews(); renderDevices(); renderBlocks(); renderPainter(); renderPreview(); renderChecks(); renderGuide(); save(); }
 
 function switchTab(name){
-  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
+  document.querySelectorAll(".panes button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.pane===name)));
   document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
   document.getElementById("pane-"+name).classList.add("active");
   renderPreview();
@@ -1555,12 +1833,6 @@ $("#vleft").onclick=()=>moveView(-1);
 $("#vright").onclick=()=>moveView(1);
 $("#vdup").onclick=duplicateView;
 $("#vdel").onclick=()=>deleteView(project.active);
-$("#copyall").onclick=async()=>{
-  const btn=$("#copyall");
-  try{ await navigator.clipboard.writeText(buildAllViews()); btn.textContent="Copied all"; }
-  catch(e){ btn.textContent="Copy failed"; }
-  setTimeout(()=>btn.textContent="Copy all views",1600);
-};
 $("#device").onchange=e=>{ project.device=e.target.value; renderAll(); };
 $("#cw").onchange=e=>{ project.customW=+e.target.value||1280; renderAll(); };
 $("#ch").onchange=e=>{ project.customH=+e.target.value||800; renderAll(); };
@@ -1568,23 +1840,27 @@ $("#bgmode").onchange=e=>{ state.bgmode=e.target.value; syncInputs(); renderAll(
 $("#bgpath").onchange=e=>{ state.bgpath=e.target.value; renderAll(); };
 $("#bgcolor").onchange=e=>{ state.bgcolor=e.target.value; syncInputs(); renderAll(); };
 $("#vabase").onchange=e=>{ project.vaBase=e.target.value||"/view-assist/"; renderAll(); };
-$("#copy").onclick=async()=>{
-  const btn=$("#copy");
-  try{ await navigator.clipboard.writeText(buildYaml()); btn.textContent="Copied"; }
-  catch(e){ btn.textContent="Copy failed"; }
-  setTimeout(()=>btn.textContent="Copy",1600);
+$("#guide").onclick=e=>{
+  const c=e.target.closest("[data-copy]"); if(c){ copyText(guideTexts[c.dataset.copy]||"", c); return; }
+  const md=e.target.closest("[data-mode]"); if(md){ guideMode=md.dataset.mode; renderGuide(); return; }
+  if(e.target.closest("[data-dl]")) downloadYaml();
 };
-$("#download").onclick=()=>{
+$("#exportbtn").onclick=()=>{
+  switchTab("yaml");
+  const g=$("#pane-yaml"); if(g && g.scrollIntoView) g.scrollIntoView({behavior:"smooth", block:"start"});
+};
+function downloadYaml(){
   const blob=new Blob([buildYaml()],{type:"text/yaml"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=safeIdent(state.name)+".yaml";
   a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-};
+}
 $("#themebtn").onclick=()=>{
-  const cur=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";
+  const now=document.documentElement.getAttribute("data-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const cur=now==="light"?"dark":"light";
   document.documentElement.setAttribute("data-theme",cur);
   try{ localStorage.setItem("panelkit.theme",cur); }catch(e){}
 };
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>switchTab(b.dataset.pane));
+document.querySelectorAll(".panes button").forEach(b=>b.onclick=()=>switchTab(b.dataset.pane));
 window.addEventListener("resize",()=>renderPreview());
 
 function syncInputs(){
