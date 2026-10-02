@@ -61,29 +61,62 @@ header.site nav a:hover{color:var(--ink)}
 .note{font-size:13.5px;color:var(--ink-3)}
 
 .shot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 clamp(40px,7vw,72px)}
-.tablet{background:#11151b;border-radius:10px;padding:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.view{aspect-ratio:2/1;display:grid;grid-template-areas:"title status ." "chips chips ." "clock media ." "assist assist .";
-  grid-template-rows:min-content min-content 1fr min-content;grid-template-columns:1fr 1fr 9%;gap:8px;
-  background:linear-gradient(140deg,#1d2733,#2a2233);border-radius:7px;padding:12px;color:#fff;font-size:clamp(9px,1.35vw,14px)}
-.view>div{display:flex;align-items:center;justify-content:center;border-radius:8px}
-.v-title{grid-area:title;justify-content:flex-start!important;font-weight:600;font-size:1.5em}
-.v-status{grid-area:status;justify-content:flex-end!important;gap:.6em;opacity:.8}
-.v-chips{grid-area:chips;gap:.5em;justify-content:flex-start!important}
-.v-chips span{background:rgba(255,255,255,.13);border-radius:999px;padding:.25em .8em;white-space:nowrap}
-.v-clock{grid-area:clock;flex-direction:column;background:rgba(255,255,255,.06)}
-.v-clock b{font-size:2.6em;font-weight:600;line-height:1.05}
-.v-media{grid-area:media;flex-direction:column;gap:.45em;background:rgba(255,255,255,.06)}
-.v-media i{display:block;width:38%;aspect-ratio:1;border-radius:7px;background:linear-gradient(135deg,#6366f1,#ec4899)}
-.v-assist{grid-area:assist;background:rgba(0,0,0,.35);gap:.6em;opacity:.85}
-.v-nav{position:absolute;right:2.2%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.3em;background:rgba(20,24,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:1.4em;padding:.45em}
-.v-nav b{display:flex;flex-direction:column;align-items:center;font-weight:400;font-size:.8em;padding:.35em .6em;border-radius:1.6em;min-width:3em}
-.v-nav b.on{background:rgba(255,122,61,.22);color:#ff7a3d}
-.viewwrap{position:relative}
+.tablet{position:relative;background:#11151b;border-radius:12px;padding:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 20px 50px rgba(0,0,0,.35)}
+.stack{position:relative;aspect-ratio:2/1;border-radius:7px;overflow:hidden;background:linear-gradient(140deg,#1d2733,#2a2233);color:#fff;font-size:clamp(6px,1.3vw,14px)}
+.scene{position:absolute;inset:0;display:grid;gap:.6em;padding:1em;opacity:0;transform:translateY(.6em) scale(.992);transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.scene.on{opacity:1;transform:none}
+.scene>div{display:flex;align-items:center;justify-content:center;border-radius:.6em;min-width:0;min-height:0;overflow:hidden}
 .pi{width:1.2em;height:1.2em;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.view .r{display:flex;gap:1em;align-items:center}
-.view .r span{display:inline-flex;gap:.35em;align-items:center}
-.v-status,.v-assist{display:flex;gap:.6em}
-.v-chips span{display:inline-flex;align-items:center;gap:.35em}
+.s-title{justify-content:flex-start!important;font-weight:600;font-size:1.45em;letter-spacing:-.01em}
+.s-status{justify-content:flex-end!important;gap:.6em;opacity:.75}
+.s-assist{background:rgba(0,0,0,.32);gap:.5em;opacity:.85}
+.card{background:rgba(255,255,255,.065)}
+.s-chips{gap:.5em;justify-content:flex-start!important}
+.s-chips span{display:inline-flex;align-items:center;gap:.35em;background:rgba(255,255,255,.12);border-radius:999px;padding:.25em .8em;white-space:nowrap}
+.s-clock{flex-direction:column;gap:.15em}
+.s-clock b{font-size:2.7em;font-weight:600;line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.r{display:flex;gap:1em;align-items:center}
+.r span{display:inline-flex;gap:.35em;align-items:center}
+.s-media{flex-direction:column;gap:.45em}
+.art{display:block;width:34%;aspect-ratio:1;border-radius:.5em;background:linear-gradient(135deg,#6366f1,#ec4899)}
+.s-cam{position:relative;flex-direction:column;gap:.4em;color:#8a96a4;background:linear-gradient(165deg,#2a3440,#0f1419)}
+.s-cam .live{position:absolute;top:.7em;left:.7em;display:inline-flex;align-items:center;gap:.35em;font-size:.8em;color:#eef2f6;background:rgba(0,0,0,.5);padding:.15em .55em;border-radius:.35em}
+.s-cam .live::before{content:"";width:.5em;height:.5em;border-radius:50%;background:#ef4444;animation:blink 1.6s ease-in-out infinite}
+.s-cam .scan{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0,rgba(255,255,255,.04) 50%,transparent 100%);background-size:100% 40%;background-repeat:no-repeat;animation:scan 4s linear infinite}
+.s-light{flex-direction:column;gap:.4em}
+.s-light .ic{width:2.3em;height:2.3em;border-radius:50%;display:grid;place-items:center;background:rgba(255,193,7,.22);color:#ffd76a}
+.s-light .bar{width:66%;height:.38em;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+.s-light .bar i{display:block;height:100%;width:var(--b,60%);background:#ffc94d;transition:width .8s ease}
+.s-light.off .ic{background:rgba(255,255,255,.08);color:#7d8a99}
+.s-btn{gap:.6em;justify-content:flex-start!important;padding:0 1em}
+.s-btn .ic{width:2.1em;height:2.1em;border-radius:50%;display:grid;place-items:center;flex:none}
+.s-player{gap:1.2em;padding:0 1.4em;justify-content:flex-start!important}
+.s-player .art{width:auto;height:72%;flex:none}
+.s-player .meta{display:flex;flex-direction:column;gap:.45em;flex:1;min-width:0}
+.s-player .meta b{font-size:1.25em;font-weight:600}
+.s-player .meta small{opacity:.65}
+.prog{height:.35em;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+.prog i{display:block;height:100%;width:30%;background:#fff;border-radius:999px}
+.scene.on .prog i{animation:prog 9s linear infinite}
+.s-agenda{flex-direction:column;align-items:stretch!important;justify-content:flex-start!important;gap:.45em;padding:.8em}
+.s-agenda div{display:flex;gap:1em;align-items:center;padding:.5em .8em;border-radius:.5em;background:rgba(255,255,255,.06)}
+.s-agenda b{min-width:4.2em;font-weight:500;opacity:.6}
+.s-agenda .dot{width:.55em;height:.55em;border-radius:50%;flex:none}
+.v-nav{position:absolute;right:calc(10px + 2%);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.3em;padding:.45em;background:rgba(20,24,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:1.4em;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:clamp(6px,1.3vw,14px);z-index:2}
+.v-nav button{font:inherit;position:relative;z-index:1;display:grid;place-items:center;width:2.6em;height:2.3em;border:0;border-radius:1.2em;background:none;color:#c3ccd7;cursor:pointer;transition:color .3s ease}
+.v-nav button:hover{color:#fff}
+.v-nav button[aria-pressed=true]{color:#ff7a3d}
+.v-nav button:focus-visible{outline:2px solid #ff7a3d;outline-offset:1px}
+.v-nav .ind{position:absolute;left:0;top:0;border-radius:1.2em;background:rgba(255,122,61,.22);pointer-events:none}
+.v-nav.ready .ind{transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.tap{position:absolute;width:2.8em;height:2.8em;margin:-1.4em 0 0 -1.4em;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;opacity:0;z-index:3;font-size:clamp(6px,1.3vw,14px)}
+.tap.go{animation:tap .6s ease-out}
+.shot-cap{margin:12px 2px 0;font-size:13.5px;color:var(--ink-3);text-align:center}
+@keyframes tap{0%{opacity:0;transform:scale(.4)}30%{opacity:.5;transform:scale(.8)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes scan{0%{background-position:0 -40%}100%{background-position:0 140%}}
+@keyframes prog{0%{width:12%}100%{width:96%}}
+@media (prefers-reduced-motion: reduce){.scene,.v-nav.ready .ind,.s-light .bar i{transition:none}.s-cam .live::before,.s-cam .scan,.scene.on .prog i,.tap.go{animation:none}}
 
 section{padding:0 0 clamp(36px,6vw,64px)}
 .grid3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
@@ -198,17 +231,18 @@ footer.site a{color:var(--ink-2)}
 
 <div class="wrap">
   <div class="shot">
-    <div class="tablet viewwrap">
-      <div class="view">
-        <div class="v-title">Home</div>
-        <div class="v-status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div>
-        <div class="v-chips"><span><svg class="pi"><use href="#i-weather"/></svg>21&nbsp;°C</span><span><svg class="pi"><use href="#i-calendar"/></svg>Dentist 09:00</span><span><svg class="pi"><use href="#i-music"/></svg>Music</span></div>
-        <div class="v-clock"><b>14:32</b><span class="r"><span><svg class="pi"><use href="#i-weather"/></svg>21°</span><span><svg class="pi"><use href="#i-drop"/></svg>48 %</span></span></div>
-        <div class="v-media"><i></i><span>Song title, Artist</span><span class="r"><svg class="pi"><use href="#i-prev"/></svg><svg class="pi"><use href="#i-play"/></svg><svg class="pi"><use href="#i-next"/></svg></span></div>
-        <div class="v-assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div>
+    <div class="tablet" id="demo">
+      <div class="stack">
+        <section class="scene on" data-scene="0" aria-label="Home view" style="grid-template-columns:1fr 1fr 9%;grid-template-areas:'title status .' 'chips chips .' 'clock media .' 'assist assist .';grid-template-rows:min-content min-content 1fr min-content"><div class="s-title" style="grid-area:title">Home</div><div class="s-status" style="grid-area:status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div><div class="s-chips" style="grid-area:chips"><span><svg class="pi"><use href="#i-weather"/></svg>21&nbsp;°C</span><span><svg class="pi"><use href="#i-calendar"/></svg>Dentist 09:00</span><span><svg class="pi"><use href="#i-music"/></svg>Music</span></div><div class="card s-clock" style="grid-area:clock"><b data-clock>14:32</b><span class="r"><span><svg class="pi"><use href="#i-weather"/></svg>21°</span><span><svg class="pi"><use href="#i-drop"/></svg>48 %</span></span></div><div class="card s-media" style="grid-area:media"><i class="art"></i><span>Song title, Artist</span><span class="r"><svg class="pi"><use href="#i-prev"/></svg><svg class="pi"><use href="#i-play"/></svg><svg class="pi"><use href="#i-next"/></svg></span></div><div class="s-assist" style="grid-area:assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div></section>
+        <section class="scene" data-scene="1" aria-label="Camera view" aria-hidden="true" style="grid-template-columns:3fr 1fr 9%;grid-template-areas:'title status .' 'cam flood .' 'assist assist .';grid-template-rows:min-content 1fr min-content"><div class="s-title" style="grid-area:title">Camera</div><div class="s-status" style="grid-area:status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div><div class="s-cam" style="grid-area:cam"><span class="scan"></span><span class="live">Live</span><svg class="pi"><use href="#i-camera"/></svg><span>camera.front_door</span></div><div class="card s-light" style="grid-area:flood"><span class="ic"><svg class="pi"><use href="#i-flood"/></svg></span><span>Floodlight</span><span class="bar"><i style="--b:70%"></i></span></div><div class="s-assist" style="grid-area:assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div></section>
+        <section class="scene" data-scene="2" aria-label="Music view" aria-hidden="true" style="grid-template-columns:1fr 1fr 9%;grid-template-areas:'title status .' 'player player .' 'fav radio .' 'assist assist .';grid-template-rows:min-content 1fr min-content min-content"><div class="s-title" style="grid-area:title">Music</div><div class="s-status" style="grid-area:status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div><div class="card s-player" style="grid-area:player"><i class="art"></i><div class="meta"><b>Song title</b><small>Artist, Album</small><span class="prog"><i></i></span><span class="r"><svg class="pi"><use href="#i-prev"/></svg><svg class="pi"><use href="#i-play"/></svg><svg class="pi"><use href="#i-next"/></svg><svg class="pi"><use href="#i-volume"/></svg></span></div></div><div class="card s-btn" style="grid-area:fav;padding:.6em 1em"><span class="ic" style="background:rgba(255,122,61,.22);color:#ffb38a"><svg class="pi"><use href="#i-heart"/></svg></span>Favorites</div><div class="card s-btn" style="grid-area:radio;padding:.6em 1em"><span class="ic" style="background:rgba(74,163,255,.2);color:#9cc8ff"><svg class="pi"><use href="#i-radio"/></svg></span>Radio</div><div class="s-assist" style="grid-area:assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div></section>
+        <section class="scene" data-scene="3" aria-label="Lights view" aria-hidden="true" style="grid-template-columns:1fr 1fr 1fr 9%;grid-template-areas:'title title status .' 'l1 l2 l3 .' 'l4 l5 off .' 'assist assist assist .';grid-template-rows:min-content 1fr 1fr min-content"><div class="s-title" style="grid-area:title">Lights</div><div class="s-status" style="grid-area:status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div><div class="card s-light" style="grid-area:l1"><span class="ic"><svg class="pi"><use href="#i-sofa"/></svg></span><span>Living room</span><span class="bar"><i style="--b:75%"></i></span></div><div class="card s-light" style="grid-area:l2"><span class="ic"><svg class="pi"><use href="#i-bulb"/></svg></span><span>Floor lamp</span><span class="bar"><i style="--b:40%"></i></span></div><div class="card s-light" style="grid-area:l3"><span class="ic"><svg class="pi"><use href="#i-desk"/></svg></span><span>Office</span><span class="bar"><i style="--b:90%"></i></span></div><div class="card s-light off" style="grid-area:l4"><span class="ic"><svg class="pi"><use href="#i-bulb"/></svg></span><span>Desk lamp</span><span class="bar"><i style="--b:0%"></i></span></div><div class="card s-light" style="grid-area:l5"><span class="ic"><svg class="pi"><use href="#i-leaf"/></svg></span><span>Garden</span><span class="bar"><i style="--b:55%"></i></span></div><div class="card s-light" style="grid-area:off"><span class="ic" style="background:rgba(239,68,68,.2);color:#fca5a5"><svg class="pi"><use href="#i-power"/></svg></span><span>All off</span></div><div class="s-assist" style="grid-area:assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div></section>
+        <section class="scene" data-scene="4" aria-label="Calendar view" aria-hidden="true" style="grid-template-columns:1fr 1fr 9%;grid-template-areas:'title status .' 'agenda agenda .' 'assist assist .';grid-template-rows:min-content 1fr min-content"><div class="s-title" style="grid-area:title">Calendar</div><div class="s-status" style="grid-area:status"><svg class="pi"><use href="#i-mic"/></svg><svg class="pi"><use href="#i-wifi"/></svg><svg class="pi"><use href="#i-battery"/></svg></div><div class="card s-agenda" style="grid-area:agenda"><div><b>Today</b><span class="dot" style="background:#4aa3ff"></span>Dentist 09:00</div><div><b>Today</b><span class="dot" style="background:#ff7a3d"></span>Parcel pickup 17:30</div><div><b>Tue</b><span class="dot" style="background:#4ade80"></span>Football 18:30</div><div><b>Sat</b><span class="dot" style="background:#d2a8ff"></span>Birthday</div></div><div class="s-assist" style="grid-area:assist"><svg class="pi"><use href="#i-mic"/></svg>Assist</div></section>
       </div>
-      <div class="v-nav"><b class="on"><svg class="pi"><use href="#i-home"/></svg></b><b><svg class="pi"><use href="#i-camera"/></svg></b><b><svg class="pi"><use href="#i-music"/></svg></b><b><svg class="pi"><use href="#i-bulb"/></svg></b><b><svg class="pi"><use href="#i-calendar"/></svg></b></div>
+      <nav class="v-nav" aria-label="Example navbar"><span class="ind" aria-hidden="true"></span><button type="button" data-go="0" aria-label="Show the Home view" aria-pressed="true"><svg class="pi"><use href="#i-home"/></svg></button><button type="button" data-go="1" aria-label="Show the Camera view" aria-pressed="false"><svg class="pi"><use href="#i-camera"/></svg></button><button type="button" data-go="2" aria-label="Show the Music view" aria-pressed="false"><svg class="pi"><use href="#i-music"/></svg></button><button type="button" data-go="3" aria-label="Show the Lights view" aria-pressed="false"><svg class="pi"><use href="#i-bulb"/></svg></button><button type="button" data-go="4" aria-label="Show the Calendar view" aria-pressed="false"><svg class="pi"><use href="#i-calendar"/></svg></button></nav>
+      <span class="tap" aria-hidden="true"></span>
     </div>
+    <p class="shot-cap">The tab set template: five views sharing one navbar. Tap the navbar to switch.</p>
   </div>
 </div>
 
@@ -308,5 +342,70 @@ footer.site a{color:var(--ink-2)}
   </div>
 </footer>
 
+<script>
+(function () {
+  var root = document.getElementById("demo");
+  if (!root) return;
+  var scenes = [].slice.call(root.querySelectorAll(".scene"));
+  var btns = [].slice.call(root.querySelectorAll("[data-go]"));
+  var nav = root.querySelector(".v-nav"), ind = root.querySelector(".ind"), tap = root.querySelector(".tap");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var cur = 0, hovering = false, visible = true, holdUntil = 0;
+
+  function place() {
+    var b = btns[cur];
+    ind.style.width = b.offsetWidth + "px";
+    ind.style.height = b.offsetHeight + "px";
+    ind.style.transform = "translate(" + b.offsetLeft + "px," + b.offsetTop + "px)";
+  }
+  function show(i) {
+    cur = i;
+    scenes.forEach(function (s, k) {
+      s.classList.toggle("on", k === i);
+      if (k === i) s.removeAttribute("aria-hidden"); else s.setAttribute("aria-hidden", "true");
+    });
+    btns.forEach(function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
+    place();
+  }
+  function tapAt(b) {
+    if (reduce) return;
+    var r = b.getBoundingClientRect(), p = root.getBoundingClientRect();
+    tap.style.left = (r.left - p.left + r.width / 2) + "px";
+    tap.style.top = (r.top - p.top + r.height / 2) + "px";
+    tap.classList.remove("go");
+    void tap.offsetWidth;
+    tap.classList.add("go");
+  }
+  function step() {
+    if (hovering || !visible || document.hidden || Date.now() < holdUntil) return;
+    var next = (cur + 1) % btns.length;
+    tapAt(btns[next]);
+    setTimeout(function () { show(next); }, 240);
+  }
+  btns.forEach(function (b, k) {
+    b.addEventListener("click", function () { holdUntil = Date.now() + 9000; tapAt(b); show(k); });
+  });
+  root.addEventListener("mouseenter", function () { hovering = true; });
+  root.addEventListener("mouseleave", function () { hovering = false; });
+  root.addEventListener("focusin", function () { hovering = true; });
+  root.addEventListener("focusout", function () { hovering = false; });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0.35 }).observe(root);
+  }
+  window.addEventListener("resize", place);
+
+  var clock = root.querySelector("[data-clock]");
+  function tick() {
+    var d = new Date();
+    clock.textContent = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  }
+  tick();
+  setInterval(tick, 15000);
+
+  show(0);
+  requestAnimationFrame(function () { nav.classList.add("ready"); });
+  if (!reduce) setInterval(step, 3400);
+})();
+</script>
 </body>
 </html>
