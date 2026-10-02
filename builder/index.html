@@ -220,25 +220,14 @@ details.sty[open] summary{margin-bottom:10px}
 .canvas-head{display:flex;align-items:center;gap:10px}
 .devlabel{font-size:12px;color:var(--ink-3);font-family:var(--mono)}
 .canvas-tools{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.canvas-tools .help{margin-left:auto;text-align:right;max-width:560px}
+.canvas-tools .help{margin:0}
 .show-touch{display:none}
 @media (hover:none){.show-touch{display:inline}.hide-touch{display:none}}
-.editor{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:6px;row-gap:4px;width:100%;max-width:1100px}
-.colbar{grid-column:2;grid-row:1;display:grid;padding:0 10px;min-height:28px;align-items:end}
-.rowbar{grid-column:1;grid-row:2;display:grid;padding:10px 0;width:88px}
-.editor .bezel{grid-column:2;grid-row:2;max-width:none}
-.editor.nobars{grid-template-columns:minmax(0,1fr)}
-.editor.nobars .colbar,.editor.nobars .rowbar{display:none}
-.editor.nobars .bezel{grid-column:1}
-#sizesbtn[aria-pressed=true]{background:var(--surface-3);color:var(--ink)}
-.tk{display:flex;align-items:center;gap:2px;min-width:0;min-height:0;padding:1px 2px;overflow:hidden}
-.tksel{height:24px;min-height:24px !important;padding:0 4px !important;font-size:11px !important;width:100%;min-width:0;border-radius:6px;background:var(--surface) !important}
-.tkdel{border:none;background:none;color:var(--ink-3);width:20px;height:20px;display:grid;place-items:center;border-radius:5px;opacity:0;flex:none;padding:0}
-.tk:hover .tkdel,.tkdel:focus-visible{opacity:1}
-.tkdel:hover{color:var(--warn);background:var(--surface-3)}
-@media (hover:none){.tkdel{opacity:1}}
-@media (max-width:640px){.rowbar{width:64px}.stage{padding:14px 6px}.canvas-head .devlabel{display:none}}
-.screen > .gcell{border:1px dashed rgba(255,255,255,.08);padding:0;margin:0;pointer-events:none;border-radius:0;z-index:0}
+.editor{width:100%;max-width:1000px}
+.editor .bezel{max-width:none}
+@media (max-width:640px){.stage{padding:14px 6px}.canvas-head .devlabel{display:none}}
+.screen > .gcell{border:1px dashed rgba(255,255,255,.035);padding:0;margin:0;pointer-events:none;border-radius:0;z-index:0;transition:border-color .15s}
+.screen.show-grid > .gcell{border-color:rgba(255,255,255,.13)}
 .screen > .blk{position:relative;z-index:1;cursor:grab;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .screen > .blk:hover{outline:1px dashed rgba(74,163,255,.6);outline-offset:-1px}
 .screen > .blk:focus-visible{outline:2px solid #4aa3ff;outline-offset:-2px;box-shadow:none}
@@ -253,7 +242,11 @@ details.sty[open] summary{margin-bottom:10px}
 .sel-frame .hd.e{right:2px}.sel-frame .hd.w{left:2px}
 .sel-frame .hd.n,.sel-frame .hd.s{left:50%;height:11px;width:30px;margin-left:-15px;cursor:ns-resize}
 .sel-frame .hd.n{top:2px}.sel-frame .hd.s{bottom:2px}
-.sel-bar{position:absolute;top:6px;left:6px;pointer-events:auto;display:flex;align-items:center;gap:1px;background:#0d1117;border:1px solid #2b3440;border-radius:7px;padding:2px 2px 2px 8px;font-family:var(--mono);font-size:11px;color:#e6ebf1;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:calc(100% - 12px)}
+.sel-frame .hd.ne,.sel-frame .hd.nw,.sel-frame .hd.se,.sel-frame .hd.sw{width:13px;height:13px;border-radius:4px}
+.sel-frame .hd.se{right:2px;bottom:2px;cursor:nwse-resize}.sel-frame .hd.nw{left:2px;top:2px;cursor:nwse-resize}
+.sel-frame .hd.ne{right:2px;top:2px;cursor:nesw-resize}.sel-frame .hd.sw{left:2px;bottom:2px;cursor:nesw-resize}
+.screen > .ghost.push{border-style:dotted;border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.06)}
+.sel-bar{position:absolute;top:6px;left:20px;pointer-events:auto;display:flex;align-items:center;gap:1px;background:#0d1117;border:1px solid #2b3440;border-radius:7px;padding:2px 2px 2px 8px;font-family:var(--mono);font-size:11px;color:#e6ebf1;box-shadow:0 4px 12px rgba(0,0,0,.4);max-width:calc(100% - 12px)}
 .sel-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:4px}
 .sel-bar button{border:none;background:none;color:#a1abb8;width:24px;height:22px;display:grid;place-items:center;border-radius:5px;padding:0;flex:none}
 .sel-bar button:hover{background:#1f2630;color:#fff}
@@ -452,7 +445,7 @@ footer .grow{flex:1}
   <div class="in">
     <a class="logo" href="../" aria-label="PanelKit home">
       <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#161c24"/><rect x="12" y="13" width="24" height="18" rx="4" fill="#4aa3ff"/><rect x="40" y="13" width="12" height="18" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="12" y="35" width="12" height="16" rx="4" fill="#4aa3ff" opacity=".5"/><rect x="28" y="35" width="24" height="16" rx="4" fill="#ff7a3d"/></svg>
-      PanelKit <span class="ver">0.6</span>
+      PanelKit <span class="ver">0.7</span>
     </a>
     <div class="devpick">
       <label for="device">Device</label>
@@ -563,15 +556,10 @@ footer .grow{flex:1}
         <span class="devlabel" id="devlabel"></span>
       </div>
       <div class="canvas-tools">
-        <button class="btn sm" id="addrowbtn"><svg class="i sm"><use href="#i-plus"/></svg>Row</button>
-        <button class="btn sm" id="addcolbtn"><svg class="i sm"><use href="#i-plus"/></svg>Column</button>
-        <button class="btn sm quiet" id="sizesbtn" aria-pressed="true">Sizes</button>
-        <p class="help" id="canvashelp"><span class="hide-touch">Drag a block to move it, drop it on another block to swap them. Drag the blue handles to resize. Double-click a title to edit it.</span><span class="show-touch">Tap a block to select it, then drag it or its blue handles.</span></p>
+        <p class="help" id="canvashelp"><span class="hide-touch">Drag a block to move it, drop it on another block to swap them. Pull its edges or corners to make it bigger or smaller, neighbours make room. Double-click a title to edit it.</span><span class="show-touch">Tap a block to select it. Then drag it, or pull its edges and corners to resize it.</span></p>
       </div>
       <div class="stage">
         <div class="editor" id="editor">
-          <div class="colbar" id="colbar" aria-label="Column sizes"></div>
-          <div class="rowbar" id="rowbar" aria-label="Row sizes"></div>
           <div class="bezel"><div class="screen" id="screen"></div></div>
         </div>
       </div>
@@ -891,8 +879,77 @@ function presetBlank(){
   s.blocks={title:blockDefaults("title"), ...provided()};
   s.selected="title"; return s;
 }
+const FINE = 12;
+function trackUnits(sizes, contentWeight, devPx){
+  const fixed = sizes.map((v,i)=>{
+    v=String(v||"").trim();
+    if(/fr$/.test(v)) return null;
+    if(/px$/.test(v)) return Math.max(1, parseFloat(v)/devPx*FINE);
+    if(/vh$|vw$|%$/.test(v)) return Math.max(1, parseFloat(v)/100*FINE);
+    return contentWeight(i);
+  });
+  const frs = sizes.map(v=>/fr$/.test(String(v)) ? (parseFloat(v)||1) : 0);
+  const frTotal = frs.reduce((a,b)=>a+b,0);
+  let fixedSum = fixed.reduce((a,b)=>a+(b||0),0);
+  const frCount = frs.filter(x=>x>0).length;
+  const room = FINE - frCount;
+  const scale = fixedSum > room && fixedSum>0 ? room/fixedSum : (frTotal ? 1 : FINE/(fixedSum||1));
+  const raw = sizes.map((_,i)=> fixed[i]!==null ? fixed[i]*scale : 0);
+  const left = FINE - raw.reduce((a,b)=>a+b,0);
+  sizes.forEach((_,i)=>{ if(fixed[i]===null) raw[i] = frTotal ? left*frs[i]/frTotal : 0; });
+  const u = raw.map(x=>Math.max(1, Math.floor(x)));
+  while(u.reduce((a,b)=>a+b,0) > FINE){ let k=-1; u.forEach((x,i)=>{ if(x>1 && (k<0 || x>u[k])) k=i; }); if(k<0) break; u[k]--; }
+  while(u.reduce((a,b)=>a+b,0) < FINE){ let k=0, best=-1; raw.forEach((x,i)=>{ const d=x-u[i]; if(d>best){ best=d; k=i; } }); u[k]++; raw[k]=u[k]; }
+  return u;
+}
+function normalizeView(v){
+  if(v.fine) return v;
+  const isSpacer = ci => /px$/.test(String(v.colSizes[ci]||"")) && v.rows.every(r=>(r.cells[ci]||".")===".");
+  let cols=[...Array(v.cols).keys()].filter(ci=>!isSpacer(ci));
+  if(!cols.length) cols=[...Array(v.cols).keys()];
+  let rows=v.rows.map((_,i)=>i).filter(i=>!(/px$/.test(String(v.rows[i].size)) && cols.every(ci=>(v.rows[i].cells[ci]||".")===".")));
+  if(!rows.length) rows=v.rows.map((_,i)=>i);
+  const light = new Set(["title","status","assist","chips"]);
+  const isLight = k => cols.map(ci=>v.rows[rows[k]].cells[ci]).filter(n=>n && n!==".").every(n=>v.blocks[n] && light.has(v.blocks[n].type));
+  let rowSizes = rows.map(i=>String(v.rows[i].size));
+  if(!rowSizes.some(x=>/fr$/.test(x))) rowSizes = rowSizes.map((x,k)=>!/px$|vh$|%$/.test(x) && !isLight(k) ? "1fr" : x);
+  let colSizes = cols.map(ci=>String(v.colSizes[ci]));
+  if(!colSizes.some(x=>/fr$/.test(x))) colSizes = colSizes.map(x=>/px$/.test(x) ? x : "1fr");
+  const ru = trackUnits(rowSizes, k=>isLight(k) ? 1 : 2, 480);
+  const cu = trackUnits(colSizes, ()=>2, 960);
+  const rs=[], cs=[]; let acc=0; ru.forEach(u=>{ rs.push(acc); acc+=u; }); acc=0; cu.forEach(u=>{ cs.push(acc); acc+=u; });
+  const cells = Array.from({length:FINE}, ()=>Array(FINE).fill("."));
+  rows.forEach((ri,i)=>cols.forEach((ci,j)=>{
+    const n=v.rows[ri].cells[ci]||".";
+    if(n===".") return;
+    for(let r=rs[i]; r<rs[i]+ru[i]; r++) for(let c=cs[j]; c<cs[j]+cu[j]; c++) cells[r][c]=n;
+  }));
+  v.rows = cells.map(row=>({size:"1fr", cells:row}));
+  v.cols = FINE; v.colSizes = Array(FINE).fill("1fr"); v.fine = true; v.lost = {};
+  return v;
+}
+function gutterOf(v){ const k=Object.keys(v.blocks).find(x=>v.blocks[x].type==="navbar"); return k ? (v.blocks[k].position||"right") : null; }
+function compressTracks(list){
+  const out=[]; let i=0;
+  while(i<list.length){ let j=i; while(j<list.length && list[j]===list[i]) j++; const n=j-i; out.push(n>2 ? `repeat(${n}, ${list[i]})` : Array(n).fill(list[i]).join(" ")); i=j; }
+  return out.join(" ");
+}
+function gridSpec(v, preview){
+  const g=gutterOf(v), px=n=>preview ? `calc(${n}px * var(--scale,1))` : `${n}px`;
+  let rows=v.rows.map(r=>{ const c=[]; for(let i=0;i<v.cols;i++) c.push(r.cells[i]||"."); return c; });
+  let rowSizes=v.rows.map(r=>r.size), colSizes=v.colSizes.slice(0,v.cols);
+  const width=rows.length ? rows[0].length : v.cols;
+  if(g==="right"){ rows=rows.map(r=>[...r,"."]); colSizes=[...colSizes, px(90)]; }
+  if(g==="left"){ rows=rows.map(r=>[".",...r]); colSizes=[px(90),...colSizes]; }
+  const w2=rows.length ? rows[0].length : width;
+  if(g==="bottom"){ rows=[...rows, Array(w2).fill(".")]; rowSizes=[...rowSizes, px(70)]; }
+  if(g==="top"){ rows=[Array(w2).fill("."), ...rows]; rowSizes=[px(70), ...rowSizes]; }
+  return {g, areas:rows.map(r=>'"'+r.join(" ")+'"'), rows:compressTracks(rowSizes), cols:compressTracks(colSizes),
+    offR: g==="top"?1:0, offC: g==="left"?1:0};
+}
 const PRESETS = {home:presetHome, camera:presetCamera, music:presetMusic, lights:presetLights, calendar:presetCalendar,
   info:presetInfo, infonav:presetInfonav, infopic:presetInfopic, timers:presetTimers, split:presetSplit, blank:presetBlank};
+Object.keys(PRESETS).forEach(k=>{ const f=PRESETS[k]; PRESETS[k]=()=>normalizeView(f()); });
 
 const VIEW_MENU = [
   {group:"Start fresh", items:[
@@ -922,7 +979,7 @@ function load(){
       const p = JSON.parse(raw);
       if(p && Array.isArray(p.views) && p.views.length){
         const pr = Object.assign(newProject([]), p);
-        pr.views = p.views.map(v=>Object.assign(base(), v));
+        pr.views = p.views.map(v=>normalizeView(Object.assign(base(), v)));
         if(!DEVICES.some(d=>d.id===pr.device)) pr.device="echo5";
         pr.active = Math.min(Math.max(0, +pr.active||0), pr.views.length-1);
         return pr;
@@ -932,7 +989,7 @@ function load(){
     if(old){
       const v = JSON.parse(old);
       if(v && v.rows && v.blocks){
-        const pr = newProject([Object.assign(base(), v)]);
+        const pr = newProject([normalizeView(Object.assign(base(), v))]);
         const m = /^(\d+)x(\d+)$/.exec(String(v.device||""));
         const hit = m ? DEVICES.find(d=>d.w==+m[1] && d.h==+m[2]) : DEVICES.find(d=>d.id===v.device);
         pr.device = hit ? hit.id : "echo5";
@@ -1357,7 +1414,7 @@ function inspectorHTML(a,b,isPlaced){
   if(!t.floating && !isPlaced)
     P.push(`<div class="place">${sym("alert","i sm")}<span>Not on the screen yet.<span class="chk-actions"><button class="btn sm" data-autoplace="${esc(a)}">${sym("wand","i sm")}Place it</button></span></span></div>`);
   const h=hacsOf(b); if(h) P.push(`<p class="note">Needs <strong>${esc(h)}</strong> from HACS. The install steps list it for you.</p>`);
-  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. Keep the edge it sits on free. The templates reserve a narrow column for it.</p>`);
+  if(t.floating && b.type==="navbar") P.push(`<p class="note">Floats above the view. PanelKit keeps a strip free for it on the side you choose.</p>`);
   if(t.provided) P.push(`<p class="note">View Assist draws this one itself. Move and resize it in the preview.</p>`);
 
   if(b.type==="title")   P.push(`<div><label for="i-text">Text</label><input type="text" id="i-text" value="${esc(b.text)}"></div>`);
@@ -1380,13 +1437,10 @@ function applyNavbarEverywhere(a){
     if(v===state) return;
     const key = Object.keys(v.blocks).find(k=>v.blocks[k].type==="navbar");
     if(key){ v.blocks[key] = JSON.parse(JSON.stringify(src)); updated++; }
-    else {
-      makeRoom(v, src.position||"right");
-      v.blocks[uniqueIn(v,"navbar")] = JSON.parse(JSON.stringify(src)); added++;
-    }
+    else { v.blocks[uniqueIn(v,"navbar")] = JSON.parse(JSON.stringify(src)); added++; }
   });
   renderAll();
-  showSnack(`Navbar copied: ${updated} updated, ${added} added with a free ${src.position||"right"} edge`);
+  showSnack(`Navbar copied: ${updated} updated, ${added} added`);
 }
 function uniqueIn(v,b){ let n=b,i=2; while(v.blocks[n]) n=b+i++; return n; }
 function hexOr(v, fb){
@@ -1434,61 +1488,39 @@ function bindInspector(a,b){
   document.querySelectorAll("[data-autoplace]").forEach(x=>x.onclick=()=>{ autoPlace(x.dataset.autoplace); renderAll(); });
 }
 
-const SIZE_OPTS=[["min-content","Auto"],["1fr","Fill"],["2fr","Fill 2x"],["3fr","Fill 3x"],["4fr","Fill 4x"]];
-function sizeSelect(kind,i,val){
-  const known=SIZE_OPTS.some(o=>o[0]===val);
-  return `<select class="tksel" data-${kind}="${i}" aria-label="${kind==="col"?"Column":"Row"} ${i+1} size">`+
-    (known?"":`<option value="${esc(val)}" selected>${esc(val)}</option>`)+
-    SIZE_OPTS.map(([v,l])=>`<option value="${v}"${v===val?" selected":""}>${l}</option>`).join("")+
-    `<option value="__custom">Custom</option></select>`;
-}
+
 function trackPx(el){
   const cs=getComputedStyle(el);
   const parse=t=>{ const p=String(t||"").trim().split(/\s+/); return p.every(x=>/^[\d.]+px$/.test(x)) ? p.map(parseFloat) : null; };
   return {cols:parse(cs.gridTemplateColumns), rows:parse(cs.gridTemplateRows)};
 }
-function renderBars(){
-  const t=trackPx($("#screen"));
-  const cb=$("#colbar"), rb=$("#rowbar");
-  cb.style.gridTemplateColumns = t.cols && t.cols.length===state.cols ? t.cols.map(x=>x+"px").join(" ") : `repeat(${state.cols},minmax(0,1fr))`;
-  rb.style.gridTemplateRows = t.rows && t.rows.length===state.rows.length ? t.rows.map(x=>x+"px").join(" ") : `repeat(${state.rows.length},minmax(0,1fr))`;
-  cb.innerHTML = state.colSizes.slice(0,state.cols).map((v,i)=>`<div class="tk">${sizeSelect("col",i,v)}${state.cols>1?`<button class="tkdel" data-delcol="${i}" aria-label="Delete column ${i+1}" title="Delete column">${sym("x","i sm")}</button>`:""}</div>`).join("");
-  rb.innerHTML = state.rows.map((r,i)=>`<div class="tk">${sizeSelect("row",i,r.size)}${state.rows.length>1?`<button class="tkdel" data-delrow="${i}" aria-label="Delete row ${i+1}" title="Delete row">${sym("x","i sm")}</button>`:""}</div>`).join("");
-}
-function onBarChange(e){
-  const t=e.target; if(!t.matches(".tksel")) return;
-  let val=t.value;
-  if(val==="__custom"){
-    const cur = t.dataset.col!==undefined ? state.colSizes[+t.dataset.col] : state.rows[+t.dataset.row].size;
-    const v = window.prompt("Size in any CSS grid unit, for example 90px, 20vh or 1.5fr", cur);
-    if(!v || !v.trim()){ renderBars(); return; }
-    val=v.trim();
-  }
-  if(t.dataset.col!==undefined) state.colSizes[+t.dataset.col]=val; else state.rows[+t.dataset.row].size=val;
-  renderAll();
-}
-function onBarClick(e){
-  const dc=e.target.closest("[data-delcol]"), dr=e.target.closest("[data-delrow]");
-  if(!dc && !dr) return;
-  const gone = dc ? delCol(+dc.dataset.delcol) : delRow(+dr.dataset.delrow);
-  renderAll();
-  showSnack(gone.length ? `${dc?"Column":"Row"} deleted. ${gone.map(x=>`“${x}”`).join(", ")} ${gone.length>1?"are":"is"} no longer on the screen` : `${dc?"Column":"Row"} deleted`, ()=>histUndo(true));
-}
+
+
+
 function cellAt(x,y,clamp){
-  const s=$("#screen"), b=s.getBoundingClientRect(), t=trackPx(s);
-  if(!t.cols || !t.rows || t.cols.length!==state.cols || t.rows.length!==state.rows.length) return null;
-  const px=x-b.left, py=y-b.top;
-  if(!clamp && (px<0||py<0||px>b.width||py>b.height)) return null;
+  const s=$("#screen"), b=s.getBoundingClientRect(), t=trackPx(s), g=gutterOf(state);
+  if(!t.cols || !t.rows) return null;
+  let cols=t.cols, rows=t.rows, px=x-b.left, py=y-b.top;
+  if(g==="left"){ px-=cols[0]; cols=cols.slice(1); }
+  if(g==="right") cols=cols.slice(0,-1);
+  if(g==="top"){ py-=rows[0]; rows=rows.slice(1); }
+  if(g==="bottom") rows=rows.slice(0,-1);
+  if(cols.length!==state.cols || rows.length!==state.rows.length) return null;
+  const W=cols.reduce((a,c)=>a+c,0), H=rows.reduce((a,c)=>a+c,0);
+  if(!clamp && (px<0||py<0||px>W||py>H)) return null;
   const idx=(arr,v)=>{ let acc=0; for(let i=0;i<arr.length;i++){ acc+=arr[i]; if(v<acc) return i; } return arr.length-1; };
-  return {r:Math.max(0,idx(t.rows,py)), c:Math.max(0,idx(t.cols,px))};
+  return {r:Math.max(0,idx(rows,py)), c:Math.max(0,idx(cols,px))};
 }
 let drag=null;
-function ghost(R,kind){
-  const s=$("#screen"); let g=s.querySelector(".ghost");
-  if(!R){ if(g) g.remove(); return; }
-  if(!g){ g=document.createElement("div"); s.appendChild(g); }
-  g.className="ghost"+(kind==="swap"?" swap":"");
-  g.style.gridArea=`${R.r+1} / ${R.c+1} / span ${R.h} / span ${R.w}`;
+function ghost(R,kind,pushes){
+  const s=$("#screen");
+  s.querySelectorAll(".ghost").forEach(x=>x.remove());
+  if(!R){ s.classList.remove("show-grid"); return; }
+  s.classList.add("show-grid");
+  const gs=gridSpec(state,true);
+  const add=(rect,cls)=>{ const g=document.createElement("div"); g.className="ghost"+cls; g.style.gridArea=`${rect.r+1+gs.offR} / ${rect.c+1+gs.offC} / span ${rect.h} / span ${rect.w}`; s.appendChild(g); };
+  Object.values(pushes||{}).forEach(p=>add(p," push"));
+  add(R, kind==="swap"?" swap":"");
 }
 function onScreenDown(e){
   if(e.button!==undefined && e.button!==0) return;
@@ -1531,8 +1563,8 @@ function onDragMove(e){
     ghost(drag.plan && drag.plan.rect, drag.plan && drag.plan.kind);
   } else if(drag.rect){
     const pc=cellAt(e.clientX,e.clientY,true); if(!pc) return;
-    const R=resizePlan(state, drag.a, drag.rect, drag.edge, pc.r, pc.c);
-    drag.plan={kind:"resize", rect:R}; ghost(R,"ok");
+    const P=resizePlan(state, drag.a, drag.rect, drag.edge, pc.r, pc.c);
+    drag.plan={kind:"resize", rect:P.rect, push:P.push}; ghost(P.rect,"ok",P.push);
   }
 }
 function onDragEnd(){
@@ -1549,7 +1581,7 @@ function onDragEnd(){
   }
   ghost(null);
   if(d.plan){
-    const pushed = d.plan.kind==="resize" ? (setRect(state,d.a,d.plan.rect), null) : applyPlan(state,d.a,d.plan);
+    const pushed = d.plan.kind==="resize" ? (applyResize(state,d.a,d.plan), null) : applyPlan(state,d.a,d.plan);
     if(pushed) autoPlace(pushed);
     state.selected=d.a; state.expanded=true;
     renderAll(); focusBlock(d.a);
@@ -1567,8 +1599,8 @@ function onScreenKey(e){
     e.preventDefault();
     let R=null;
     if(e.shiftKey){
-      if(d[1]) R=resizePlan(state,a,rc,"e",0,rc.c+rc.w-1+d[1]);
-      else R=resizePlan(state,a,rc,"s",rc.r+rc.h-1+d[0],0);
+      const P = d[1] ? resizePlan(state,a,rc,"e",0,rc.c+rc.w-1+d[1]) : resizePlan(state,a,rc,"s",rc.r+rc.h-1+d[0],0);
+      applyResize(state,a,P); state.selected=a; renderAll(); focusBlock(a); return;
     } else {
       const T={...rc, r:rc.r+d[0], c:rc.c+d[1]};
       if(fits(state,T,a)) R=T;
@@ -1604,9 +1636,7 @@ function editTitleInline(a){
   blk.addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); blk.blur(); } if(ev.key==="Escape"){ blk.textContent=b.text; blk.blur(); } });
 }
 
-function areasString(){
-  return state.rows.map(r=>{ const c=[]; for(let i=0;i<state.cols;i++) c.push(r.cells[i]||"."); return '"'+c.join(" ")+'"'; }).join("\n");
-}
+function areasString(){ return gridSpec(state,false).areas.join("\n"); }
 function usedAreas(){
   const s=new Set(); state.rows.forEach(r=>r.cells.slice(0,state.cols).forEach(c=>{ if(c&&c!==".") s.add(c); })); return [...s];
 }
@@ -1676,9 +1706,10 @@ function renderPreview(){
   const d=DEVICES.find(x=>x.id===project.device);
   $("#devlabel").textContent = `${d&&d.id!=="custom"?d.label+", ":""}${w} × ${h}`;
   s.style.aspectRatio=`${w} / ${h}`;
+  const gs=gridSpec(state,true), oR=gs.offR, oC=gs.offC;
   s.style.gridTemplateAreas="none";
-  s.style.gridTemplateRows=state.rows.map(r=>r.size).join(" ");
-  s.style.gridTemplateColumns=state.colSizes.slice(0,state.cols).map(c=>/px$/.test(c)?`calc(${c} * var(--scale,1))`:c).join(" ");
+  s.style.gridTemplateRows=gs.rows;
+  s.style.gridTemplateColumns=gs.cols;
   const cw=s.clientWidth||640;
   s.style.setProperty("--scale", (cw/w).toFixed(4));
   s.style.fontSize=Math.max(8, Math.round(cw/(w/15)))+"px";
@@ -1686,19 +1717,20 @@ function renderPreview(){
   s.style.backgroundImage=(state.bgmode==="fixed"&&state.bgpath)?`url("${state.bgpath}")`:"none";
   s.innerHTML="";
   for(let r=0;r<state.rows.length;r++) for(let c=0;c<state.cols;c++){
-    const g=document.createElement("div"); g.className="gcell"; g.style.gridArea=`${r+1} / ${c+1} / ${r+2} / ${c+2}`; s.appendChild(g);
+    const g=document.createElement("div"); g.className="gcell"; g.style.gridArea=`${r+1+oR} / ${c+1+oC} / ${r+2+oR} / ${c+2+oC}`; s.appendChild(g);
   }
   usedAreas().forEach(a=>{
     const b=state.blocks[a], R=rectOf(state,a);
     const el=document.createElement("div");
-    el.style.gridArea=`${R.r+1} / ${R.c+1} / span ${R.h} / span ${R.w}`;
+    el.style.gridArea=`${R.r+1+oR} / ${R.c+1+oC} / span ${R.h} / span ${R.w}`;
     if(!b){ el.className="pv-generic blk"; el.dataset.block=a; el.innerHTML=`<span class="pv-label">${esc(a)} (no block)</span>`; s.appendChild(el); return; }
     const st=b.style||{};
     const [cls,html]=mockHTML(a,b); el.className=cls+" blk"; el.innerHTML=html;
     el.dataset.block=a; el.tabIndex=0; el.setAttribute("role","button");
     el.setAttribute("aria-label", `${a}, ${TYPES[b.type].label}. Arrow keys move it, Shift with arrow keys resizes it, Enter edits it.`);
-    if(st.alignSelf && st.alignSelf!=="stretch") el.style.alignSelf=st.alignSelf;
-    if(st.justifySelf && st.justifySelf!=="stretch") el.style.justifySelf=st.justifySelf;
+    const flex={start:"flex-start", end:"flex-end", center:"center"};
+    if(flex[st.alignSelf] && !/pv-cal|pv-cam/.test(cls)) el.style.alignItems=flex[st.alignSelf];
+    if(flex[st.justifySelf] && !/pv-cal|pv-cam/.test(cls)) el.style.justifyContent=flex[st.justifySelf];
     if(st.textAlign) el.style.textAlign=st.textAlign;
     if(st.padding) el.style.margin=st.padding;
     if(st.background) el.style.background=st.background;
@@ -1710,9 +1742,9 @@ function renderPreview(){
   const sel=state.selected, sb=sel&&state.blocks[sel], sr=sb&&!TYPES[sb.type].floating&&rectOf(state,sel);
   if(sr){
     const f=document.createElement("div"); f.className="sel-frame";
-    f.style.gridArea=`${sr.r+1} / ${sr.c+1} / span ${sr.h} / span ${sr.w}`;
+    f.style.gridArea=`${sr.r+1+oR} / ${sr.c+1+oC} / span ${sr.h} / span ${sr.w}`;
     f.innerHTML=`<div class="sel-bar"><span>${esc(sel)}</span><button data-act="edit" aria-label="Edit ${esc(sel)}" title="Edit">${sym("edit","i")}</button><button data-act="del" aria-label="Remove ${esc(sel)}" title="Remove">${sym("trash","i")}</button></div>`+
-      ["n","s","e","w"].map(x=>`<span class="hd ${x}" data-h="${x}" aria-hidden="true"></span>`).join("");
+      ["n","s","e","w","ne","nw","se","sw"].map(x=>`<span class="hd ${x}" data-h="${x}" aria-hidden="true"></span>`).join("");
     s.appendChild(f);
   }
   Object.values(state.blocks).forEach(b=>{
@@ -1724,7 +1756,6 @@ function renderPreview(){
     wv.innerHTML=`<svg class="pi" aria-hidden="true"><use href="#i-alert"/></svg><span>Layout is broken, so the device would show this jumble. See the issues below.</span>`;
     s.appendChild(wv);
   }
-  renderBars();
 }
 
 function indent(text,pad){ return text.split("\n").map(l=>l.length?pad+l:l).join("\n"); }
@@ -1740,10 +1771,11 @@ function buildYaml(){
   L.push("variables:",...vars);
   L.push("template:","  - variable_template","  - body_template");
 
+  const gs=gridSpec(state,false);
   L.push("styles:","  grid:","    - grid-template-areas: |");
-  areasString().split("\n").forEach(r=>L.push("        "+r));
-  L.push(`    - grid-template-rows: ${state.rows.map(r=>r.size).join(" ")}`);
-  L.push(`    - grid-template-columns: ${state.colSizes.slice(0,state.cols).join(" ")}`);
+  gs.areas.forEach(r=>L.push("        "+r));
+  L.push(`    - grid-template-rows: ${gs.rows}`);
+  L.push(`    - grid-template-columns: ${gs.cols}`);
   L.push("  card:");
   if(state.bgmode==="fixed"&&state.bgpath){
     L.push("    - background: '[[[ return `center / cover no-repeat url(${variables.background})` ]]]'","    - background-size: cover");
@@ -1866,54 +1898,60 @@ function fillRow(v, ri, a){
   free.forEach(ci=>v.rows[ri].cells[ci]=a);
   return true;
 }
+const DEFAULT_SIZE={title:[8,1], status:[4,1], assist:[12,1], chips:[12,1], message:[12,5], timers:[12,6], image:[6,6], webpage:[12,6],
+  intent:[12,6], mtemplate:[4,2], mlight:[4,3], tile:[4,2], media:[6,6], clockweather:[6,6], camera:[8,7], calendar:[12,7], custom:[6,4]};
+function findFree(v,w,h,prefer){
+  const R=v.rows.length, C=v.cols;
+  const order=[...Array(Math.max(0,R-h+1)).keys()];
+  if(prefer==="bottom") order.reverse();
+  for(const r of order){
+    const cs=[...Array(Math.max(0,C-w+1)).keys()];
+    if(prefer==="right") cs.reverse();
+    for(const c of cs){ const T={r,c,w,h}; if(fits(v,T,null)) return T; }
+  }
+  return null;
+}
+function stealEdge(v,edge){
+  const y = edge==="top" ? 0 : v.rows.length-1;
+  const names=[...new Set(v.rows[y].cells.filter(n=>n!=="."))];
+  const plans=[];
+  for(const n of names){
+    const R=rectOf(v,n);
+    if(!R || R.h<2 || !v.blocks[n]) return false;
+    plans.push([n, edge==="top" ? {...R, r:R.r+1, h:R.h-1} : {...R, h:R.h-1}]);
+  }
+  plans.forEach(([n,R])=>setRect(v,n,R));
+  return true;
+}
 function autoPlace(a){
   const v=state, b=v.blocks[a]; if(!b || TYPES[b.type].floating) return;
-  const lost=lostMap();
-  if(lost[a] && lost[a].length){
-    const keys=lost[a].filter(k=>{ const [ri,ci]=k.split(",").map(Number); return v.rows[ri] && ci<v.cols; });
-    delete lost[a];
-    keys.forEach(k=>{ const [ri,ci]=k.split(",").map(Number); v.rows[ri].cells[ci]=a; });
-    if(keys.length && areaInfo(v,a).rect) return;
-    clearArea(a);
+  const [w0,h0]=DEFAULT_SIZE[b.type]||[6,4];
+  const edge = b.type==="assist" ? "bottom" : (b.type==="title"||b.type==="status") ? "top" : null;
+  if(edge){
+    const y = edge==="top" ? 0 : v.rows.length-1;
+    const tryRow=()=>{
+      const row=v.rows[y].cells; let best=null, start=-1;
+      for(let x=0;x<=v.cols;x++){
+        const free = x<v.cols && (row[x]||".")===".";
+        if(free && start<0) start=x;
+        if(!free && start>=0){ const run={c:start,w:x-start}; if(!best || run.w>best.w || (b.type==="status" && run.w===best.w)) best=run; start=-1; }
+      }
+      if(!best) return false;
+      const w=Math.min(best.w, w0), c = b.type==="status" ? best.c+best.w-w : best.c;
+      setRect(v,a,{r:y,c,w,h:1}); return true;
+    };
+    if(tryRow()) return;
+    if(stealEdge(v,edge) && tryRow()) return;
   }
-  const cc=contentCols(v);
-  const newRow=(size, name)=>({size, cells:Array.from({length:v.cols},(_,ci)=>cc.includes(ci)?name:".")});
-  const placed=new Set(usedAreas());
-  const emptyRow=ri=>cc.every(ci=>(v.rows[ri].cells[ci]||".")===".");
-  if(b.type==="assist"){
-    const last=v.rows.length-1;
-    if(last>=0 && emptyRow(last)){ cc.forEach(ci=>v.rows[last].cells[ci]=a); v.rows[last].size="min-content"; return; }
-    v.rows.push(newRow("min-content",a)); return;
-  }
-  if(b.type==="title"||b.type==="status"){
-    const otherKey = findType(b.type==="title"?"status":"title");
-    if(v.rows.length && fillRow(v,0,a)) return;
-    if(b.type==="status"){
-      const t=findType("title");
-      if(t){ const inf=areaInfo(v,t); if(inf.rect && inf.r0===inf.r1 && inf.c1>inf.c0){ v.rows[inf.r0].cells[inf.c1]=a; return; } }
-    }
-    const r=newRow("min-content",a);
-    if(otherKey && !placed.has(otherKey) && cc.length>1){
-      cc.forEach((ci,i)=>{ r.cells[ci] = (i===cc.length-1) === (b.type==="status") ? a : otherKey; });
-    }
-    v.rows.unshift(r); return;
-  }
-  for(let ri=0; ri<v.rows.length; ri++){ if(emptyRow(ri)){ cc.forEach(ci=>v.rows[ri].cells[ci]=a); return; } }
-  const assistKey=findType("assist");
-  const ai=assistKey ? v.rows.findIndex(r=>r.cells.includes(assistKey)) : -1;
-  const r=newRow("1fr",a);
-  if(ai>=0) v.rows.splice(ai,0,r); else v.rows.push(r);
+  for(let h=h0; h>=1; h--) for(let w=Math.min(w0,v.cols); w>=1; w--){ const T=findFree(v,w,h,null); if(T){ setRect(v,a,T); return; } }
+  const all=usedAreas().filter(n=>v.blocks[n]).map(n=>[n,rectOf(v,n)]).sort((x,y)=>y[1].w*y[1].h-x[1].w*x[1].h);
+  const vic=all.find(([n])=>!["title","status","assist"].includes(v.blocks[n].type)) || all[0];
+  if(!vic) return;
+  const [n,R]=vic;
+  if(R.w>=2 && R.w>=R.h){ const k=Math.ceil(R.w/2); setRect(v,n,{...R,w:k}); setRect(v,a,{r:R.r,c:R.c+k,w:R.w-k,h:R.h}); }
+  else if(R.h>=2){ const k=Math.ceil(R.h/2); setRect(v,n,{...R,h:k}); setRect(v,a,{r:R.r+k,c:R.c,w:R.w,h:R.h-k}); }
 }
-function makeRoom(v, edge){
-  if(edge==="right"||edge==="left"){
-    v.cols+=1;
-    if(edge==="right"){ v.colSizes.push("90px"); v.rows.forEach(r=>r.cells.push(".")); }
-    else { v.colSizes.unshift("90px"); v.rows.forEach(r=>r.cells.unshift(".")); }
-  } else {
-    const row={size:"70px", cells:Array(v.cols).fill(".")};
-    if(edge==="bottom") v.rows.push(row); else v.rows.unshift(row);
-  }
-}
+
 function rectOf(v,a){ const i=areaInfo(v,a); return i.n ? {r:i.r0,c:i.c0,h:i.r1-i.r0+1,w:i.c1-i.c0+1} : null; }
 function cellsOf(R){ const o=[]; for(let r=R.r;r<R.r+R.h;r++) for(let c=R.c;c<R.c+R.w;c++) o.push([r,c]); return o; }
 function clampN(x,lo,hi){ return Math.max(lo, Math.min(hi, x)); }
@@ -1951,15 +1989,65 @@ function applyPlan(v,a,plan){
   setRect(v,a,plan.rect); return null;
 }
 function resizePlan(v,a,R,edge,pr,pc){
+  const C=v.cols, RN=v.rows.length;
+  let G=v.rows.map(r=>r.cells.slice(0,C)), rects={}, push={};
+  const light=new Set(["title","status","assist","chips"]);
+  const minOf=n=>light.has((v.blocks[n]||{}).type) ? 1 : 2;
+  const rectNow=n=>{
+    if(rects[n]) return rects[n];
+    let r0=1e9,r1=-1,c0=1e9,c1=-1;
+    G.forEach((row,y)=>row.forEach((x,xi)=>{ if(x===n){ r0=Math.min(r0,y); r1=Math.max(r1,y); c0=Math.min(c0,xi); c1=Math.max(c1,xi); } }));
+    return r1<0 ? null : {r:r0,c:c0,h:r1-r0+1,w:c1-c0+1};
+  };
+  const paint=(n,old,nw)=>{ cellsOf(old).forEach(([y,x])=>{ if(G[y][x]===n) G[y][x]="."; }); cellsOf(nw).forEach(([y,x])=>G[y][x]=n); rects[n]=nw; push[n]=nw; };
+  const snap=()=>({G:G.map(r=>r.slice()), rects:{...rects}, push:{...push}});
+  const restore=sn=>{ G=sn.G; rects=sn.rects; push=sn.push; };
+  const clear=(dir,idx,lo,hi,depth)=>{
+    if(depth>30) return false;
+    const names=new Set();
+    for(let k=lo;k<=hi;k++){ const n=(dir==="e"||dir==="w") ? G[k][idx] : G[idx][k]; if(n!=="." && n!==a) names.add(n); }
+    for(const n of names){
+      const nr=rectNow(n); if(!nr || !v.blocks[n]) return false;
+      const m=minOf(n); let nn=null;
+      if(dir==="e"){ if(nr.c!==idx) return false;
+        if(nr.w>m) nn={...nr,c:nr.c+1,w:nr.w-1};
+        else { const nx=nr.c+nr.w; if(nx>=C || !clear("e",nx,nr.r,nr.r+nr.h-1,depth+1)) return false; nn={...nr,c:nr.c+1}; } }
+      if(dir==="w"){ if(nr.c+nr.w-1!==idx) return false;
+        if(nr.w>m) nn={...nr,w:nr.w-1};
+        else { const nx=nr.c-1; if(nx<0 || !clear("w",nx,nr.r,nr.r+nr.h-1,depth+1)) return false; nn={...nr,c:nr.c-1}; } }
+      if(dir==="s"){ if(nr.r!==idx) return false;
+        if(nr.h>m) nn={...nr,r:nr.r+1,h:nr.h-1};
+        else { const ny=nr.r+nr.h; if(ny>=RN || !clear("s",ny,nr.c,nr.c+nr.w-1,depth+1)) return false; nn={...nr,r:nr.r+1}; } }
+      if(dir==="n"){ if(nr.r+nr.h-1!==idx) return false;
+        if(nr.h>m) nn={...nr,h:nr.h-1};
+        else { const ny=nr.r-1; if(ny<0 || !clear("n",ny,nr.c,nr.c+nr.w-1,depth+1)) return false; nn={...nr,r:nr.r-1}; } }
+      paint(n, rectNow(n), nn);
+    }
+    return true;
+  };
   let r=R.r, c=R.c, r1=R.r+R.h-1, c1=R.c+R.w-1;
-  const okCell=(y,x)=>{ const o=(v.rows[y]&&v.rows[y].cells[x])||"."; return o==="."||o===a; };
-  const freeCol=x=>{ for(let y=r;y<=r1;y++) if(!okCell(y,x)) return false; return true; };
-  const freeRow=y=>{ for(let x=c;x<=c1;x++) if(!okCell(y,x)) return false; return true; };
-  if(edge==="e"){ const t=clampN(pc,c,v.cols-1); if(t>c1){ let x=c1; while(x<t && freeCol(x+1)) x++; c1=x; } else c1=t; }
-  if(edge==="w"){ const t=clampN(pc,0,c1); if(t<c){ let x=c; while(x>t && freeCol(x-1)) x--; c=x; } else c=t; }
-  if(edge==="s"){ const t=clampN(pr,r,v.rows.length-1); if(t>r1){ let y=r1; while(y<t && freeRow(y+1)) y++; r1=y; } else r1=t; }
-  if(edge==="n"){ const t=clampN(pr,0,r1); if(t<r){ let y=r; while(y>t && freeRow(y-1)) y--; r=y; } else r=t; }
-  return {r,c,w:c1-c+1,h:r1-r+1};
+  const fill=()=>{ for(let y=r;y<=r1;y++) for(let x=c;x<=c1;x++) G[y][x]=a; };
+  const grow=(dir,idx,lo,hi)=>{ const sn=snap(); if(clear(dir,idx,lo,hi,0)) return true; restore(sn); return false; };
+  for(const e of String(edge).split("")){
+    if(e==="e"){ const t=clampN(pc,c,C-1);
+      if(t>c1){ while(c1<t && grow("e",c1+1,r,r1)){ c1++; fill(); } }
+      else { for(let y=r;y<=r1;y++) for(let x=t+1;x<=c1;x++) G[y][x]="."; c1=t; } }
+    if(e==="w"){ const t=clampN(pc,0,c1);
+      if(t<c){ while(c>t && grow("w",c-1,r,r1)){ c--; fill(); } }
+      else { for(let y=r;y<=r1;y++) for(let x=c;x<t;x++) G[y][x]="."; c=t; } }
+    if(e==="s"){ const t=clampN(pr,r,RN-1);
+      if(t>r1){ while(r1<t && grow("s",r1+1,c,c1)){ r1++; fill(); } }
+      else { for(let y=t+1;y<=r1;y++) for(let x=c;x<=c1;x++) G[y][x]="."; r1=t; } }
+    if(e==="n"){ const t=clampN(pr,0,r1);
+      if(t<r){ while(r>t && grow("n",r-1,c,c1)){ r--; fill(); } }
+      else { for(let y=r;y<t;y++) for(let x=c;x<=c1;x++) G[y][x]="."; r=t; } }
+  }
+  return {rect:{r,c,w:c1-c+1,h:r1-r+1}, push};
+}
+function applyResize(v,a,P){
+  if(!P) return;
+  Object.entries(P.push||{}).forEach(([n,R])=>setRect(v,n,R));
+  setRect(v,a,P.rect);
 }
 function moveBlockTo(a,r,c){
   const plan=dropPlan(state,a,r,c,{dr:0,dc:0});
@@ -1967,36 +2055,11 @@ function moveBlockTo(a,r,c){
   if(pushed) autoPlace(pushed);
   return plan;
 }
-function addRow(){
-  const ak=findType("assist"), last=state.rows.length-1;
-  const at = ak && last>=0 && state.rows[last].cells.includes(ak) ? last : state.rows.length;
-  state.rows.splice(at,0,{size:"1fr", cells:Array(state.cols).fill(".")});
-  state.lost={};
-}
-function addCol(){
-  const last=state.cols-1;
-  const spacer = last>0 && /px$/.test(String(state.colSizes[last])) && state.rows.every(r=>(r.cells[last]||".")===".");
-  const at = spacer ? last : state.cols;
-  state.colSizes.splice(at,0,"1fr");
-  state.rows.forEach(r=>r.cells.splice(at,0,"."));
-  state.cols++; state.lost={};
-}
-function lostAfter(fn){
-  const before=new Set(usedAreas().filter(a=>state.blocks[a]));
-  fn();
-  const after=new Set(usedAreas());
-  return [...before].filter(a=>!after.has(a));
-}
-function delRow(i){
-  if(state.rows.length<2) return [];
-  const gone=lostAfter(()=>{ state.rows.splice(i,1); state.lost={}; });
-  return gone;
-}
-function delCol(i){
-  if(state.cols<2) return [];
-  const gone=lostAfter(()=>{ state.colSizes.splice(i,1); state.rows.forEach(r=>r.cells.splice(i,1)); state.cols--; state.lost={}; });
-  return gone;
-}
+
+
+
+
+
 function issues(){
   const L=[], areas=usedAreas(), lost=lostMap();
   const unplaced=Object.entries(state.blocks).filter(([a,b])=>!TYPES[b.type].floating && !areas.includes(a));
@@ -2039,17 +2102,7 @@ function issues(){
     hint:"Keep one navbar per view.",
     fix:{label:"Remove the extra navbar", run:()=>navKeys.slice(1).forEach(k=>delete state.blocks[k])}});
   navKeys.slice(0,1).forEach(k=>{
-    const b=state.blocks[k], pos=b.position||"right";
-    let edge=[];
-    if(pos==="right") edge=state.rows.map(r=>r.cells[state.cols-1]);
-    if(pos==="left") edge=state.rows.map(r=>r.cells[0]);
-    if(pos==="bottom") edge=(state.rows[state.rows.length-1]||{cells:[]}).cells.slice(0,state.cols);
-    if(pos==="top") edge=(state.rows[0]||{cells:[]}).cells.slice(0,state.cols);
-    const hit=[...new Set(edge.filter(c=>c&&c!=="."))];
-    if(hit.length) L.push({
-      text:`The navbar on the ${pos} covers ${hit.map(x=>`“${x}”`).join(", ")}.`,
-      hint:`Content under the navbar cannot be tapped. PanelKit can add a free ${pos==="left"||pos==="right"?"column":"row"} for it.`,
-      fix:{label:"Make room for the navbar", run:()=>makeRoom(state,pos)}});
+    const b=state.blocks[k];
     if(!b.sync) (b.routes||[]).forEach((r,i)=>{ if(!r.target) L.push({
       text:`Navbar route ${i+1} (${r.label||"no label"}) has no target.`,
       hint:"Give it a view name, a path or a web address in the navbar settings.",
@@ -2263,16 +2316,6 @@ $("#screen").addEventListener("pointerdown", onScreenDown);
 $("#screen").addEventListener("keydown", onScreenKey);
 $("#screen").addEventListener("click", onScreenClick);
 $("#screen").addEventListener("dblclick", onScreenDbl);
-$("#colbar").addEventListener("change", onBarChange);
-$("#rowbar").addEventListener("change", onBarChange);
-$("#colbar").addEventListener("click", onBarClick);
-$("#rowbar").addEventListener("click", onBarClick);
-$("#addrowbtn").onclick=()=>{ addRow(); renderAll(); };
-let showBars = !(window.matchMedia && window.matchMedia("(max-width:640px)").matches);
-function applyBars(){ $("#editor").classList.toggle("nobars", !showBars); $("#sizesbtn").setAttribute("aria-pressed", String(showBars)); }
-$("#sizesbtn").onclick=()=>{ showBars=!showBars; applyBars(); renderPreview(); };
-applyBars();
-$("#addcolbtn").onclick=()=>{ addCol(); renderAll(); };
 $("#viewname").onchange=e=>{
   const old=state.name, nn=safeIdent(e.target.value);
   state.name = project.views.some(v=>v!==state && v.name===nn) ? uniqueView(nn) : nn;

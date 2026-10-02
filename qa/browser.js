@@ -1,94 +1,72 @@
-const path=require("path");const puppeteer=require("puppeteer-core");
-async function chromePath(){ if(process.env.CHROME_PATH) return process.env.CHROME_PATH; return await require("@sparticuz/chromium").executablePath(); }
-let failed=0;
-(async()=>{
-  const browser=await puppeteer.launch({executablePath:await chromePath(),args:["--no-sandbox","--disable-gpu"],headless:true});
-  const page=await browser.newPage(); await page.setViewport({width:1440,height:1000});
-  await page.emulateMediaFeatures([{name:"prefers-color-scheme",value:"dark"}]);
-  const errs=[]; page.on("pageerror",e=>errs.push(e.message));
-  await page.goto("file://"+path.join(__dirname,"..","builder","index.html"),{waitUntil:"load"});
-  await page.evaluate(()=>{ localStorage.clear(); }); await page.reload({waitUntil:"load"});
-  const T=(n,c,d)=>{ if(!c) failed++; console.log((c?"ok  ":"FAIL")+" "+n+(c?"":"  "+(d||""))); };
-  const grid=()=>page.evaluate(()=>project.views[project.active].rows.map(r=>r.cells.join(" ")).join(" | "));
-  const box=async sel=>{ const el=await page.$(sel); return el && await el.boundingBox(); };
-  const center=b=>({x:b.x+b.width/2,y:b.y+b.height/2});
-  const dragFrom=async (from,to)=>{ await page.mouse.move(from.x,from.y); await page.mouse.down(); await page.mouse.move(from.x+8,from.y+8,{steps:2}); await page.mouse.move(to.x,to.y,{steps:8}); await page.mouse.up(); await new Promise(r=>setTimeout(r,150)); };
+const path = require("path");
+const puppeteer = require("puppeteer-core");
+async function chromePath() { if (process.env.CHROME_PATH) return process.env.CHROME_PATH; return await require("@sparticuz/chromium").executablePath(); }
+let failed = 0;
+(async () => {
+  const browser = await puppeteer.launch({ executablePath: await chromePath(), args: ["--no-sandbox", "--disable-gpu"], headless: true });
+  const page = await browser.newPage(); await page.setViewport({ width: 1440, height: 1000 });
+  const errs = []; page.on("pageerror", e => errs.push(e.message));
+  const file = "file://" + path.join(__dirname, "..", "builder", "index.html");
+  await page.goto(file, { waitUntil: "load" });
+  await page.evaluate(() => localStorage.clear()); await page.reload({ waitUntil: "load" });
+  const T = (n, c, d) => { if (!c) failed++; console.log((c ? "ok  " : "FAIL") + " " + n + (c ? "" : "  " + (d || ""))); };
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const rect = n => page.evaluate(n => rectOf(state, n), n);
+  const cell = (r, c) => page.evaluate((r, c) => { const g = [...document.querySelectorAll(".screen .gcell")][r * 12 + c].getBoundingClientRect(); return { x: g.x + g.width / 2, y: g.y + g.height / 2 }; }, r, c);
+  const box = async s => { const b = await (await page.$(s)).boundingBox(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; };
+  const drag = async (from, to) => { await page.mouse.move(from.x, from.y); await page.mouse.down(); await page.mouse.move(from.x + 6, from.y + 6, { steps: 2 }); await page.mouse.move(to.x, to.y, { steps: 10 }); await page.mouse.up(); await wait(120); };
+  const issues = () => page.evaluate(() => issues().map(i => i.text));
 
-  await page.evaluate(()=>[...document.querySelectorAll("#vtabs .go")].find(b=>b.textContent==="Lights").click());
-  const g0=await grid();
-  T("lights start", g0.includes("living floorlamp office"), g0);
-  const bars=await page.evaluate(()=>({c:document.querySelectorAll("#colbar .tk").length, r:document.querySelectorAll("#rowbar .tk").length, cols:getComputedStyle(document.querySelector("#colbar")).gridTemplateColumns}));
-  T("bars match grid", bars.c===4 && bars.r===4 && /px/.test(bars.cols), JSON.stringify(bars));
+  await page.evaluate(() => [...document.querySelectorAll("#vtabs .go")].find(b => b.textContent === "Lights").click());
+  T("no size menus", await page.evaluate(() => !document.querySelector("select.tksel, #colbar, #rowbar")));
+  T("starts clean", (await issues()).length === 0);
 
-  let liv=await box('.screen .blk[data-block="living"]'); await page.mouse.click(center(liv).x,center(liv).y); await new Promise(r=>setTimeout(r,100));
-  T("click selects", await page.evaluate(()=>state.selected)==="living" && !!(await page.$(".sel-frame")));
-  T("sidebar opens block", await page.evaluate(()=>!!document.querySelector('.bitem.open[data-block="living"]')));
+  const liv0 = await rect("living"), gar0 = await rect("garden");
+  await page.click('.screen .blk[data-block="living"]'); await wait(80);
+  T("click selects and opens settings", await page.evaluate(() => state.selected === "living" && !!document.querySelector('.bitem.open[data-block="living"]')));
+  T("eight handles", await page.evaluate(() => document.querySelectorAll(".sel-frame [data-h]").length === 8));
 
-  const garden=await box('.screen .blk[data-block="garden"]');
-  liv=await box('.screen .blk[data-block="living"]');
-  await dragFrom(center(liv), center(garden));
-  let g=await grid();
-  T("drop on block swaps", g.includes("garden floorlamp office") && g.includes("desk living alloff"), g);
+  await drag(await box('.screen .blk[data-block="living"]'), await cell(gar0.r + 1, gar0.c + 1));
+  T("drop on block swaps", JSON.stringify(await rect("living")) === JSON.stringify(gar0) && JSON.stringify(await rect("garden")) === JSON.stringify(liv0));
+  await page.evaluate(() => histUndo());
+  T("undo swap", JSON.stringify(await rect("living")) === JSON.stringify(liv0));
 
-  await page.evaluate(()=>{ histUndo(); });
-  T("undo swap", (await grid())===g0, await grid());
+  const fl0 = await rect("floorlamp");
+  await page.click('.screen .blk[data-block="living"]'); await wait(80);
+  await drag(await box(".sel-frame .hd.e"), await cell(liv0.r, liv0.c + liv0.w + 1));
+  const liv1 = await rect("living"), fl1 = await rect("floorlamp");
+  T("pull right edge, neighbour makes room", liv1.w === liv0.w + 2 && fl1.c === fl0.c + 2 && fl1.w === fl0.w - 2, JSON.stringify([liv1, fl1]));
+  await drag(await box(".sel-frame .hd.s"), await cell(liv1.r + liv1.h, liv1.c));
+  const liv2 = await rect("living"), desk2 = await rect("desk");
+  T("pull bottom edge, block below makes room", liv2.h === liv1.h + 1 && desk2.r === liv2.r + liv2.h, JSON.stringify([liv2, desk2]));
+  await drag(await box(".sel-frame .hd.se"), await cell(liv2.r + liv2.h - 2, liv2.c + liv2.w - 3));
+  const liv3 = await rect("living");
+  T("corner shrinks both ways", liv3.w === liv2.w - 2 && liv3.h === liv2.h - 1, JSON.stringify(liv3));
+  T("still valid", (await issues()).length === 0, (await issues()).join(" | "));
 
-  await page.evaluate(()=>{ delete state.blocks.garden; state.rows.forEach(r=>r.cells=r.cells.map(c=>c==="garden"?".":c)); state.selected="desk"; renderAll(); });
-  let desk=await box('.screen .blk[data-block="desk"]'); const e=await box('.sel-frame .hd.e');
-  T("handles visible", !!e);
-  await dragFrom(center(e), {x:center(e).x+desk.width, y:center(e).y});
-  g=await grid();
-  T("resize east into free cell", g.includes("desk desk alloff"), g);
-  const e2=await box('.sel-frame .hd.e');
-  await dragFrom(center(e2), {x:center(e2).x+desk.width*2, y:center(e2).y});
-  g=await grid();
-  T("resize stops at other block", g.includes("desk desk alloff"), g);
-  const w=await box('.sel-frame .hd.e');
-  const c0=await page.evaluate(()=>{ const g=[...document.querySelectorAll(".screen .gcell")][2*4+0].getBoundingClientRect(); return g.x+g.width/2; });
-  await dragFrom(center(w), {x:c0, y:center(w).y});
-  g=await grid();
-  T("resize shrink", g.includes("desk . alloff"), g);
+  const free = await cell(liv3.r, liv3.c + liv3.w);
+  const before = await rect("living");
+  await drag(await box('.screen .blk[data-block="living"]'), free);
+  const moved = await rect("living");
+  T("drag into free space moves", moved.c > before.c || moved.r !== before.r, JSON.stringify([before, moved]));
 
-  desk=await box('.screen .blk[data-block="desk"]');
-  const free=await page.evaluate(()=>{ const g=[...document.querySelectorAll(".screen .gcell")][2*4+1].getBoundingClientRect(); return {x:g.x+g.width/2,y:g.y+g.height/2}; });
-  await dragFrom(center(desk), free);
-  g=await grid();
-  T("move into free cell", g.includes(". desk alloff"), g);
-
-  const office=await box('.screen .blk[data-block="office"]');
-  await page.mouse.click(center(office).x,center(office).y);
-  await page.keyboard.press("ArrowDown");
-  g=await grid();
-  T("keyboard blocked by other block", g.includes("living floorlamp office"), g);
-  await page.evaluate(()=>{ state.selected="desk"; renderAll(); document.querySelector('.screen .blk[data-block="desk"]').focus(); });
-  await page.keyboard.press("ArrowLeft");
-  g=await grid();
-  T("keyboard move", g.includes("desk . alloff"), g);
+  await page.evaluate(() => { state.selected = "desk"; renderAll(); document.querySelector('.screen .blk[data-block="desk"]').focus(); });
+  const d0 = await rect("desk");
   await page.keyboard.down("Shift"); await page.keyboard.press("ArrowRight"); await page.keyboard.up("Shift");
-  g=await grid();
-  T("keyboard resize", g.includes("desk desk alloff"), g);
+  T("keyboard resize", (await rect("desk")).w === d0.w + 1);
 
-  const titleBox=await box('.screen .blk[data-block="title"]');
-  await page.mouse.click(center(titleBox).x,center(titleBox).y); await new Promise(r=>setTimeout(r,120)); await page.mouse.click(center(titleBox).x,center(titleBox).y);
-  await page.keyboard.type("My lights"); await page.keyboard.press("Enter"); await new Promise(r=>setTimeout(r,100));
-  T("inline title edit", await page.evaluate(()=>state.blocks.title.text)==="My lights", await page.evaluate(()=>state.blocks.title.text));
+  const tb = await box('.screen .blk[data-block="title"]');
+  await page.mouse.click(tb.x, tb.y); await wait(120); await page.mouse.click(tb.x, tb.y);
+  await page.keyboard.type("My lights"); await page.keyboard.press("Enter"); await wait(100);
+  T("inline title edit", await page.evaluate(() => state.blocks.title.text) === "My lights");
 
-  await page.select('#rowbar select[data-row="1"]','min-content');
-  T("row size from bar", await page.evaluate(()=>state.rows[1].size)==="min-content");
-  await page.click('#addrowbtn');
-  T("add row above assist", await page.evaluate(()=>state.rows.length===5 && state.rows[4].cells.includes("assist") && state.rows[3].cells.every(c=>c===".")));
-  await page.click('#addcolbtn');
-  T("add column before navbar spacer", await page.evaluate(()=>state.cols===5 && state.colSizes[4]==="90px" && state.colSizes[3]==="1fr"));
-  await page.hover('#rowbar .tk:nth-child(5)'); await page.click('#rowbar [data-delrow="4"]');
-  T("delete row with assist reports it", await page.evaluate(()=>!document.querySelector("#snack").hidden && document.querySelector("#snacktext").textContent.includes("assist")));
-  await page.click('#snackundo'); await new Promise(r=>setTimeout(r,100));
-  T("undo row delete", await page.evaluate(()=>state.rows.length===5 && state.rows[4].cells.includes("assist")));
+  await page.evaluate(() => { document.querySelector("#addtoggle").click(); document.querySelector('[data-add="camera"]').click(); });
+  T("new block on a full screen", await page.evaluate(() => usedAreas().includes("camera")) && (await issues()).length === 0, (await issues()).join(" | "));
 
-  await page.evaluate(()=>{ document.querySelector("#addtoggle").click(); document.querySelector('[data-add="tile"]').click(); });
-  T("added block lands on screen", await page.evaluate(()=>usedAreas().includes("tile") && state.selected==="tile"));
-
-  T("no page errors", errs.length===0, errs.join(" | "));
+  const y = await page.evaluate(() => document.querySelector("#g-view").textContent);
+  T("yaml uses the fine grid and a navbar strip", /grid-template-columns: repeat\(12, 1fr\) 90px/.test(y) && /grid-template-rows: repeat\(12, 1fr\)/.test(y));
+  T("no page errors", errs.length === 0, errs.join(" | "));
   await browser.close();
   console.log(failed ? `${failed} browser checks failed` : "all browser checks passed");
-  process.exit(failed?1:0);
-})().catch(e=>{console.error("CRASH",e);process.exit(1)});
+  process.exit(failed ? 1 : 0);
+})().catch(e => { console.error("CRASH", e); process.exit(1); });

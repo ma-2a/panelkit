@@ -15,8 +15,8 @@ grid, fills in the fields and hands back YAML you paste into a manual card.
 - Templates, including a tab set (home, camera, music, lights, calendar) that shares one navbar
 - A navbar that follows your views, and one click to put it on every view
 - Export one view, or all of them at once for the raw configuration editor
-- Edit directly in the preview: drag to move, drop on another block to swap, pull handles to resize, keyboard arrows work too
-- Row and column sizes from a menu next to the preview, custom CSS grid values if you need them
+- Edit directly in the preview: drag to move, drop on another block to swap, pull edges or corners to resize, neighbours make room on their own
+- No rows, columns or sizes to configure. A fine 12 by 12 grid sits underneath, and the navbar gets its own strip automatically
 - Undo and redo for everything
 - View Assist blocks: title, status icons, assist bar, message, timers, satellite image, web page, intent cards
 - HACS cards with proper forms: navbar-card, Mushroom chips, template and light cards, mini-media-player, clock-weather-card, Advanced Camera Card

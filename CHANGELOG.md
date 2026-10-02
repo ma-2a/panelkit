@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 — 2026-10-02
+
+- No more size menus. Make a block bigger by pulling its edge or corner, the blocks next to it shrink or move along to make room
+- Neighbours keep a sensible minimum size and get pushed along once they reach it
+- Corner handles resize in both directions at once
+- A fine 12 by 12 grid sits underneath every view, so blocks can be any size from a twelfth to the full screen
+- The navbar gets its own strip automatically on the side you choose, it can no longer cover content
+- New blocks always find a place, on a full screen the largest block makes room
+- Blocks fill their whole area in the editor, so what you grab is what you see
+- Views from earlier versions are converted to the new grid automatically, keeping their proportions
+
 ## 0.6.0 — 2026-10-01
 
 - The preview is now the editor. The separate layout grid is gone

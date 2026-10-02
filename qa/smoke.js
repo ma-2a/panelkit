@@ -178,19 +178,9 @@ step("blocks: add, remove, undo", () => {
   if ($$(".bitem").length !== n) throw new Error("undo failed");
 });
 
-step("rows and columns from the preview", () => {
-  const rows = () => w.eval("state.rows.length"), cols = () => w.eval("state.cols");
-  const r0 = rows(), c0 = cols();
-  $("#addrowbtn").click(); $("#addcolbtn").click();
-  if (rows() !== r0 + 1 || cols() !== c0 + 1) throw new Error("add failed");
-  if ($$("#rowbar .tk").length !== rows() || $$("#colbar .tk").length !== cols()) throw new Error("bars out of sync");
-  const sel = $('#rowbar select[data-row="1"]'); sel.value = "2fr"; fire(sel);
-  if (w.eval("state.rows[1].size") !== "2fr") throw new Error("row size");
-  const csel = $('#colbar select[data-col="0"]'); csel.value = "min-content"; fire(csel);
-  if (w.eval("state.colSizes[0]") !== "min-content") throw new Error("col size");
-  $(`#rowbar [data-delrow="${rows() - 2}"]`).click();
-  $(`#colbar [data-delcol="${cols() - 2}"]`).click();
-  if (rows() !== r0 || cols() !== c0) throw new Error("delete failed");
+step("no size menus in the editor", () => {
+  if ($("#colbar") || $("#rowbar") || $("select.tksel") || $("#addrowbtn") || $("#sizesbtn")) throw new Error("old controls still there");
+  if ($$(".screen .gcell").length !== 144) throw new Error("fine grid guides " + $$(".screen .gcell").length);
 });
 
 step("devices", () => {
@@ -227,21 +217,27 @@ step("old single view migrates", () => {
 step("select, keyboard move and resize in the preview", () => {
   const fresh = boot(); const D = fresh.document; const q = x => D.querySelector(x); const qa = x => [...D.querySelectorAll(x)];
   [...D.querySelectorAll("#vtabs .go")].find(b => b.textContent === "Lights").click();
-  fresh.eval('delete state.blocks.garden; state.rows[2].cells[1]="."; renderAll();');
+  fresh.eval('removeBlock("garden"); hideSnack();');
   const desk = () => q('.screen .blk[data-block="desk"]');
+  const rect = () => fresh.eval('JSON.stringify(rectOf(state,"desk"))');
   desk().dispatchEvent(new fresh.MouseEvent("pointerdown", { bubbles: true, clientX: 1, clientY: 1 }));
   fresh.dispatchEvent(new fresh.MouseEvent("pointerup", { bubbles: true, clientX: 1, clientY: 1 }));
   if (fresh.eval("state.selected") !== "desk") throw new Error("not selected");
-  if (!q(".screen .sel-frame") || qa(".sel-frame [data-h]").length !== 4) throw new Error("no handles");
+  if (!q(".screen .sel-frame") || qa(".sel-frame [data-h]").length !== 8) throw new Error("handles " + qa(".sel-frame [data-h]").length);
   if (!q('.bitem.open[data-block="desk"]')) throw new Error("sidebar not opened");
+  const start = JSON.parse(rect());
   const key = (k, shift) => desk().dispatchEvent(new fresh.KeyboardEvent("keydown", { key: k, shiftKey: !!shift, bubbles: true }));
   key("ArrowRight");
-  if (fresh.eval('state.rows[2].cells.join()') !== ".,desk,alloff,.") throw new Error("move: " + fresh.eval('state.rows[2].cells.join()'));
-  key("ArrowLeft", true);
-  key("ArrowLeft"); key("ArrowRight", true);
-  if (fresh.eval('state.rows[2].cells.join()') !== "desk,desk,alloff,.") throw new Error("resize: " + fresh.eval('state.rows[2].cells.join()'));
+  let now = JSON.parse(rect());
+  if (now.c !== start.c + 1 || now.w !== start.w) throw new Error("move " + rect());
+  key("ArrowRight", true);
+  now = JSON.parse(rect());
+  if (now.w !== start.w + 1) throw new Error("resize " + rect());
+  for (let i = 0; i < 4; i++) key("ArrowRight", true);
+  if (fresh.eval('rectOf(state,"alloff").w') >= 4) throw new Error("growing did not push the neighbour");
+  if (fresh.eval("issues().length") !== 0) throw new Error("issues after push");
   key("ArrowUp");
-  if (fresh.eval('state.rows[2].cells.join()') !== "desk,desk,alloff,.") throw new Error("moved into another block");
+  if (JSON.parse(rect()).r !== start.r) throw new Error("moved into another block");
   q('.sel-bar [data-act="del"]').click();
   if (fresh.eval('"desk" in state.blocks')) throw new Error("toolbar delete");
   q("#snackundo").click();
